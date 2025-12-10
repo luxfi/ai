@@ -141,7 +141,7 @@ func main() {
 		<-sigCh
 		fmt.Println("\nShutting down...")
 		cancel()
-		node.Stop()
+		_ = node.Stop()
 	}()
 
 	fmt.Printf("Starting Lux AI Node %s\n", version)

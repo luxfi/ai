@@ -65,7 +65,7 @@ func main() {
 		<-sigCh
 		fmt.Println("\nShutting down...")
 		cancel()
-		m.Stop()
+		_ = m.Stop()
 	}()
 
 	fmt.Printf("Starting Lux AI Miner %s\n", version)
