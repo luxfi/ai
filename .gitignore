@@ -1,0 +1,41 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+*.test
+*.out
+vendor/
+
+# Node
+node_modules/
+dist/
+.pnpm-store/
+
+# Rust/Tauri
+desktop/src-tauri/target/
+desktop/src-tauri/Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data
+data/
+models/
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
