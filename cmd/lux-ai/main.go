@@ -22,21 +22,21 @@ var (
 
 // AINode is the main AI node server
 type AINode struct {
-	config   Config
-	mu       sync.RWMutex
-	miners   map[string]*MinerInfo
-	tasks    map[string]*Task
-	models   map[string]*ModelInfo
-	server   *http.Server
-	running  bool
+	config  Config
+	mu      sync.RWMutex
+	miners  map[string]*MinerInfo
+	tasks   map[string]*Task
+	models  map[string]*ModelInfo
+	server  *http.Server
+	running bool
 }
 
 // Config holds node configuration
 type Config struct {
-	Port          int    `json:"port"`
-	DataDir       string `json:"data_dir"`
-	NodeURL       string `json:"node_url"`
-	EnableCORS    bool   `json:"enable_cors"`
+	Port           int      `json:"port"`
+	DataDir        string   `json:"data_dir"`
+	NodeURL        string   `json:"node_url"`
+	EnableCORS     bool     `json:"enable_cors"`
 	AllowedOrigins []string `json:"allowed_origins"`
 }
 
@@ -52,14 +52,14 @@ type MinerInfo struct {
 
 // Task represents an AI task
 type Task struct {
-	ID        string          `json:"id"`
-	Type      string          `json:"type"`
-	Model     string          `json:"model"`
-	Input     json.RawMessage `json:"input"`
-	Output    json.RawMessage `json:"output,omitempty"`
-	Status    string          `json:"status"`
-	AssignedTo string         `json:"assigned_to,omitempty"`
-	CreatedAt time.Time       `json:"created_at"`
+	ID         string          `json:"id"`
+	Type       string          `json:"type"`
+	Model      string          `json:"model"`
+	Input      json.RawMessage `json:"input"`
+	Output     json.RawMessage `json:"output,omitempty"`
+	Status     string          `json:"status"`
+	AssignedTo string          `json:"assigned_to,omitempty"`
+	CreatedAt  time.Time       `json:"created_at"`
 }
 
 // ModelInfo describes available models
@@ -121,10 +121,10 @@ func main() {
 	}
 
 	config := Config{
-		Port:          *port,
-		DataDir:       *dataDir,
-		NodeURL:       *nodeURL,
-		EnableCORS:    *enableCORS,
+		Port:           *port,
+		DataDir:        *dataDir,
+		NodeURL:        *nodeURL,
+		EnableCORS:     *enableCORS,
 		AllowedOrigins: []string{"*"},
 	}
 
