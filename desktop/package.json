@@ -1,7 +1,7 @@
 {
-  "name": "lux-ai-desktop",
+  "name": "lux-desktop",
   "version": "0.1.0",
-  "description": "Lux AI Desktop - Mine AI tokens and chat with AI models",
+  "description": "Lux Desktop - Mine AI tokens and chat with AI models",
   "type": "module",
   "scripts": {
     "dev": "vite",

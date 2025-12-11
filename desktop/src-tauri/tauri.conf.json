@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Lux AI",
+  "productName": "Lux Desktop",
   "version": "0.1.0",
-  "identifier": "com.luxfi.ai",
+  "identifier": "com.luxfi.desktop",
   "build": {
     "beforeBuildCommand": "pnpm build",
     "beforeDevCommand": "pnpm dev",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Lux AI",
+        "title": "Lux Desktop",
         "width": 1200,
         "height": 800,
         "minWidth": 800,
@@ -37,7 +37,7 @@
     ],
     "category": "Utility",
     "shortDescription": "Mine AI tokens and chat with AI models",
-    "longDescription": "Lux AI Desktop allows you to mine AI tokens by contributing GPU compute and chat with AI models running on the Lux network."
+    "longDescription": "Lux Desktop allows you to mine AI tokens by contributing GPU compute and chat with AI models on the Lux AI network with Q-Chain attestations."
   },
   "plugins": {
     "shell": {
