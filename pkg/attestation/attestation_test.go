@@ -214,20 +214,20 @@ func TestCalculateTrustScore(t *testing.T) {
 		maxScore uint8
 	}{
 		{
-			name: "Base score",
+			name: "Base score (unknown GPU)",
 			att: &GPUAttestation{
 				Model: "RTX 3090",
 			},
-			minScore: 50,
-			maxScore: 50,
+			minScore: 60,
+			maxScore: 60, // Base hardware CC score
 		},
 		{
-			name: "CC enabled",
+			name: "CC enabled A100",
 			att: &GPUAttestation{
 				Model:     "A100",
 				CCEnabled: true,
 			},
-			minScore: 75,
+			minScore: 80, // 60 + 20 (CC) + 4 (A100)
 			maxScore: 85,
 		},
 		{
@@ -237,17 +237,17 @@ func TestCalculateTrustScore(t *testing.T) {
 				CCEnabled:    true,
 				TEEIOEnabled: true,
 			},
-			minScore: 90,
+			minScore: 95, // 60 + 20 + 10 + 8
 			maxScore: 100,
 		},
 		{
-			name: "Blackwell",
+			name: "Blackwell datacenter",
 			att: &GPUAttestation{
 				Model:        "GB200",
 				CCEnabled:    true,
 				TEEIOEnabled: true,
 			},
-			minScore: 100,
+			minScore: 100, // 60 + 20 + 10 + 10 = 100
 			maxScore: 100,
 		},
 	}
@@ -395,5 +395,250 @@ func TestBytesEqual(t *testing.T) {
 		if got := bytesEqual(tt.a, tt.b); got != tt.expected {
 			t.Errorf("test %d: bytesEqual() = %v, want %v", i, got, tt.expected)
 		}
+	}
+}
+
+// Tests for new attestation modes
+
+func TestLocalVerifierAttestation(t *testing.T) {
+	v := NewVerifier()
+
+	att := &GPUAttestation{
+		DeviceID:     "GPU-LOCAL-001",
+		Model:        "H100",
+		CCEnabled:    true,
+		TEEIOEnabled: true,
+		Mode:         ModeLocalVerifier,
+		LocalEvidence: &LocalGPUEvidence{
+			SPDMReport:  make([]byte, 512),
+			CertChain:   make([]byte, 1024),
+			RIMVerified: true,
+			Nonce:       [32]byte{1, 2, 3},
+		},
+	}
+
+	status, err := v.VerifyGPUAttestation(att)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !status.Attested {
+		t.Error("device should be attested")
+	}
+	if status.Mode != ModeLocalVerifier {
+		t.Errorf("mode = %v, want ModeLocalVerifier", status.Mode)
+	}
+	if status.TrustScore > 95 {
+		t.Error("local verifier trust score should be capped at 95")
+	}
+	if !status.HardwareCC {
+		t.Error("should have HardwareCC true when RIMVerified")
+	}
+}
+
+func TestLocalVerifierAttestation_InvalidEvidence(t *testing.T) {
+	v := NewVerifier()
+
+	// Missing local evidence
+	att := &GPUAttestation{
+		DeviceID: "GPU-LOCAL-001",
+		Model:    "H100",
+		Mode:     ModeLocalVerifier,
+	}
+
+	_, err := v.VerifyGPUAttestation(att)
+	if err != ErrInvalidQuote {
+		t.Errorf("expected ErrInvalidQuote, got %v", err)
+	}
+
+	// SPDM report too short
+	att.LocalEvidence = &LocalGPUEvidence{
+		SPDMReport: make([]byte, 100), // Too short
+		CertChain:  make([]byte, 256),
+	}
+
+	_, err = v.VerifyGPUAttestation(att)
+	if err != ErrInvalidQuote {
+		t.Errorf("expected ErrInvalidQuote for short SPDM, got %v", err)
+	}
+}
+
+func TestSoftwareGPUAttestation(t *testing.T) {
+	v := NewVerifier()
+
+	att := &GPUAttestation{
+		DeviceID: "GPU-CONSUMER-001",
+		Model:    "RTX 5090",
+		Mode:     ModeSoftware,
+		SoftwareAttestation: &SoftwareGPUAttestation{
+			GPUSerial:      "GPU-SERIAL-12345",
+			PCIID:          "0000:01:00.0",
+			ComputeCaps:    "10.0",
+			DriverVersion:  "570.00",
+			CUDAVersion:    "13.0",
+			BenchmarkHash:  [32]byte{1, 2, 3, 4, 5},
+			BenchmarkTime:  1500,
+			ProviderPubKey: make([]byte, 64),
+			Signature:      make([]byte, 128),
+			Timestamp:      time.Now(),
+		},
+	}
+
+	status, err := v.VerifyGPUAttestation(att)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !status.Attested {
+		t.Error("device should be attested")
+	}
+	if status.Mode != ModeSoftware {
+		t.Errorf("mode = %v, want ModeSoftware", status.Mode)
+	}
+	if status.TrustScore > 60 {
+		t.Errorf("software trust score should be capped at 60, got %d", status.TrustScore)
+	}
+	if status.HardwareCC {
+		t.Error("software attestation should not claim HardwareCC")
+	}
+}
+
+func TestSoftwareGPUAttestation_DGXSpark(t *testing.T) {
+	v := NewVerifier()
+
+	att := &GPUAttestation{
+		DeviceID: "DGX-SPARK-001",
+		Model:    "GB10",
+		Mode:     ModeSoftware,
+		SoftwareAttestation: &SoftwareGPUAttestation{
+			GPUSerial:      "DGX-SERIAL-12345",
+			PCIID:          "0000:01:00.0",
+			ComputeCaps:    "10.0",
+			DriverVersion:  "575.00",
+			BenchmarkHash:  [32]byte{1, 2, 3},
+			BenchmarkTime:  1000,
+			ProviderPubKey: make([]byte, 64),
+			Signature:      make([]byte, 128),
+			Timestamp:      time.Now(),
+		},
+	}
+
+	status, err := v.VerifyGPUAttestation(att)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !status.Attested {
+		t.Error("DGX Spark should be attested")
+	}
+	// GB10 score: 20 (base) + 12 (model) + 10 (benchmark) + 10 (signature) + 5 (driver) = 57
+	if status.TrustScore < 50 || status.TrustScore > 60 {
+		t.Errorf("DGX Spark trust score = %d, expected 50-60", status.TrustScore)
+	}
+}
+
+func TestSoftwareGPUAttestation_InvalidSignature(t *testing.T) {
+	v := NewVerifier()
+
+	att := &GPUAttestation{
+		DeviceID: "GPU-CONSUMER-001",
+		Model:    "RTX 5090",
+		Mode:     ModeSoftware,
+		SoftwareAttestation: &SoftwareGPUAttestation{
+			GPUSerial:      "GPU-SERIAL-12345",
+			DriverVersion:  "570.00",
+			ProviderPubKey: make([]byte, 10), // Too short
+			Signature:      make([]byte, 10), // Too short
+			Timestamp:      time.Now(),
+		},
+	}
+
+	_, err := v.VerifyGPUAttestation(att)
+	if err != ErrInvalidSignature {
+		t.Errorf("expected ErrInvalidSignature, got %v", err)
+	}
+}
+
+func TestSoftwareGPUAttestation_Expired(t *testing.T) {
+	v := NewVerifier()
+
+	att := &GPUAttestation{
+		DeviceID: "GPU-CONSUMER-001",
+		Model:    "RTX 5090",
+		Mode:     ModeSoftware,
+		SoftwareAttestation: &SoftwareGPUAttestation{
+			GPUSerial:      "GPU-SERIAL-12345",
+			DriverVersion:  "570.00",
+			ProviderPubKey: make([]byte, 64),
+			Signature:      make([]byte, 128),
+			Timestamp:      time.Now().Add(-2 * time.Hour), // Expired
+		},
+	}
+
+	_, err := v.VerifyGPUAttestation(att)
+	if err != ErrQuoteExpired {
+		t.Errorf("expected ErrQuoteExpired, got %v", err)
+	}
+}
+
+func TestIsHardwareCCCapable(t *testing.T) {
+	tests := []struct {
+		model   string
+		capable bool
+	}{
+		{"H100", true},
+		{"H200", true},
+		{"B100", true},
+		{"B200", true},
+		{"GB200", true},
+		{"RTX PRO 6000", true},
+		{"RTX 5090", false},
+		{"RTX 4090", false},
+		{"GB10", false},
+		{"A100", false}, // A100 has limited CC, not full
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.model, func(t *testing.T) {
+			if got := IsHardwareCCCapable(tt.model); got != tt.capable {
+				t.Errorf("IsHardwareCCCapable(%s) = %v, want %v", tt.model, got, tt.capable)
+			}
+		})
+	}
+}
+
+func TestAttestationModes(t *testing.T) {
+	// Verify mode constants are distinct
+	modes := []AttestationMode{ModeHardwareCC, ModeLocalVerifier, ModeSoftware}
+	seen := make(map[AttestationMode]bool)
+	for _, m := range modes {
+		if seen[m] {
+			t.Errorf("duplicate attestation mode: %v", m)
+		}
+		seen[m] = true
+	}
+}
+
+func TestLegacyNRASTokenFallback(t *testing.T) {
+	v := NewVerifier()
+
+	// Legacy attestation without explicit mode - should use NRAS token
+	att := &GPUAttestation{
+		DeviceID:  "GPU-LEGACY-001",
+		Model:     "H100",
+		CCEnabled: true,
+		NRASToken: make([]byte, 256),
+	}
+
+	status, err := v.VerifyGPUAttestation(att)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if status.Mode != ModeHardwareCC {
+		t.Errorf("legacy NRAS should default to ModeHardwareCC, got %v", status.Mode)
+	}
+	if !status.HardwareCC {
+		t.Error("legacy NRAS should have HardwareCC=true")
 	}
 }
