@@ -11,20 +11,13 @@ Lux AI provides:
 
 ## Components
 
-### lux-ai-node
+### lux-ai
 
-Backend API server that:
+Unified node binary that:
 - Provides OpenAI-compatible chat API (`/v1/chat/completions`)
 - Coordinates miners and distributes tasks
-- Tracks rewards and task completion
-
-### lux-ai-miner
-
-Mining daemon that:
-- Connects to the Lux AI network
-- Pulls pending AI tasks
 - Runs inference on GPU/CPU
-- Submits results for rewards
+- Tracks rewards and task completion
 
 ### lux-ai-desktop
 
@@ -36,26 +29,15 @@ Tauri-based desktop application with:
 
 ## Quick Start
 
-### Run the AI Node
+### Run Lux AI
 
 ```bash
 # Build and run
-make run-node
+make run
 
 # Or manually
-go build -o bin/lux-ai-node ./cmd/lux-ai-node
-./bin/lux-ai-node -port 9090
-```
-
-### Run the Miner
-
-```bash
-# Build and run
-make run-miner
-
-# Or manually
-go build -o bin/lux-ai-miner ./cmd/lux-ai-miner
-./bin/lux-ai-miner -wallet YOUR_WALLET_ADDRESS -node http://localhost:9090
+go build -o bin/lux-ai ./cmd/lux-ai
+./bin/lux-ai -port 9090
 ```
 
 ### Run the Desktop App
@@ -131,19 +113,12 @@ curl http://localhost:9090/api/stats
                         │
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│                   Lux AI Node                           │
+│                      lux-ai                             │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
 │  │  OpenAI API │  │  Task Queue │  │   Miner     │     │
 │  │  Compat     │  │  Manager    │  │  Registry   │     │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-         ┌──────────────┼──────────────┐
-         ▼              ▼              ▼
-┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-│   Miner 1   │  │   Miner 2   │  │   Miner N   │
-│   (GPU)     │  │   (GPU)     │  │   (CPU)     │
-└─────────────┘  └─────────────┘  └─────────────┘
+└─────────────────────────────────────────────────────────┘
 ```
 
 ## Earnings Model
@@ -162,10 +137,10 @@ Miners earn LUX tokens for:
 - pnpm
 - Rust (for Tauri)
 
-### Build All
+### Build
 
 ```bash
-make all
+make build
 ```
 
 ### Run Tests

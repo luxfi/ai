@@ -116,7 +116,7 @@ func main() {
 	flag.Parse()
 
 	if *showVersion {
-		fmt.Printf("lux-ai-node %s\n", version)
+		fmt.Printf("lux-ai %s\n", version)
 		os.Exit(0)
 	}
 

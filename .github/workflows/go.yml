@@ -32,9 +32,7 @@ jobs:
         run: go mod verify
 
       - name: Build
-        run: |
-          go build -v -o bin/lux-ai-node ./cmd/lux-ai-node
-          go build -v -o bin/lux-ai-miner ./cmd/lux-ai-miner
+        run: go build -v -o bin/lux-ai ./cmd/lux-ai
 
       - name: Test
         run: go test -v -race ./...
@@ -72,8 +70,7 @@ jobs:
           mkdir -p dist
           EXT=""
           if [ "$GOOS" = "windows" ]; then EXT=".exe"; fi
-          go build -ldflags="-s -w" -o dist/lux-ai-node-${{ matrix.goos }}-${{ matrix.goarch }}${EXT} ./cmd/lux-ai-node
-          go build -ldflags="-s -w" -o dist/lux-ai-miner-${{ matrix.goos }}-${{ matrix.goarch }}${EXT} ./cmd/lux-ai-miner
+          go build -ldflags="-s -w" -o dist/lux-ai-${{ matrix.goos }}-${{ matrix.goarch }}${EXT} ./cmd/lux-ai
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
