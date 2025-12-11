@@ -21,15 +21,22 @@ var (
 )
 
 // AttestationMode indicates the type of attestation
+// NOTE: This is a BLOCKCHAIN - all attestation is LOCAL, no cloud dependencies
 type AttestationMode uint8
 
 const (
-	// ModeHardwareCC - Full hardware Confidential Computing (H100, H200, B100, B200, GB200, RTX PRO 6000)
-	ModeHardwareCC AttestationMode = iota
-	// ModeLocalVerifier - Local nvtrust verification without NVIDIA cloud
-	ModeLocalVerifier
-	// ModeSoftware - Software attestation for consumer GPUs (RTX 5090, DGX Spark, etc)
+	// ModeLocal - Local nvtrust verification (PRIMARY for CC-capable GPUs)
+	// Uses SPDM reports, certificate chains, RIM verification - all local
+	// Supported: H100, H200, B100, B200, GB200, RTX PRO 6000
+	ModeLocal AttestationMode = iota
+
+	// ModeSoftware - Software attestation for non-CC GPUs
+	// Lower trust but allows participation: RTX 5090, DGX Spark (GB10), etc
 	ModeSoftware
+
+	// Legacy aliases for backward compatibility
+	ModeHardwareCC    = ModeLocal // Deprecated: use ModeLocal
+	ModeLocalVerifier = ModeLocal // Deprecated: use ModeLocal
 )
 
 // TEEType represents the type of Trusted Execution Environment
@@ -73,6 +80,7 @@ type AttestationQuote struct {
 }
 
 // GPUAttestation represents GPU-specific attestation (NVIDIA H100/Blackwell)
+// All attestation is LOCAL - no NVIDIA cloud (NRAS) dependency
 type GPUAttestation struct {
 	DeviceID      string          `json:"device_id"`
 	Model         string          `json:"model"`
@@ -80,14 +88,15 @@ type GPUAttestation struct {
 	TEEIOEnabled  bool            `json:"tee_io_enabled"`
 	DriverVersion string          `json:"driver_version"`
 	VBIOSVersion  string          `json:"vbios_version"`
-	NRASToken     []byte          `json:"nras_token"`
 	Timestamp     time.Time       `json:"timestamp"`
 	Mode          AttestationMode `json:"mode"`
 
-	// For local nvtrust verification (ModeLocalVerifier)
+	// For local nvtrust verification (ModeLocal) - CC-capable GPUs
+	// This is the PRIMARY attestation method
 	LocalEvidence *LocalGPUEvidence `json:"local_evidence,omitempty"`
 
-	// For software attestation (ModeSoftware) - consumer GPUs
+	// For software attestation (ModeSoftware) - non-CC GPUs
+	// DGX Spark (GB10), RTX 5090, RTX 4090, etc
 	SoftwareAttestation *SoftwareGPUAttestation `json:"software_attestation,omitempty"`
 }
 
@@ -186,6 +195,7 @@ func (v *Verifier) VerifyCPUAttestation(quote *AttestationQuote, expectedMeasure
 }
 
 // VerifyGPUAttestation verifies GPU attestation based on mode
+// All attestation is LOCAL - no cloud dependencies (blockchain requirement)
 func (v *Verifier) VerifyGPUAttestation(att *GPUAttestation) (*DeviceStatus, error) {
 	if att == nil {
 		return nil, ErrInvalidQuote
@@ -195,19 +205,16 @@ func (v *Verifier) VerifyGPUAttestation(att *GPUAttestation) (*DeviceStatus, err
 	var err error
 
 	switch att.Mode {
-	case ModeHardwareCC:
-		// Full hardware CC via NRAS token
-		status, err = v.verifyHardwareCCAttestation(att)
-	case ModeLocalVerifier:
-		// Local nvtrust verification
+	case ModeLocal:
+		// Local nvtrust verification - PRIMARY method for CC-capable GPUs
 		status, err = v.verifyLocalGPUAttestation(att)
 	case ModeSoftware:
-		// Software attestation for consumer GPUs
+		// Software attestation for non-CC GPUs (DGX Spark, RTX 5090, etc)
 		status, err = v.verifySoftwareGPUAttestation(att)
 	default:
-		// Legacy: check for NRAS token
-		if len(att.NRASToken) > 0 {
-			status, err = v.verifyHardwareCCAttestation(att)
+		// Auto-detect based on evidence provided
+		if att.LocalEvidence != nil {
+			status, err = v.verifyLocalGPUAttestation(att)
 		} else if att.SoftwareAttestation != nil {
 			status, err = v.verifySoftwareGPUAttestation(att)
 		} else {
@@ -223,37 +230,22 @@ func (v *Verifier) VerifyGPUAttestation(att *GPUAttestation) (*DeviceStatus, err
 	return status, nil
 }
 
-// verifyHardwareCCAttestation verifies full hardware CC via NRAS
-func (v *Verifier) verifyHardwareCCAttestation(att *GPUAttestation) (*DeviceStatus, error) {
-	if len(att.NRASToken) == 0 {
-		return nil, ErrInvalidQuote
-	}
-	if !v.validateNRASToken(att.NRASToken) {
-		return nil, ErrInvalidQuote
-	}
-
-	return &DeviceStatus{
-		Attested:   true,
-		TrustScore: calculateHardwareCCTrustScore(att),
-		LastSeen:   time.Now(),
-		Operator:   att.DeviceID,
-		Vendor:     TEETypeNVIDIA,
-		JobHistory: []string{},
-		Mode:       ModeHardwareCC,
-		HardwareCC: true,
-	}, nil
-}
-
 // verifyLocalGPUAttestation verifies via local nvtrust
+// This is the PRIMARY attestation method - no cloud dependencies
 // See: https://github.com/NVIDIA/nvtrust
 func (v *Verifier) verifyLocalGPUAttestation(att *GPUAttestation) (*DeviceStatus, error) {
 	if att.LocalEvidence == nil {
 		return nil, ErrInvalidQuote
 	}
 
+	// Check if GPU model supports CC
+	if !IsHardwareCCCapable(att.Model) {
+		return nil, errors.New("GPU model does not support confidential computing: " + att.Model)
+	}
+
 	ev := att.LocalEvidence
 
-	// Verify SPDM report exists
+	// Verify SPDM report exists (minimum size for valid report)
 	if len(ev.SPDMReport) < 256 {
 		return nil, ErrInvalidQuote
 	}
@@ -265,8 +257,9 @@ func (v *Verifier) verifyLocalGPUAttestation(att *GPUAttestation) (*DeviceStatus
 
 	// In production: verify SPDM signature against NVIDIA root cert
 	// In production: compare measurements against RIM golden values
+	// See nvtrust.go for full implementation
 
-	trustScore := calculateLocalVerifierTrustScore(att, ev)
+	trustScore := calculateLocalTrustScore(att, ev)
 
 	return &DeviceStatus{
 		Attested:   true,
@@ -275,8 +268,8 @@ func (v *Verifier) verifyLocalGPUAttestation(att *GPUAttestation) (*DeviceStatus
 		Operator:   att.DeviceID,
 		Vendor:     TEETypeNVIDIA,
 		JobHistory: []string{},
-		Mode:       ModeLocalVerifier,
-		HardwareCC: ev.RIMVerified, // Only true if RIM verification passed
+		Mode:       ModeLocal,
+		HardwareCC: ev.RIMVerified, // True if RIM verification passed
 	}, nil
 }
 
@@ -362,8 +355,39 @@ func (v *Verifier) verifyTDXQuote(quote *AttestationQuote, expectedMeasurement [
 	return nil
 }
 
-func (v *Verifier) validateNRASToken(token []byte) bool {
-	return len(token) >= 256
+// calculateLocalTrustScore for local nvtrust verification
+// This is the PRIMARY trust score calculation for CC-capable GPUs
+// Max score: 100 for datacenter GPUs with full CC features
+func calculateLocalTrustScore(att *GPUAttestation, ev *LocalGPUEvidence) uint8 {
+	score := uint8(70) // Base for local nvtrust verification
+
+	// CC features bonus
+	if att.CCEnabled {
+		score += 15
+	}
+	if att.TEEIOEnabled {
+		score += 5
+	}
+
+	// RIM verification bonus
+	if ev != nil && ev.RIMVerified {
+		score += 5 // Bonus for RIM verification
+	}
+
+	// GPU model bonus
+	switch att.Model {
+	case "GB200", "B200", "B100": // Blackwell datacenter
+		score += 10
+	case "H200", "H100": // Hopper datacenter
+		score += 8
+	case "RTX PRO 6000": // Blackwell professional
+		score += 5
+	}
+
+	if score > 100 {
+		score = 100
+	}
+	return score
 }
 
 // SEVSNPReport represents AMD SEV-SNP attestation report
@@ -449,63 +473,21 @@ func ParseTDXQuote(data []byte) (*TDXQuote, error) {
 }
 
 // calculateTrustScore - legacy function for backward compatibility
+// Deprecated: use calculateLocalTrustScore for CC-capable GPUs
 func calculateTrustScore(att *GPUAttestation) uint8 {
-	return calculateHardwareCCTrustScore(att)
+	return calculateLocalTrustScore(att, att.LocalEvidence)
 }
 
-// calculateHardwareCCTrustScore for hardware CC attestation (highest trust)
-// Max score: 100 for datacenter GPUs with full CC
+// calculateHardwareCCTrustScore - legacy alias for calculateLocalTrustScore
+// Deprecated: use calculateLocalTrustScore directly
 func calculateHardwareCCTrustScore(att *GPUAttestation) uint8 {
-	score := uint8(60) // Base score for hardware CC
-	if att.CCEnabled {
-		score += 20
-	}
-	if att.TEEIOEnabled {
-		score += 10
-	}
-	switch att.Model {
-	case "GB200", "B200", "B100": // Blackwell datacenter
-		score += 10
-	case "H200", "H100": // Hopper datacenter
-		score += 8
-	case "RTX PRO 6000": // Blackwell professional
-		score += 6
-	case "A100", "A10": // Ampere datacenter
-		score += 4
-	}
-	if score > 100 {
-		score = 100
-	}
-	return score
+	return calculateLocalTrustScore(att, att.LocalEvidence)
 }
 
-// calculateLocalVerifierTrustScore for local nvtrust verification
-// Max score: 95 (slightly less than cloud-verified NRAS)
+// calculateLocalVerifierTrustScore - legacy alias for calculateLocalTrustScore
+// Deprecated: use calculateLocalTrustScore directly
 func calculateLocalVerifierTrustScore(att *GPUAttestation, ev *LocalGPUEvidence) uint8 {
-	score := uint8(50) // Base for local verification
-	if att.CCEnabled {
-		score += 20
-	}
-	if att.TEEIOEnabled {
-		score += 10
-	}
-	if ev.RIMVerified {
-		score += 10 // Bonus for RIM verification
-	}
-	switch att.Model {
-	case "GB200", "B200", "B100":
-		score += 8
-	case "H200", "H100":
-		score += 6
-	case "RTX PRO 6000":
-		score += 4
-	case "A100", "A10":
-		score += 2
-	}
-	if score > 95 {
-		score = 95 // Cap at 95 for local verification
-	}
-	return score
+	return calculateLocalTrustScore(att, ev)
 }
 
 // calculateSoftwareTrustScore for consumer GPU software attestation
