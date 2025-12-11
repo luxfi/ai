@@ -1,13 +1,36 @@
 # Lux AI
 
-Mine AI tokens and chat with AI models on the Lux network.
+Mine AI tokens and chat with AI models on the Lux AI network.
 
 ## Overview
 
-Lux AI provides:
-- **AI Mining**: Earn LUX tokens by contributing GPU compute for AI inference
-- **AI Chat**: Chat with AI models running on the decentralized Lux network
+Lux AI is a specialized AI compute network that:
+- **AI Mining**: Earn AI coins by contributing GPU compute for AI inference
+- **AI Chat**: Chat with AI models running on the decentralized network
+- **Q-Chain Integration**: Shared attestations and quantum security via Q-Chain
+- **Cross-Network**: AI proofs can mint on any teleport-supported network (Lux, Hanzo, Zoo)
 - **OpenAI-Compatible API**: Drop-in replacement for OpenAI API
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         Q-Chain                                 │
+│  (Shared attestations, quantum security, AI proof generation)   │
+└──────────────┬────────────────┬────────────────┬────────────────┘
+               │                │                │
+       ┌───────▼───────┐ ┌──────▼──────┐ ┌───────▼───────┐
+       │   Lux AI      │ │  Hanzo AI   │ │    Zoo AI     │
+       │   Network     │ │  Network    │ │   Network     │
+       └───────────────┘ └─────────────┘ └───────────────┘
+               │                │                │
+               └────────────────┼────────────────┘
+                                │
+                    ┌───────────▼───────────┐
+                    │   Teleport Bridge     │
+                    │  (Exit to any chain)  │
+                    └───────────────────────┘
+```
 
 ## Components
 
@@ -17,9 +40,10 @@ Unified node binary that:
 - Provides OpenAI-compatible chat API (`/v1/chat/completions`)
 - Coordinates miners and distributes tasks
 - Runs inference on GPU/CPU
+- Generates AI proofs for Q-Chain attestation
 - Tracks rewards and task completion
 
-### lux-ai-desktop
+### lux-desktop
 
 Tauri-based desktop application with:
 - AI chat interface
@@ -100,33 +124,17 @@ curl http://localhost:9090/api/stats
 | zen-mini-0.5b | 0.5B | 8K | Chat |
 | qwen3-8b | 8B | 128K | Chat, Code, Reasoning |
 
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Lux AI Desktop                       │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
-│  │    Chat     │  │   Miner     │  │  Settings   │     │
-│  │  Interface  │  │   Control   │  │             │     │
-│  └─────────────┘  └─────────────┘  └─────────────┘     │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────┐
-│                      lux-ai                             │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
-│  │  OpenAI API │  │  Task Queue │  │   Miner     │     │
-│  │  Compat     │  │  Manager    │  │  Registry   │     │
-│  └─────────────┘  └─────────────┘  └─────────────┘     │
-└─────────────────────────────────────────────────────────┘
-```
-
 ## Earnings Model
 
-Miners earn LUX tokens for:
+Miners earn AI coins for:
 - **Inference Tasks**: Variable rate based on model size and tokens
 - **Uptime Bonus**: 10% bonus for 99.9% uptime
 - **Speed Bonus**: 5% bonus for sub-100ms latency
+
+AI proofs are generated and attested on Q-Chain, then can be minted on:
+- **Lux Network**: Native rewards + ecosystem incentives
+- **Hanzo Network**: Native rewards + ecosystem incentives  
+- **Zoo Network**: Native rewards + ecosystem incentives
 
 ## Development
 

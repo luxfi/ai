@@ -5,14 +5,14 @@ BUILD_DIR := ./bin
 
 all: build
 
-# Build the lux-ai binary
+# Build lux-ai
 build:
 	@echo "Building lux-ai..."
 	go build -o $(BUILD_DIR)/lux-ai ./cmd/lux-ai
 
-# Build the desktop app
+# Build lux-desktop
 build-desktop:
-	@echo "Building lux-ai-desktop..."
+	@echo "Building lux-desktop..."
 	cd desktop && pnpm install && pnpm tauri:build
 
 # Development mode for desktop

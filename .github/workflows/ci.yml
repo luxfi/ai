@@ -1,0 +1,191 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run comprehensive tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  GO_VERSION: '1.23'
+
+jobs:
+  # Quick checks that should pass before running expensive tests
+  pre-checks:
+    name: Pre-flight Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Check formatting
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            gofmt -d .
+            exit 1
+          fi
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          args: --timeout=5m
+
+  # Unit tests
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: pre-checks
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Verify dependencies
+        run: go mod verify
+
+      - name: Run unit tests
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.out
+          fail_ci_if_error: false
+
+  # Integration tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: pre-checks
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build binary
+        run: go build -o bin/lux-ai ./cmd/lux-ai
+
+      - name: Run integration tests
+        run: |
+          # Start the server in background
+          ./bin/lux-ai -port 9090 &
+          sleep 2
+          
+          # Test health endpoint
+          curl -f http://localhost:9090/health || exit 1
+          
+          # Test models endpoint
+          curl -f http://localhost:9090/v1/models || exit 1
+          
+          # Test chat completions
+          curl -f -X POST http://localhost:9090/v1/chat/completions \
+            -H "Content-Type: application/json" \
+            -d '{"model": "zen-mini-0.5b", "messages": [{"role": "user", "content": "test"}]}' || exit 1
+          
+          # Cleanup
+          pkill lux-ai || true
+
+  # Security audit
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: pre-checks
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Run govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+        continue-on-error: true
+
+  # Build release binaries
+  build-release:
+    name: Build ${{ matrix.goos }}-${{ matrix.goarch }}
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          EXT=""
+          if [ "$GOOS" = "windows" ]; then EXT=".exe"; fi
+          go build -ldflags="-s -w" -o lux-ai-${{ matrix.goos }}-${{ matrix.goarch }}${EXT} ./cmd/lux-ai
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lux-ai-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: lux-ai-*
+
+  # Final status check
+  status-check:
+    name: CI Status Check
+    runs-on: ubuntu-latest
+    needs:
+      - pre-checks
+      - unit-tests
+      - integration-tests
+      - security-audit
+      - build-release
+    if: always()
+    steps:
+      - name: Check status
+        run: |
+          echo "CI pipeline completed"
+          echo "Unit tests: ${{ needs.unit-tests.result }}"
+          echo "Integration tests: ${{ needs.integration-tests.result }}"
+          echo "Security audit: ${{ needs.security-audit.result }}"
+          
+          if [[ "${{ needs.unit-tests.result }}" == "failure" ]]; then
+            echo "Critical tests failed"
+            exit 1
+          fi
+          
+          echo "All critical tests passed!"
