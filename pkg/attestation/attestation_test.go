@@ -163,6 +163,7 @@ func TestVerifyTDXQuote(t *testing.T) {
 func TestVerifyGPUAttestation(t *testing.T) {
 	v := NewVerifier()
 
+	// Local nvtrust attestation - PRIMARY method (no cloud dependency)
 	att := &GPUAttestation{
 		DeviceID:      "GPU-001",
 		Model:         "H100",
@@ -170,8 +171,14 @@ func TestVerifyGPUAttestation(t *testing.T) {
 		TEEIOEnabled:  true,
 		DriverVersion: "535.154.05",
 		VBIOSVersion:  "96.00.89.00.01",
-		NRASToken:     make([]byte, 256),
-		Timestamp:     time.Now(),
+		Mode:          ModeLocal,
+		LocalEvidence: &LocalGPUEvidence{
+			SPDMReport:  make([]byte, 512),
+			CertChain:   make([]byte, 1024),
+			RIMVerified: true,
+			Nonce:       [32]byte{1, 2, 3},
+		},
+		Timestamp: time.Now(),
 	}
 
 	status, err := v.VerifyGPUAttestation(att)
@@ -185,6 +192,9 @@ func TestVerifyGPUAttestation(t *testing.T) {
 	if status.TrustScore == 0 {
 		t.Error("trust score should not be zero")
 	}
+	if status.Mode != ModeLocal {
+		t.Errorf("mode should be ModeLocal, got %v", status.Mode)
+	}
 }
 
 func TestVerifyGPUAttestation_NilAttestation(t *testing.T) {
@@ -195,10 +205,12 @@ func TestVerifyGPUAttestation_NilAttestation(t *testing.T) {
 	}
 }
 
-func TestVerifyGPUAttestation_InvalidToken(t *testing.T) {
+func TestVerifyGPUAttestation_InvalidEvidence(t *testing.T) {
 	v := NewVerifier()
+	// No evidence provided - should fail
 	att := &GPUAttestation{
-		NRASToken: make([]byte, 100), // Too short
+		DeviceID: "GPU-001",
+		Model:    "H100",
 	}
 	_, err := v.VerifyGPUAttestation(att)
 	if err != ErrInvalidQuote {
@@ -206,57 +218,75 @@ func TestVerifyGPUAttestation_InvalidToken(t *testing.T) {
 	}
 }
 
-func TestCalculateTrustScore(t *testing.T) {
+func TestCalculateLocalTrustScore(t *testing.T) {
+	// Test local nvtrust trust score calculation
+	// Base score: 70, max: 100 for datacenter GPUs with full CC
 	tests := []struct {
 		name     string
 		att      *GPUAttestation
+		ev       *LocalGPUEvidence
 		minScore uint8
 		maxScore uint8
 	}{
 		{
-			name: "Base score (unknown GPU)",
+			name: "Base H100 no features",
 			att: &GPUAttestation{
-				Model: "RTX 3090",
+				Model: "H100",
 			},
-			minScore: 60,
-			maxScore: 60, // Base hardware CC score
+			ev:       &LocalGPUEvidence{},
+			minScore: 78, // 70 (base) + 8 (H100)
+			maxScore: 78,
 		},
 		{
-			name: "CC enabled A100",
+			name: "H100 with CC enabled",
 			att: &GPUAttestation{
-				Model:     "A100",
+				Model:     "H100",
 				CCEnabled: true,
 			},
-			minScore: 80, // 60 + 20 (CC) + 4 (A100)
-			maxScore: 85,
+			ev:       &LocalGPUEvidence{},
+			minScore: 93, // 70 + 15 (CC) + 8 (H100)
+			maxScore: 93,
 		},
 		{
-			name: "Full H100 features",
+			name: "Full H100 features with RIM",
 			att: &GPUAttestation{
 				Model:        "H100",
 				CCEnabled:    true,
 				TEEIOEnabled: true,
 			},
-			minScore: 95, // 60 + 20 + 10 + 8
+			ev:       &LocalGPUEvidence{RIMVerified: true},
+			minScore: 100, // 70 + 15 + 5 + 5 (RIM) + 8 = 103 → capped at 100
 			maxScore: 100,
 		},
 		{
-			name: "Blackwell datacenter",
+			name: "Blackwell datacenter GB200",
 			att: &GPUAttestation{
 				Model:        "GB200",
 				CCEnabled:    true,
 				TEEIOEnabled: true,
 			},
-			minScore: 100, // 60 + 20 + 10 + 10 = 100
+			ev:       &LocalGPUEvidence{RIMVerified: true},
+			minScore: 100, // 70 + 15 + 5 + 5 + 10 = 105 → capped at 100
+			maxScore: 100,
+		},
+		{
+			name: "RTX PRO 6000 professional",
+			att: &GPUAttestation{
+				Model:        "RTX PRO 6000",
+				CCEnabled:    true,
+				TEEIOEnabled: true,
+			},
+			ev:       &LocalGPUEvidence{RIMVerified: true},
+			minScore: 100, // 70 + 15 + 5 + 5 + 5 = 100
 			maxScore: 100,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			score := calculateTrustScore(tt.att)
+			score := calculateLocalTrustScore(tt.att, tt.ev)
 			if score < tt.minScore || score > tt.maxScore {
-				t.Errorf("calculateTrustScore() = %d, want between %d and %d",
+				t.Errorf("calculateLocalTrustScore() = %d, want between %d and %d",
 					score, tt.minScore, tt.maxScore)
 			}
 		})
@@ -311,11 +341,17 @@ func TestParseTDXQuote_TooShort(t *testing.T) {
 func TestGetDeviceStatus(t *testing.T) {
 	v := NewVerifier()
 
+	// Local nvtrust attestation
 	att := &GPUAttestation{
 		DeviceID:  "GPU-001",
 		Model:     "H100",
 		CCEnabled: true,
-		NRASToken: make([]byte, 256),
+		Mode:      ModeLocal,
+		LocalEvidence: &LocalGPUEvidence{
+			SPDMReport:  make([]byte, 512),
+			CertChain:   make([]byte, 1024),
+			RIMVerified: true,
+		},
 	}
 
 	_, err := v.VerifyGPUAttestation(att)
@@ -335,10 +371,15 @@ func TestGetDeviceStatus(t *testing.T) {
 func TestRecordJobCompletion(t *testing.T) {
 	v := NewVerifier()
 
+	// Local nvtrust attestation
 	att := &GPUAttestation{
-		DeviceID:  "GPU-001",
-		Model:     "H100",
-		NRASToken: make([]byte, 256),
+		DeviceID: "GPU-001",
+		Model:    "H100",
+		Mode:     ModeLocal,
+		LocalEvidence: &LocalGPUEvidence{
+			SPDMReport: make([]byte, 512),
+			CertChain:  make([]byte, 1024),
+		},
 	}
 
 	v.VerifyGPUAttestation(att)
@@ -400,15 +441,16 @@ func TestBytesEqual(t *testing.T) {
 
 // Tests for new attestation modes
 
-func TestLocalVerifierAttestation(t *testing.T) {
+func TestLocalAttestation(t *testing.T) {
 	v := NewVerifier()
 
+	// Local nvtrust attestation - PRIMARY method
 	att := &GPUAttestation{
 		DeviceID:     "GPU-LOCAL-001",
 		Model:        "H100",
 		CCEnabled:    true,
 		TEEIOEnabled: true,
-		Mode:         ModeLocalVerifier,
+		Mode:         ModeLocal,
 		LocalEvidence: &LocalGPUEvidence{
 			SPDMReport:  make([]byte, 512),
 			CertChain:   make([]byte, 1024),
@@ -425,25 +467,26 @@ func TestLocalVerifierAttestation(t *testing.T) {
 	if !status.Attested {
 		t.Error("device should be attested")
 	}
-	if status.Mode != ModeLocalVerifier {
-		t.Errorf("mode = %v, want ModeLocalVerifier", status.Mode)
+	if status.Mode != ModeLocal {
+		t.Errorf("mode = %v, want ModeLocal", status.Mode)
 	}
-	if status.TrustScore > 95 {
-		t.Error("local verifier trust score should be capped at 95")
+	// Local nvtrust can reach 100 with full features
+	if status.TrustScore == 0 {
+		t.Error("trust score should not be zero")
 	}
 	if !status.HardwareCC {
 		t.Error("should have HardwareCC true when RIMVerified")
 	}
 }
 
-func TestLocalVerifierAttestation_InvalidEvidence(t *testing.T) {
+func TestLocalAttestation_InvalidEvidence(t *testing.T) {
 	v := NewVerifier()
 
 	// Missing local evidence
 	att := &GPUAttestation{
 		DeviceID: "GPU-LOCAL-001",
 		Model:    "H100",
-		Mode:     ModeLocalVerifier,
+		Mode:     ModeLocal,
 	}
 
 	_, err := v.VerifyGPUAttestation(att)
@@ -608,37 +651,36 @@ func TestIsHardwareCCCapable(t *testing.T) {
 }
 
 func TestAttestationModes(t *testing.T) {
-	// Verify mode constants are distinct
-	modes := []AttestationMode{ModeHardwareCC, ModeLocalVerifier, ModeSoftware}
-	seen := make(map[AttestationMode]bool)
-	for _, m := range modes {
-		if seen[m] {
-			t.Errorf("duplicate attestation mode: %v", m)
-		}
-		seen[m] = true
+	// Verify mode constants - ModeLocal is PRIMARY, ModeSoftware for non-CC GPUs
+	// ModeHardwareCC and ModeLocalVerifier are legacy aliases for ModeLocal
+	if ModeLocal != ModeHardwareCC {
+		t.Error("ModeHardwareCC should be alias for ModeLocal")
+	}
+	if ModeLocal != ModeLocalVerifier {
+		t.Error("ModeLocalVerifier should be alias for ModeLocal")
+	}
+	if ModeLocal == ModeSoftware {
+		t.Error("ModeLocal and ModeSoftware should be distinct")
 	}
 }
 
-func TestLegacyNRASTokenFallback(t *testing.T) {
+func TestLocalAttestationNonCCGPU(t *testing.T) {
 	v := NewVerifier()
 
-	// Legacy attestation without explicit mode - should use NRAS token
+	// Non-CC GPU (RTX 5090) should NOT pass local verification
+	// It should use software attestation instead
 	att := &GPUAttestation{
-		DeviceID:  "GPU-LEGACY-001",
-		Model:     "H100",
-		CCEnabled: true,
-		NRASToken: make([]byte, 256),
+		DeviceID: "GPU-CONSUMER-001",
+		Model:    "RTX 5090", // Not CC capable
+		Mode:     ModeLocal,
+		LocalEvidence: &LocalGPUEvidence{
+			SPDMReport: make([]byte, 512),
+			CertChain:  make([]byte, 1024),
+		},
 	}
 
-	status, err := v.VerifyGPUAttestation(att)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	if status.Mode != ModeHardwareCC {
-		t.Errorf("legacy NRAS should default to ModeHardwareCC, got %v", status.Mode)
-	}
-	if !status.HardwareCC {
-		t.Error("legacy NRAS should have HardwareCC=true")
+	_, err := v.VerifyGPUAttestation(att)
+	if err == nil {
+		t.Error("expected error for non-CC GPU with local attestation")
 	}
 }

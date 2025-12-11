@@ -100,6 +100,7 @@ func TestRegisterProvider(t *testing.T) {
 func TestRegisterProviderWithGPUAttestation(t *testing.T) {
 	vm := NewVM()
 
+	// Local nvtrust attestation - no cloud dependency
 	provider := &Provider{
 		ID:            "provider-001",
 		WalletAddress: "0x1234567890abcdef",
@@ -112,7 +113,12 @@ func TestRegisterProviderWithGPUAttestation(t *testing.T) {
 			Model:        "H100",
 			CCEnabled:    true,
 			TEEIOEnabled: true,
-			NRASToken:    make([]byte, 256),
+			Mode:         attestation.ModeLocal,
+			LocalEvidence: &attestation.LocalGPUEvidence{
+				SPDMReport:  make([]byte, 512),
+				CertChain:   make([]byte, 1024),
+				RIMVerified: true,
+			},
 		},
 	}
 
