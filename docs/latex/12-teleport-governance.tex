@@ -1,0 +1,271 @@
+\section{Teleport Integration \& Governance}
+\label{sec:teleport-governance}
+
+\subsection{Architecture Overview}
+
+AI Token uses Lux's native infrastructure for cross-chain operations:
+
+\begin{enumerate}
+    \item \textbf{Lux Network}: Source of truth for all AI mining
+    \item \textbf{Warp Messaging}: Native cross-chain communication
+    \item \textbf{Teleport Protocol}: Threshold LSS over T-chain
+    \item \textbf{Safe Multi-sig}: MPC-managed contract ownership
+\end{enumerate}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+    % Lux Network (Source of Truth)
+    \node[draw, rectangle, fill=blue!20, minimum width=8cm, minimum height=1.5cm] (lux) at (0,4) {
+        \textbf{Lux Network (Source of Truth)}
+    };
+
+    % T-Chain (Validators + MPC)
+    \node[draw, rectangle, fill=yellow!20, minimum width=3cm] (tchain) at (-3,2) {T-Chain (MPC)};
+
+    % Teleport Bridge
+    \node[draw, diamond, fill=green!20] (teleport) at (0,2) {Teleport};
+
+    % Safe Multi-sig
+    \node[draw, rectangle, fill=orange!20, minimum width=3cm] (safe) at (3,2) {Safe (MPC)};
+
+    % Destination Chains
+    \node[draw, rectangle, fill=purple!10] (eth) at (-4,0) {Ethereum};
+    \node[draw, rectangle, fill=purple!10] (arb) at (-1.5,0) {Arbitrum};
+    \node[draw, rectangle, fill=purple!10] (base) at (1.5,0) {Base};
+    \node[draw, rectangle, fill=purple!10] (etc) at (4,0) {...Top 20};
+
+    % Arrows
+    \draw[->, thick] (lux) -- (tchain);
+    \draw[->, thick] (lux) -- (teleport);
+    \draw[->, thick] (lux) -- (safe);
+    \draw[->, thick] (teleport) -- (eth);
+    \draw[->, thick] (teleport) -- (arb);
+    \draw[->, thick] (teleport) -- (base);
+    \draw[->, thick] (teleport) -- (etc);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Warp Messaging Integration}
+
+Lux native chains use Warp for trustless cross-chain communication:
+
+\begin{lstlisting}[style=solidity]
+interface IWarp {
+    /// @notice Send cross-chain message
+    function sendWarpMessage(
+        bytes calldata payload
+    ) external returns (bytes32 messageId);
+
+    /// @notice Verify incoming message
+    function getVerifiedWarpMessage(
+        uint32 index
+    ) external view returns (WarpMessage memory, bool);
+}
+\end{lstlisting}
+
+\subsubsection{Message Flow}
+
+\begin{enumerate}
+    \item Source chain emits \texttt{SendWarpMessage} event
+    \item Validators sign message (BLS aggregation)
+    \item Relayer constructs proof (message + signatures)
+    \item Destination chain verifies via precompile
+    \item 67\% quorum required for validity
+\end{enumerate}
+
+\subsection{Teleport Protocol}
+
+Teleport enables cross-chain token transfers via threshold signatures:
+
+\begin{lstlisting}[style=rust]
+pub struct TeleportTransfer {
+    pub teleport_id: [u8; 32],
+    pub source_chain: u64,
+    pub dest_chain: u64,
+    pub sender: Address,
+    pub recipient: Address,
+    pub amount: U256,
+    pub nonce: u64,
+    pub signature: Vec<u8>, // MPC threshold signature
+}
+\end{lstlisting}
+
+\subsubsection{T-Chain Validator MPC}
+
+Top validators on T-chain collectively manage Teleport:
+
+\begin{itemize}
+    \item \textbf{Key Generation}: CGGMP21 distributed keygen
+    \item \textbf{Signing}: Threshold t-of-n (e.g., 67-of-100)
+    \item \textbf{Verification}: Single ECDSA signature output
+    \item \textbf{Key Refresh}: Proactive security without changing pubkey
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Operation} & \textbf{Participants} & \textbf{Output} \\
+\midrule
+Keygen & All validators & Shared public key \\
+Sign & 67+ validators & Single signature \\
+Refresh & All validators & New shares \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Safe Multi-sig Management}
+
+AI contracts are initially managed by Lux Safe (MPC wallet):
+
+\begin{lstlisting}[style=solidity]
+contract AITokenTeleport {
+    /// @notice Safe multi-sig address (initial owner)
+    address public safe;
+
+    /// @notice Update Safe address (requires Safe approval)
+    function setSafe(address newSafe) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(DEFAULT_ADMIN_ROLE, newSafe);
+        _revokeRole(DEFAULT_ADMIN_ROLE, safe);
+        safe = newSafe;
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Safe Capabilities}
+
+\begin{enumerate}
+    \item Mint initial 10\% for LP seeding
+    \item Authorize mining contracts
+    \item Authorize Teleport bridge
+    \item Set genesis block for mining
+    \item Update treasury address
+    \item Transfer admin to DAO (phase 2)
+\end{enumerate}
+
+\subsection{Initial LP Seeding}
+
+Each chain receives one-sided LP at launch:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Chain} & \textbf{AI Amount} & \textbf{Initial Price} & \textbf{Pair} \\
+\midrule
+Lux C-Chain & 100M & 0.0001 BTC & AI/LUX \\
+Hanzo EVM & 100M & 0.0001 BTC & AI/LUX \\
+Zoo EVM & 100M & 0.0001 BTC & AI/LUX \\
+Ethereum & 100M & 0.0001 BTC & AI/ETH \\
+Arbitrum & 100M & 0.0001 BTC & AI/ETH \\
+Base & 100M & 0.0001 BTC & AI/ETH \\
+... & ... & ... & ... \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{LP Setup Process}
+
+\begin{enumerate}
+    \item Safe calls \texttt{mintInitialLP(lpRecipient)}
+    \item 100M AI minted to Safe/LP contract
+    \item Create Uniswap V2 pair (AI/native token)
+    \item Add one-sided liquidity (AI only)
+    \item First swap sets initial price
+\end{enumerate}
+
+\subsection{Governance Roadmap}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Phase} & \textbf{Controller} & \textbf{Mechanism} \\
+\midrule
+1. Launch & Lux Safe (MPC) & Multi-sig approval \\
+2. DAO & AI Token Holders & On-chain voting \\
+3. Cross-chain & Teleport DAO & Multi-chain governance \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{Phase 1: Safe Multi-sig}
+
+\begin{itemize}
+    \item 3-of-5 or 5-of-7 threshold
+    \item MPC-managed keys (no single point of failure)
+    \item Time-locked critical operations
+    \item Emergency pause capability
+\end{itemize}
+
+\subsubsection{Phase 2: DAO Governance}
+
+\begin{itemize}
+    \item AI token voting power
+    \item Proposal + voting + timelock
+    \item Parameter adjustments (treasury \%, GPU tiers)
+    \item Mining contract upgrades
+\end{itemize}
+
+\subsubsection{Phase 3: Cross-chain DAO}
+
+\begin{itemize}
+    \item Votes aggregated via Teleport
+    \item Unified governance across all chains
+    \item Warp messages for execution
+    \item Chain-specific parameters remain local
+\end{itemize}
+
+\subsection{Top 20 EVM Deployment}
+
+\begin{center}
+\begin{tabular}{lccl}
+\toprule
+\textbf{Chain} & \textbf{Chain ID} & \textbf{Type} & \textbf{Bridge} \\
+\midrule
+Lux C-Chain & 96369 & Native & Warp \\
+Hanzo EVM & 36963 & Native & Warp \\
+Zoo EVM & 200200 & Native & Warp \\
+\midrule
+Ethereum & 1 & External & Teleport \\
+BSC & 56 & External & Teleport \\
+Polygon & 137 & External & Teleport \\
+Arbitrum & 42161 & External & Teleport \\
+Optimism & 10 & External & Teleport \\
+Base & 8453 & External & Teleport \\
+Avalanche & 43114 & External & Teleport \\
+Fantom & 250 & External & Teleport \\
+Cronos & 25 & External & Teleport \\
+Gnosis & 100 & External & Teleport \\
+zkSync Era & 324 & External & Teleport \\
+Linea & 59144 & External & Teleport \\
+Scroll & 534352 & External & Teleport \\
+Mantle & 5000 & External & Teleport \\
+Blast & 81457 & External & Teleport \\
+Mode & 34443 & External & Teleport \\
+Manta & 169 & External & Teleport \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Contract Addresses}
+
+Deterministic deployment via CREATE2:
+
+\begin{lstlisting}[style=solidity]
+// Same address across all chains via CREATE2
+bytes32 constant SALT = keccak256("AI_TOKEN_V1");
+
+address token = CREATE2.deploy(
+    SALT,
+    type(AITokenTeleport).creationCode,
+    abi.encode(safe, treasury)
+);
+\end{lstlisting}
+
+\subsection{Security Properties}
+
+\begin{enumerate}
+    \item \textbf{No Single Point of Failure}: MPC/threshold throughout
+    \item \textbf{Trustless Verification}: Warp + Teleport proofs
+    \item \textbf{Supply Integrity}: 1B cap enforced per chain
+    \item \textbf{Upgrade Safety}: Timelock on all admin operations
+    \item \textbf{Cross-chain Consistency}: Lux as source of truth
+\end{enumerate}
