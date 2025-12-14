@@ -1,0 +1,503 @@
+\section{Shielded Mining via Zero-Knowledge Proofs}
+\label{sec:zkproofs}
+
+\subsection{Overview}
+
+While public mining (Section~\ref{sec:proof-of-ai}) establishes a transparent economy, many miners require privacy for competitive or regulatory reasons. \textbf{Shielded Mining} integrates with the Lux Z-Chain to enable:
+
+\begin{enumerate}
+    \item \textbf{Hidden Miner Identity}: Device IDs and public keys masked via nullifiers
+    \item \textbf{Hidden Workloads}: Model, input, and output data remain private
+    \item \textbf{Verifiable Compute}: ZK proofs attest to valid AI work without revealing details
+    \item \textbf{Selective Disclosure}: Gradual reveal for auditing when required
+\end{enumerate}
+
+\subsection{Z-Chain Integration}
+
+The Lux Z-Chain provides the cryptographic infrastructure for shielded mining. Work proofs submitted to Z-Chain replace public data with ZK commitments.
+
+\begin{definition}[Shielded Work Proof]
+A shielded work proof $\pi$ consists of:
+\begin{align}
+\pi = (\text{commitment}, \text{nullifier}, \text{zkproof}, \text{timestamp})
+\end{align}
+where:
+\begin{itemize}
+    \item $\text{commitment} = \text{Commit}(\text{device\_id}, \text{work\_data}, r)$ for random $r$
+    \item $\text{nullifier}$ prevents double-spend without revealing identity
+    \item $\text{zkproof}$ attests to valid AI work
+    \item $\text{timestamp}$ binds the proof to a time window
+\end{itemize}
+\end{definition}
+
+\subsubsection{Commitment Scheme}
+
+We use Pedersen commitments over the BLS12-381 curve:
+
+\begin{equation}
+\text{Commit}(m, r) = m \cdot G + r \cdot H
+\end{equation}
+
+where $G$ and $H$ are independent generators. This provides:
+\begin{itemize}
+    \item \textbf{Hiding}: Given $\text{Commit}(m, r)$, $m$ is computationally hidden
+    \item \textbf{Binding}: Cannot find $(m', r')$ such that $\text{Commit}(m, r) = \text{Commit}(m', r')$
+\end{itemize}
+
+\subsection{Nullifier Scheme}
+
+The nullifier scheme prevents double-spend while hiding miner identity.
+
+\begin{definition}[Nullifier]
+For a miner with secret key $\text{sk}$ and work identifier $\text{work\_id}$:
+\begin{equation}
+\text{nullifier} = \mathcal{H}(\text{sk} \| \text{work\_id})
+\end{equation}
+where $\mathcal{H}$ is a collision-resistant hash function (BLAKE3).
+\end{definition}
+
+\begin{property}[Double-Spend Prevention]
+The spent set $\mathcal{S}$ stores nullifiers, not work IDs. A proof $\pi$ is rejected if:
+\begin{equation}
+\pi.\text{nullifier} \in \mathcal{S}
+\end{equation}
+This prevents double-spend without revealing which work was performed or by whom.
+\end{property}
+
+\subsubsection{Nullifier Properties}
+
+\begin{enumerate}
+    \item \textbf{Uniqueness}: Each (miner, work) pair produces a unique nullifier
+    \item \textbf{Unlinkability}: Different nullifiers from the same miner cannot be linked
+    \item \textbf{Non-forgery}: Cannot produce valid nullifier without knowing $\text{sk}$
+\end{enumerate}
+
+\begin{lemma}[Nullifier Security]
+Under the collision resistance of $\mathcal{H}$:
+\begin{enumerate}
+    \item An adversary cannot find $(\text{sk}', \text{work\_id}')$ producing the same nullifier as honest $(\text{sk}, \text{work\_id})$
+    \item Given nullifiers $n_1, n_2$ from the same miner, distinguishing them from random requires breaking the PRF property of $\mathcal{H}$
+\end{enumerate}
+\end{lemma}
+
+\subsection{ZK Circuit Design}
+
+The ZK circuit proves: ``I performed valid AI work for chain $C$ with nonce $N$'' without revealing device ID, model, or input/output data.
+
+\subsubsection{Circuit Statement}
+
+\begin{definition}[ZK Statement]
+Public inputs:
+\begin{align}
+\mathbf{x} = (\text{chain\_id}, \text{commitment}, \text{nullifier}, \text{work\_type}, \text{compute\_units}, \text{timestamp})
+\end{align}
+Private witness:
+\begin{align}
+\mathbf{w} = (\text{sk}, \text{device\_id}, \text{nonce}, \text{model\_hash}, \text{input\_hash}, \text{output\_hash}, r)
+\end{align}
+\end{definition}
+
+The circuit enforces:
+
+\begin{equation}
+\mathcal{R}(\mathbf{x}, \mathbf{w}) = 1 \iff
+\begin{cases}
+\text{commitment} = \text{Commit}((\text{device\_id}, \text{model\_hash}, \text{input\_hash}, \text{output\_hash}), r) \\
+\text{nullifier} = \mathcal{H}(\text{sk} \| \text{device\_id} \| \text{nonce} \| \text{chain\_id}) \\
+\text{ValidWork}(\text{work\_type}, \text{compute\_units}, \text{model\_hash}) = 1 \\
+\text{NVTrustVerify}(\text{device\_id}, \text{model\_hash}, \text{input\_hash}, \text{output\_hash}) = 1
+\end{cases}
+\end{equation}
+
+\subsubsection{Circuit Pseudocode}
+
+\begin{algorithm}
+\caption{ShieldedWorkCircuit}
+\begin{algorithmic}[1]
+\Require Public: $(\text{chain\_id}, \text{commitment}, \text{nullifier}, \text{work\_type}, \text{compute\_units}, \text{timestamp})$
+\Require Private: $(\text{sk}, \text{device\_id}, \text{nonce}, \text{model\_hash}, \text{input\_hash}, \text{output\_hash}, r)$
+\Ensure Boolean: circuit satisfiability
+
+\State \Comment{1. Verify commitment opening}
+\State $\text{data} \gets \text{Pack}(\text{device\_id}, \text{model\_hash}, \text{input\_hash}, \text{output\_hash})$
+\State \textbf{assert} $\text{commitment} = \text{PedersenCommit}(\text{data}, r)$
+
+\State \Comment{2. Verify nullifier derivation}
+\State $\text{preimage} \gets \text{sk} \| \text{device\_id} \| \text{nonce} \| \text{chain\_id}$
+\State \textbf{assert} $\text{nullifier} = \text{BLAKE3}(\text{preimage})$
+
+\State \Comment{3. Verify work validity}
+\If{$\text{work\_type} = \text{INFERENCE}$}
+    \State \textbf{assert} $\text{compute\_units} \geq \text{MIN\_INFERENCE\_UNITS}$
+    \State \textbf{assert} $\text{model\_hash} \in \text{APPROVED\_MODELS}$
+\ElsIf{$\text{work\_type} = \text{TRAINING}$}
+    \State \textbf{assert} $\text{compute\_units} \geq \text{MIN\_TRAINING\_FLOPS}$
+\ElsIf{$\text{work\_type} = \text{RESEARCH}$}
+    \State \textbf{assert} $\text{compute\_units} \geq \text{MIN\_RESEARCH\_HOURS}$
+\EndIf
+
+\State \Comment{4. Verify NVTrust attestation (in-circuit)}
+\State $\text{attestation} \gets \text{NVTrustAttestation}(\text{device\_id})$
+\State \textbf{assert} $\text{VerifySignature}(\text{attestation}, \text{NVIDIA\_ROOT\_PK})$
+\State \textbf{assert} $\text{attestation.device\_id} = \text{device\_id}$
+
+\State \Comment{5. Verify timestamp freshness (relative check)}
+\State \textbf{assert} $\text{timestamp} > 0$
+
+\State \Return \textbf{true}
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Proving System Selection}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{System} & \textbf{Proof Size} & \textbf{Verify Time} & \textbf{Setup} \\
+\midrule
+Groth16 & 128 bytes & 3ms & Trusted \\
+PLONK & 400 bytes & 8ms & Universal \\
+Halo2 & 600 bytes & 12ms & None \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Recommendation}: Use \textbf{Groth16} for production (smallest proofs, fastest verification) with a trusted setup ceremony. Use \textbf{PLONK} for development and chains requiring universal setup.
+
+\subsubsection{Circuit Constraints}
+
+The circuit requires approximately:
+\begin{itemize}
+    \item \textbf{Pedersen commitment}: $\sim$1,500 constraints
+    \item \textbf{BLAKE3 hash}: $\sim$25,000 constraints per invocation
+    \item \textbf{NVTrust signature verification}: $\sim$200,000 constraints (BLS)
+    \item \textbf{Range checks and logic}: $\sim$5,000 constraints
+\end{itemize}
+
+Total: $\sim$250,000 constraints (Groth16 proving time: $\sim$5 seconds on modern CPU).
+
+\subsection{Privacy Levels}
+
+Shielded mining supports multiple privacy levels, allowing miners to choose their disclosure preference.
+
+\begin{definition}[Privacy Levels]
+\begin{align}
+\text{Level 0 (Public)} &: \text{All data public} \\
+\text{Level 1 (Identity)} &: \text{Miner identity hidden} \\
+\text{Level 2 (Workload)} &: \text{Model and I/O hidden} \\
+\text{Level 3 (Full)} &: \text{All data in ZK}
+\end{align}
+\end{definition}
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Data Field} & \textbf{Level 0} & \textbf{Level 1} & \textbf{Level 2} & \textbf{Level 3} \\
+\midrule
+Miner pubkey & Public & Hidden & Hidden & Hidden \\
+Device ID & Public & Hidden & Hidden & Hidden \\
+Chain ID & Public & Public & Public & Hidden$^*$ \\
+Model hash & Public & Public & Hidden & Hidden \\
+Input hash & Public & Public & Hidden & Hidden \\
+Output hash & Public & Public & Hidden & Hidden \\
+Compute units & Public & Public & Public & Hidden$^*$ \\
+Work type & Public & Public & Public & Hidden$^*$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+$^*$Level 3 hides these in ZK but proves they meet minimum thresholds.
+
+\subsubsection{Level 1: Hidden Miner Identity}
+
+Only the nullifier is exposed; device ID and public key are hidden.
+
+\begin{lstlisting}[style=rust]
+pub struct Level1ShieldedProof {
+    // Public
+    pub nullifier: [u8; 32],
+    pub chain_id: u64,
+    pub model_hash: [u8; 32],
+    pub input_hash: [u8; 32],
+    pub output_hash: [u8; 32],
+    pub compute_units: u64,
+    pub timestamp: u64,
+
+    // ZK proof that hidden identity is valid
+    pub zk_proof: Vec<u8>,
+}
+\end{lstlisting}
+
+\subsubsection{Level 2: Hidden Workload}
+
+Model and I/O data are hidden; only compute units and work type are public.
+
+\begin{lstlisting}[style=rust]
+pub struct Level2ShieldedProof {
+    // Public
+    pub nullifier: [u8; 32],
+    pub chain_id: u64,
+    pub work_type: WorkType,
+    pub compute_units: u64,
+    pub timestamp: u64,
+
+    // Commitments to hidden data
+    pub model_commitment: [u8; 32],
+    pub io_commitment: [u8; 32],
+
+    // ZK proof
+    pub zk_proof: Vec<u8>,
+}
+\end{lstlisting}
+
+\subsubsection{Level 3: Fully Shielded}
+
+All data hidden; ZK proof attests to minimum thresholds.
+
+\begin{lstlisting}[style=rust]
+pub struct Level3ShieldedProof {
+    // Only commitment and nullifier exposed
+    pub commitment: [u8; 32],
+    pub nullifier: [u8; 32],
+    pub timestamp: u64,
+
+    // ZK proof attesting to:
+    // - Valid chain binding
+    // - compute_units >= MIN_THRESHOLD
+    // - work_type in {INFERENCE, TRAINING, RESEARCH}
+    // - Valid NVTrust attestation
+    pub zk_proof: Vec<u8>,
+}
+\end{lstlisting}
+
+\subsection{Selective Disclosure}
+
+Miners may need to reveal data for auditing, dispute resolution, or regulatory compliance. The protocol supports gradual disclosure.
+
+\begin{definition}[Opening]
+An opening $o$ for commitment $c = \text{Commit}(m, r)$ is the tuple $(m, r)$. Given $o$, anyone can verify:
+\begin{equation}
+c \stackrel{?}{=} \text{Commit}(m, r)
+\end{equation}
+\end{definition}
+
+\subsubsection{Disclosure Levels}
+
+\begin{enumerate}
+    \item \textbf{Identity Disclosure}: Reveal $(device\_id, \text{sk\_commitment})$ to prove ownership
+    \item \textbf{Work Disclosure}: Reveal $(model\_hash, input\_hash, output\_hash)$ to prove work details
+    \item \textbf{Full Disclosure}: Reveal all witness data, converting to Level 0 proof
+\end{enumerate}
+
+\begin{algorithm}
+\caption{SelectiveDisclosure}
+\begin{algorithmic}[1]
+\Require ShieldedProof $\pi$, DisclosureRequest $D$, MinerSecret $\text{sk}$
+\Ensure DisclosureProof $\delta$
+\If{$D.\text{level} = \text{IDENTITY}$}
+    \State $\delta \gets (device\_id, \text{Commit}(\text{sk}, r'))$
+    \State $\delta.\text{proof} \gets \text{ProveKnowledge}(\text{sk}, r')$
+\ElsIf{$D.\text{level} = \text{WORK}$}
+    \State $\delta \gets (model\_hash, input\_hash, output\_hash, r)$
+    \State \textbf{verify} $\pi.\text{commitment} = \text{Commit}(\delta, r)$
+\ElsIf{$D.\text{level} = \text{FULL}$}
+    \State $\delta \gets (\text{sk}, device\_id, nonce, model\_hash, input\_hash, output\_hash, r)$
+\EndIf
+\State \Return $\delta$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Upgrade Path}
+
+The protocol evolves from fully public to default shielded over multiple versions.
+
+\begin{definition}[Version Timeline]
+\begin{align}
+\text{v1.0} &: \text{Public mining with NVTrust (current)} \\
+\text{v2.0} &: \text{Optional shielded mining via Z-Chain} \\
+\text{v3.0} &: \text{Default shielded with public opt-in}
+\end{align}
+\end{definition}
+
+\subsubsection{v1.0: Public Mining (Current)}
+
+All mining is public as described in Section~\ref{sec:proof-of-ai}. This establishes:
+\begin{itemize}
+    \item Baseline security model with NVTrust
+    \item Economic equilibrium and difficulty adjustment
+    \item Infrastructure for reward distribution
+\end{itemize}
+
+\subsubsection{v2.0: Optional Shielded Mining}
+
+Miners may choose shielded mode by submitting proofs to Z-Chain.
+
+\begin{lstlisting}[style=rust]
+pub enum MiningMode {
+    Public,           // Standard AIWorkProof
+    Shielded(Level),  // Level1/2/3 ShieldedProof
+}
+
+pub struct MiningConfig {
+    pub mode: MiningMode,
+    pub chain_id: u64,
+    pub zk_prover: Option<ProverConfig>,
+}
+\end{lstlisting}
+
+\textbf{Transition Rules}:
+\begin{enumerate}
+    \item Shielded proofs receive \textbf{same rewards} as public proofs
+    \item Spent sets are \textbf{unified}: nullifiers and work IDs share the same set
+    \item Shielded-to-public \textbf{conversion} allowed via full disclosure
+\end{enumerate}
+
+\subsubsection{v3.0: Default Shielded}
+
+Privacy becomes the default; public mining requires explicit opt-in.
+
+\begin{itemize}
+    \item \textbf{Default}: Level 2 shielded (hidden identity and workload)
+    \item \textbf{Opt-in Public}: Miners may choose Level 0 for transparency bonuses
+    \item \textbf{Regulatory Mode}: Jurisdictions may require Level 1 minimum
+\end{itemize}
+
+\begin{property}[Backward Compatibility]
+All v1.0 public proofs remain valid in v2.0 and v3.0. The spent set is cumulative across versions.
+\end{property}
+
+\subsection{Security Analysis}
+
+\subsubsection{Threat Model}
+
+We consider adversaries who:
+\begin{enumerate}
+    \item \textbf{Double-spend}: Submit the same work to multiple chains or multiple times
+    \item \textbf{Link proofs}: Correlate multiple proofs to the same miner
+    \item \textbf{Forge work}: Claim rewards for work not performed
+    \item \textbf{Extract secrets}: Recover private keys or work details from proofs
+\end{enumerate}
+
+\subsubsection{Security Properties}
+
+\begin{theorem}[Double-Spend Resistance]
+Under the collision resistance of BLAKE3, no PPT adversary can produce two valid proofs with the same nullifier for different work.
+\end{theorem}
+
+\begin{proof}
+Suppose adversary produces proofs $\pi_1, \pi_2$ with nullifiers:
+\begin{align}
+n_1 &= \mathcal{H}(\text{sk}_1 \| \text{work\_id}_1) \\
+n_2 &= \mathcal{H}(\text{sk}_2 \| \text{work\_id}_2)
+\end{align}
+If $n_1 = n_2$ and $(\text{sk}_1, \text{work\_id}_1) \neq (\text{sk}_2, \text{work\_id}_2)$, this is a collision in $\mathcal{H}$.
+\end{proof}
+
+\begin{theorem}[Unlinkability]
+Under the DDH assumption on BLS12-381, no PPT adversary can link two proofs from the same miner with advantage better than random guessing.
+\end{theorem}
+
+\begin{theorem}[Soundness]
+Under the knowledge soundness of Groth16/PLONK, any valid proof implies the existence of a witness satisfying the circuit constraints.
+\end{theorem}
+
+\subsubsection{NVTrust in ZK}
+
+The circuit verifies NVTrust attestations without revealing device identity:
+
+\begin{enumerate}
+    \item NVTrust signature is verified in-circuit against NVIDIA root public key
+    \item Device ID is committed, not revealed
+    \item Attestation freshness is checked via timestamp bounds
+\end{enumerate}
+
+This ensures shielded proofs have the same hardware guarantees as public proofs.
+
+\subsection{Implementation Notes}
+
+\subsubsection{Prover Infrastructure}
+
+Miners generate ZK proofs locally or via delegated provers:
+
+\begin{lstlisting}[style=rust]
+pub trait ZKProver {
+    fn prove(
+        &self,
+        public_inputs: &PublicInputs,
+        witness: &Witness,
+    ) -> Result<Proof, ProverError>;
+}
+
+pub struct LocalProver {
+    proving_key: ProvingKey,
+    num_threads: usize,
+}
+
+pub struct DelegatedProver {
+    endpoint: String,
+    encryption_key: PublicKey,  // Encrypt witness before sending
+}
+\end{lstlisting}
+
+\subsubsection{Verifier Contract}
+
+On-chain verification in Solidity (EVM chains):
+
+\begin{lstlisting}[style=solidity]
+interface IShieldedVerifier {
+    function verifyLevel1(
+        bytes32 nullifier,
+        uint64 chainId,
+        bytes32 modelHash,
+        bytes32 inputHash,
+        bytes32 outputHash,
+        uint64 computeUnits,
+        bytes calldata proof
+    ) external view returns (bool);
+
+    function verifyLevel2(
+        bytes32 nullifier,
+        uint64 chainId,
+        uint8 workType,
+        uint64 computeUnits,
+        bytes32 modelCommitment,
+        bytes32 ioCommitment,
+        bytes calldata proof
+    ) external view returns (bool);
+
+    function verifyLevel3(
+        bytes32 commitment,
+        bytes32 nullifier,
+        bytes calldata proof
+    ) external view returns (bool);
+}
+\end{lstlisting}
+
+\subsubsection{Gas Costs}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Operation} & \textbf{Gas (Groth16)} & \textbf{Gas (PLONK)} \\
+\midrule
+Proof verification & $\sim$230,000 & $\sim$350,000 \\
+Nullifier check & $\sim$20,000 & $\sim$20,000 \\
+Commitment storage & $\sim$40,000 & $\sim$40,000 \\
+\textbf{Total} & $\sim$290,000 & $\sim$410,000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Summary}
+
+Shielded mining via Z-Chain provides:
+
+\begin{enumerate}
+    \item \textbf{Privacy}: Miners can hide identity and workload details
+    \item \textbf{Verifiability}: ZK proofs attest to valid work without revealing data
+    \item \textbf{Flexibility}: Multiple privacy levels for different requirements
+    \item \textbf{Compatibility}: Smooth upgrade path from public to shielded default
+    \item \textbf{Security}: Same double-spend and hardware attestation guarantees as public mining
+\end{enumerate}
+
+This positions PoAI for enterprise and privacy-sensitive miners while maintaining the open, verifiable nature of the protocol.

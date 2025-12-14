@@ -1,0 +1,131 @@
+\section{Difficulty Adjustment}
+\label{sec:difficulty}
+
+\subsection{Overview}
+
+Unlike Bitcoin's hash-based difficulty, PoAI uses a \textbf{compute-based difficulty} that adjusts based on network AI throughput. The goal is to maintain consistent block times while adapting to changes in total compute capacity.
+
+\subsection{Difficulty Target}
+
+\begin{definition}[Difficulty Target]
+The difficulty target $D$ represents the minimum compute units required for a valid proof:
+\begin{equation}
+D = \text{base\_compute} \times 2^{\text{difficulty\_bits}}
+\end{equation}
+\end{definition}
+
+A proof is valid only if:
+\begin{equation}
+W_{\text{proof}} \geq D_{\text{current}}
+\end{equation}
+
+\subsection{Adjustment Algorithm}
+
+Difficulty adjusts every $N_{\text{adj}} = 2016$ blocks (similar to Bitcoin):
+
+\begin{algorithm}
+\caption{AdjustDifficulty}
+\begin{algorithmic}[1]
+\Require Previous difficulty $D_{\text{prev}}$, actual time $T_{\text{actual}}$, target time $T_{\text{target}}$
+\Ensure New difficulty $D_{\text{new}}$
+\State $\text{ratio} \gets T_{\text{actual}} / T_{\text{target}}$
+\State $\text{ratio} \gets \max(0.25, \min(4.0, \text{ratio}))$ \Comment{Clamp to 4x range}
+\State $D_{\text{new}} \gets D_{\text{prev}} / \text{ratio}$
+\State \Return $D_{\text{new}}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Per-Chain Difficulty}
+
+Each chain maintains independent difficulty:
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Chain} & \textbf{Target Block Time} & \textbf{Adjustment Window} & \textbf{Max Adjustment} \\
+\midrule
+Hanzo (36963) & 2 seconds & 2016 blocks & 4x \\
+Zoo (200200) & 2 seconds & 2016 blocks & 4x \\
+Lux (96369) & 2 seconds & 2016 blocks & 4x \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Compute Unit Standardization}
+
+Different AI workloads produce different compute metrics. We standardize to \textbf{AI Compute Units (ACU)}:
+
+\begin{equation}
+\text{ACU} = \alpha \times \text{tokens} + \beta \times \text{FLOPs} + \gamma \times \text{compute\_hours}
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $\alpha = 10^{-3}$ (tokens to ACU)
+    \item $\beta = 10^{-15}$ (FLOPs to ACU)
+    \item $\gamma = 10^{6}$ (hours to ACU)
+\end{itemize}
+
+\subsection{GPU Tier Adjustment}
+
+Higher-tier GPUs earn bonus difficulty credits:
+
+\begin{equation}
+D_{\text{effective}} = D_{\text{raw}} \times M_{\text{tier}}
+\end{equation}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{GPU Tier} & \textbf{$M_{\text{tier}}$} & \textbf{Effective Difficulty} \\
+\midrule
+Sovereign (GB200, B200) & 1.5 & $D \times 1.5$ \\
+DataCenter (H100, H200) & 1.3 & $D \times 1.3$ \\
+Professional (RTX PRO) & 1.1 & $D \times 1.1$ \\
+Consumer (RTX 4090/5090) & 0.8 & $D \times 0.8$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Emergency Difficulty Adjustment}
+
+If blocks are too slow (>10x target), emergency adjustment triggers:
+
+\begin{lstlisting}[style=rust]
+fn emergency_adjust(
+    current_difficulty: u64,
+    time_since_last_block: Duration,
+    target_block_time: Duration,
+) -> u64 {
+    if time_since_last_block > target_block_time * 10 {
+        // Emergency: reduce difficulty by 25%
+        current_difficulty * 75 / 100
+    } else {
+        current_difficulty
+    }
+}
+\end{lstlisting}
+
+\subsection{Difficulty and Rewards}
+
+Rewards scale inversely with difficulty:
+
+\begin{equation}
+R = R_{\text{base}} \times \frac{D_0}{D_{\text{current}}}
+\end{equation}
+
+This ensures:
+\begin{itemize}
+    \item High difficulty $\Rightarrow$ fewer proofs valid $\Rightarrow$ higher reward per proof
+    \item Low difficulty $\Rightarrow$ more proofs valid $\Rightarrow$ lower reward per proof
+\end{itemize}
+
+\subsection{Economic Equilibrium}
+
+\begin{theorem}[Mining Equilibrium]
+In equilibrium, miners earn expected value equal to their electricity and hardware costs:
+\begin{equation}
+\mathbb{E}[\text{Revenue}] = \text{Cost}_{\text{electricity}} + \text{Cost}_{\text{depreciation}}
+\end{equation}
+Difficulty auto-adjusts to maintain this equilibrium as hashrate changes.
+\end{theorem}

@@ -1,0 +1,141 @@
+\section{Token Economics}
+\label{sec:tokenomics}
+
+\subsection{Fixed Supply Per Chain}
+
+Each chain in the PoAI ecosystem has a fixed maximum supply of \textbf{1 billion AI tokens}:
+
+\begin{equation}
+\text{Supply}_{\text{chain}} = 1,000,000,000 \text{ AI}
+\end{equation}
+
+\begin{definition}[Global Supply]
+The global AI supply $S_{\text{global}}$ increases only as new chains join the network:
+\begin{equation}
+S_{\text{global}} = \sum_{i=1}^{n} S_{\text{chain}_i} = n \times 10^9 \text{ AI}
+\end{equation}
+where $n$ is the number of active chains.
+\end{definition}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Chain} & \textbf{Chain ID} & \textbf{Max Supply} \\
+\midrule
+Hanzo EVM & 36963 & 1,000,000,000 AI \\
+Zoo EVM & 200200 & 1,000,000,000 AI \\
+Lux C-Chain & 96369 & 1,000,000,000 AI \\
+\midrule
+\textbf{Total (3 chains)} & --- & \textbf{3,000,000,000 AI} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Bitcoin-Aligned Halving Schedule}
+
+Mining rewards halve every 210,000 blocks, perfectly aligned with Bitcoin's halving schedule:
+
+\begin{equation}
+R_{\text{block}}(h) = R_0 \times 2^{-\lfloor h / 210000 \rfloor}
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $R_{\text{block}}(h)$ = reward per block at height $h$
+    \item $R_0$ = initial block reward
+    \item $\lfloor \cdot \rfloor$ = floor function
+\end{itemize}
+
+\subsubsection{Initial Block Reward Calculation}
+
+To distribute 1 billion tokens following Bitcoin's halving schedule:
+
+\begin{equation}
+\sum_{i=0}^{\infty} 210000 \times R_0 \times 2^{-i} = 210000 \times R_0 \times 2 = 1,000,000,000
+\end{equation}
+
+Solving for $R_0$:
+\begin{equation}
+R_0 = \frac{1,000,000,000}{420,000} = 2,380.95 \text{ AI per block}
+\end{equation}
+
+Rounding to $R_0 = 2,381$ AI per block.
+
+\subsection{Halving Timeline}
+
+With target block time of 2 seconds (Quasar consensus):
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+\textbf{Era} & \textbf{Block Range} & \textbf{Reward} & \textbf{Est. Date} \\
+\midrule
+1 & 0 -- 209,999 & 2,381 AI & Genesis -- +4.8 days \\
+2 & 210,000 -- 419,999 & 1,190.5 AI & +4.8 days -- +9.7 days \\
+3 & 420,000 -- 629,999 & 595.25 AI & +9.7 days -- +14.5 days \\
+4 & 630,000 -- 839,999 & 297.62 AI & +14.5 days -- +19.4 days \\
+\vdots & \vdots & \vdots & \vdots \\
+32 & 6,510,000+ & $<$1 AI & +75 days \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Note:} With 2-second blocks, halving occurs approximately every 4.86 days rather than Bitcoin's 4 years. For longer-term distribution, the block time can be adjusted or halving interval increased.
+
+\subsection{Supply Distribution}
+
+\begin{theorem}[Total Mined Supply]
+The total supply $S$ mined after $n$ complete halving eras is:
+\begin{equation}
+S(n) = R_0 \times 210000 \times (2 - 2^{1-n})
+\end{equation}
+which approaches $1B$ as $n \to \infty$.
+\end{theorem}
+
+\begin{proof}
+Geometric series:
+$S = \sum_{i=0}^{n-1} 210000 \times R_0 \times 2^{-i} = 210000 \times R_0 \times \frac{1 - 2^{-n}}{1 - 2^{-1}} = 420000 \times R_0 \times (1 - 2^{-n})$
+\end{proof}
+
+\subsection{Token Utility}
+
+AI tokens serve multiple functions in the ecosystem:
+
+\begin{enumerate}
+    \item \textbf{Payment for AI Services}: Users pay miners for inference, training, fine-tuning
+    \item \textbf{Governance}: Token holders vote on protocol parameters
+    \item \textbf{Staking}: Miners stake AI to increase reward priority
+    \item \textbf{Cross-Chain Liquidity}: Teleport enables DeFi integration
+    \item \textbf{Research Funding}: Treasury contributions fund open AI research
+\end{enumerate}
+
+\subsection{Treasury Allocation}
+
+Each chain allocates a portion of mining rewards to research and development:
+
+\begin{equation}
+\text{Treasury}(R) = 0.02 \times R
+\end{equation}
+
+A 2\% contribution from all mining rewards funds:
+\begin{itemize}
+    \item Open-source model development
+    \item Protocol security audits
+    \item Community grants
+    \item Infrastructure maintenance
+\end{itemize}
+
+\subsection{Atomic Units}
+
+Like Bitcoin's satoshis, AI tokens have atomic units called \textbf{neurons}:
+
+\begin{equation}
+1 \text{ AI} = 10^{18} \text{ neurons}
+\end{equation}
+
+This allows for precise micropayments for AI inference:
+\begin{itemize}
+    \item 1 token generation $\approx$ 1,000 neurons
+    \item 1 image generation $\approx$ 100,000 neurons
+    \item 1 minute of speech recognition $\approx$ 10,000 neurons
+\end{itemize}

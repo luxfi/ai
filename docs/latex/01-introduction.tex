@@ -1,0 +1,113 @@
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{The Vision: Open AI for Everyone}
+
+The artificial intelligence revolution has been captured by centralized corporations. Access to frontier models requires expensive API subscriptions, training compute is controlled by hyperscalers, and the economic benefits of AI accrue to shareholders rather than contributors.
+
+\textbf{Proof of AI (PoAI)} democratizes this landscape by creating an open protocol where:
+
+\begin{enumerate}
+    \item \textbf{Anyone with a GPU can participate} --- from a single RTX 4090 to data center H100 clusters
+    \item \textbf{Miners earn AI tokens} for providing useful compute (inference, training, research)
+    \item \textbf{Users pay for services} with AI tokens, creating a self-sustaining economy
+    \item \textbf{Supply is fixed and predictable} --- 1 billion tokens per chain, halving like Bitcoin
+    \item \textbf{Cross-chain liquidity} enables tokens to flow freely via Teleport
+\end{enumerate}
+
+\subsection{Design Philosophy}
+
+PoAI draws inspiration from Bitcoin's elegant simplicity while adapting to AI compute requirements:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Aspect} & \textbf{Bitcoin} & \textbf{Proof of AI} \\
+\midrule
+Work & SHA-256 hashing & AI inference/training \\
+Supply & 21M BTC & 1B AI per chain \\
+Halving & Every 210,000 blocks & Every 210,000 blocks \\
+Finality & ~60 minutes (6 confirms) & ~500ms (Quasar) \\
+Signatures & ECDSA & ML-DSA (quantum-safe) \\
+Hardware & ASICs & GPUs with NVTrust \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Core Innovation: Chain-Bound AI Work}
+
+The fundamental innovation of PoAI is \textbf{chain-binding}: each unit of AI work is cryptographically committed to a specific chain \textit{before} the compute runs. This prevents ``copy-paste mining'' where the same work is submitted to multiple chains.
+
+\begin{definition}[Chain-Bound Work]
+A unit of AI work $W$ is chain-bound if and only if:
+\begin{enumerate}
+    \item The target chain ID $c$ is included in the work context before computation
+    \item The GPU's NVTrust enclave signs a receipt including $c$
+    \item Each chain maintains a spent set preventing double-minting
+\end{enumerate}
+\end{definition}
+
+\subsection{Ecosystem Overview}
+
+PoAI operates across three primary chains in the Lux ecosystem:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+    % Hanzo L1
+    \node[draw, rectangle, rounded corners, fill=blue!10, minimum width=4cm, minimum height=1.5cm] (hanzo) at (0,3) {
+        \begin{tabular}{c}
+        \textbf{Hanzo Networks L1} \\
+        AI Mining Native Chain \\
+        Chain ID: 36963
+        \end{tabular}
+    };
+
+    % Teleport
+    \node[draw, diamond, fill=yellow!20, minimum width=1.5cm] (teleport) at (0,1.5) {Teleport};
+
+    % EVM Chains
+    \node[draw, rectangle, rounded corners, fill=green!10, minimum width=2.5cm, minimum height=1cm] (lux) at (-4,0) {
+        \begin{tabular}{c}
+        \textbf{Lux C-Chain} \\
+        96369
+        \end{tabular}
+    };
+
+    \node[draw, rectangle, rounded corners, fill=purple!10, minimum width=2.5cm, minimum height=1cm] (zoo) at (0,0) {
+        \begin{tabular}{c}
+        \textbf{Zoo EVM} \\
+        200200
+        \end{tabular}
+    };
+
+    \node[draw, rectangle, rounded corners, fill=orange!10, minimum width=2.5cm, minimum height=1cm] (hanzo_evm) at (4,0) {
+        \begin{tabular}{c}
+        \textbf{Hanzo EVM} \\
+        36963
+        \end{tabular}
+    };
+
+    % Arrows
+    \draw[->, thick] (hanzo) -- (teleport);
+    \draw[->, thick] (teleport) -- (lux);
+    \draw[->, thick] (teleport) -- (zoo);
+    \draw[->, thick] (teleport) -- (hanzo_evm);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Document Structure}
+
+This paper is organized as follows:
+
+\begin{itemize}
+    \item \textbf{Section~\ref{sec:tokenomics}}: Token economics, supply schedule, halving mechanism
+    \item \textbf{Section~\ref{sec:proof-of-ai}}: Proof of AI consensus and reward calculation
+    \item \textbf{Section~\ref{sec:nvtrust}}: NVTrust chain-binding and double-spend prevention
+    \item \textbf{Section~\ref{sec:difficulty}}: Difficulty adjustment algorithm
+    \item \textbf{Section~\ref{sec:payments}}: Market dynamics and payment for services
+    \item \textbf{Section~\ref{sec:multi-chain}}: Multi-chain mining with Teleport
+    \item \textbf{Section~\ref{sec:evm-contracts}}: EVM contracts for reward claiming
+    \item \textbf{Section~\ref{sec:security}}: Security analysis and quantum safety
+    \item \textbf{Section~\ref{sec:conclusion}}: Conclusion and future work
+    \item \textbf{Section~\ref{sec:zkproofs}}: Shielded mining via zero-knowledge proofs
+\end{itemize}
