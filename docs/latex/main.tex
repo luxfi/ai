@@ -1,0 +1,91 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{geometry}
+
+\geometry{margin=1in}
+
+% Code listing style
+\lstdefinestyle{rust}{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\lstdefinestyle{solidity}{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{purple}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true,
+    frame=single
+}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{property}[theorem]{Property}
+
+% Title
+\title{\textbf{Proof of AI: An Open Protocol for Decentralized AI Mining}\\[0.5em]
+\large Bitcoin-Inspired Token Economics with Quantum-Safe Security}
+
+\author{
+Lux Network Foundation\thanks{Technical Contact: team@lux.network} \\
+Hanzo AI\thanks{AI Infrastructure: team@hanzo.ai} \\
+Zoo Labs Foundation\thanks{DeSci Research: team@zoo.ngo}
+}
+
+\date{Version 1.0 --- December 2025}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper presents \textbf{Proof of AI (PoAI)}, an open protocol enabling anyone with GPU compute to mine AI tokens across the Lux ecosystem. Inspired by Bitcoin's elegant simplicity, PoAI establishes a fixed supply of 1 billion AI tokens per chain, with mining rewards halving on a schedule aligned with Bitcoin's halvings. The protocol leverages NVIDIA's NVTrust for hardware attestation, ML-DSA quantum-safe signatures for long-term security, and Quasar consensus for instant finality. Unlike traditional mining, PoAI rewards \textit{useful} AI compute---inference, training, and research---while preventing double-spend through cryptographic chain-binding. The Teleport bridge enables seamless cross-chain liquidity across Hanzo EVM, Zoo EVM, and Lux C-Chain, with a novel global supply cap that only increases as new chains join the network.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% Include sections
+\input{01-introduction}
+\input{02-tokenomics}
+\input{03-proof-of-ai}
+\input{04-nvtrust}
+\input{05-difficulty}
+\input{06-payments}
+\input{07-multi-chain}
+\input{08-evm-contracts}
+\input{09-security}
+\input{10-conclusion}
+\input{11-zkproofs}
+
+% Bibliography
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

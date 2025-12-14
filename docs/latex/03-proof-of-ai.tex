@@ -1,0 +1,173 @@
+\section{Proof of AI Consensus}
+\label{sec:proof-of-ai}
+
+\subsection{Overview}
+
+Proof of AI (PoAI) is a consensus mechanism that rewards \textit{useful} AI compute rather than wasteful hash computation. Miners earn AI tokens by:
+
+\begin{enumerate}
+    \item Providing inference services (LLM, vision, audio)
+    \item Contributing training compute for model improvement
+    \item Running research workloads for scientific discovery
+\end{enumerate}
+
+\subsection{Work Types}
+
+\begin{definition}[AI Work Types]
+PoAI recognizes three categories of useful work:
+\begin{align}
+W_{\text{inference}} &= \text{tokens\_processed} \times \text{model\_complexity} \\
+W_{\text{training}} &= \text{flops} \times \text{batch\_size} \times \text{gradient\_steps} \\
+W_{\text{research}} &= \text{compute\_hours} \times \text{job\_complexity}
+\end{align}
+\end{definition}
+
+\subsection{Reward Calculation}
+
+The reward for a unit of AI work is:
+
+\begin{equation}
+R = R_{\text{base}} \times W \times D^{-1} \times M_{\text{GPU}} \times M_{\text{uptime}}
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $R_{\text{base}}$ = base reward per compute unit
+    \item $W$ = work units (tokens, FLOPs, etc.)
+    \item $D$ = current network difficulty
+    \item $M_{\text{GPU}}$ = GPU tier multiplier
+    \item $M_{\text{uptime}}$ = uptime bonus (0.9--1.1)
+\end{itemize}
+
+\subsubsection{GPU Tier Multipliers}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{GPU Model} & \textbf{NVTrust} & \textbf{Trust Score} & \textbf{Multiplier} \\
+\midrule
+GB200 & Full + TEE-I/O & 100 & 1.5 \\
+B200 & Full + TEE-I/O & 100 & 1.5 \\
+B100 & Full + TEE-I/O & 100 & 1.5 \\
+H200 & Full & 95 & 1.3 \\
+H100 & Full & 95 & 1.3 \\
+RTX PRO 6000 & Basic & 85 & 1.1 \\
+RTX 5090 & Software only & 60 & 0.8 \\
+RTX 4090 & Software only & 60 & 0.8 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Work Proof Structure}
+
+Each mining proof contains:
+
+\begin{lstlisting}[style=rust]
+pub struct AIWorkProof {
+    // Identity
+    pub miner_pubkey: [u8; 1952],     // ML-DSA-65 public key
+    pub device_id: [u8; 32],          // GPU hardware ID
+
+    // Chain binding
+    pub chain_id: u64,                // Target chain (36963/200200/96369)
+    pub nonce: [u8; 32],              // Unique per job
+    pub timestamp: u64,               // Unix timestamp
+
+    // Work specification
+    pub model_hash: [u8; 32],         // BLAKE3 of model weights
+    pub input_hash: [u8; 32],         // BLAKE3 of input data
+    pub output_hash: [u8; 32],        // BLAKE3 of output
+
+    // Work metrics
+    pub work_type: WorkType,
+    pub compute_units: u64,
+    pub tokens_processed: u64,
+    pub flops: u64,
+
+    // Attestation
+    pub nvtrust_signature: Vec<u8>,   // NVTrust enclave signature
+    pub spdm_evidence: Vec<u8>,       // GPU firmware measurement
+
+    // Miner signature
+    pub signature: Vec<u8>,           // ML-DSA signature over proof
+}
+\end{lstlisting}
+
+\subsection{Validation Rules}
+
+A proof is valid if and only if:
+
+\begin{enumerate}
+    \item \textbf{Signature Valid}: ML-DSA signature verifies against miner pubkey
+    \item \textbf{NVTrust Valid}: NVTrust signature chains to NVIDIA root CA
+    \item \textbf{Chain Bound}: $\text{proof.chain\_id} = \text{current\_chain\_id}$
+    \item \textbf{Not Spent}: $\text{hash}(\text{device\_id} \| \text{nonce} \| \text{chain\_id}) \notin \text{SpentSet}$
+    \item \textbf{Fresh}: $|\text{timestamp} - \text{block\_time}| < \text{PROOF\_EXPIRY}$
+    \item \textbf{Meets Difficulty}: Work exceeds current difficulty target
+\end{enumerate}
+
+\begin{algorithm}
+\caption{ValidateAIWorkProof}
+\begin{algorithmic}[1]
+\Require AIWorkProof $P$, ChainState $S$
+\Ensure Boolean validity
+\State \textbf{verify} $P.\text{signature}$ against $P.\text{miner\_pubkey}$
+\State \textbf{verify} $P.\text{nvtrust\_signature}$ against NVIDIA root
+\If{$P.\text{chain\_id} \neq S.\text{chain\_id}$}
+    \State \Return \textbf{false} \Comment{Wrong chain binding}
+\EndIf
+\State $\text{work\_id} \gets \text{BLAKE3}(P.\text{device\_id} \| P.\text{nonce} \| P.\text{chain\_id})$
+\If{$\text{work\_id} \in S.\text{spent\_set}$}
+    \State \Return \textbf{false} \Comment{Double-spend attempt}
+\EndIf
+\If{$|P.\text{timestamp} - S.\text{block\_time}| > \text{PROOF\_EXPIRY}$}
+    \State \Return \textbf{false} \Comment{Proof expired}
+\EndIf
+\State \textbf{verify} $P.\text{compute\_units} \geq S.\text{difficulty\_target}$
+\State \Return \textbf{true}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Block Structure}
+
+Blocks contain aggregated AI work proofs:
+
+\begin{lstlisting}[style=rust]
+pub struct AIBlock {
+    // Header
+    pub height: u64,
+    pub prev_hash: [u8; 32],
+    pub merkle_root: [u8; 32],        // Merkle root of proofs
+    pub state_root: [u8; 32],         // State trie root
+    pub timestamp: u64,
+    pub difficulty: u64,
+
+    // Proofs
+    pub proofs: Vec<AIWorkProof>,     // Up to MAX_PROOFS_PER_BLOCK
+    pub total_work: u64,              // Sum of all work units
+    pub total_rewards: u128,          // Sum of all rewards
+
+    // Consensus
+    pub proposer: [u8; 1952],         // Block proposer pubkey
+    pub quasar_signature: Vec<u8>,    // Quasar consensus signature
+}
+\end{lstlisting}
+
+\subsection{Integration with Quasar Consensus}
+
+PoAI integrates with Quasar for instant finality:
+
+\begin{enumerate}
+    \item \textbf{Proposer Selection}: Weighted by staked AI tokens + cumulative work
+    \item \textbf{Finality}: 2-round BFT with $\frac{2}{3}$ supermajority
+    \item \textbf{Block Time}: 500ms target (sub-second user experience)
+    \item \textbf{Signatures}: ML-DSA for quantum safety
+\end{enumerate}
+
+\begin{property}[Finality Guarantee]
+Under Quasar consensus with $n$ validators and at most $f < n/3$ Byzantine:
+\begin{itemize}
+    \item \textbf{Safety}: No two honest validators finalize conflicting blocks
+    \item \textbf{Liveness}: If $\geq 2n/3$ validators are honest, blocks finalize within 2 rounds
+\end{itemize}
+\end{property}

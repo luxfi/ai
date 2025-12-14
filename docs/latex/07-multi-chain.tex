@@ -1,0 +1,185 @@
+\section{Multi-Chain Mining with Teleport}
+\label{sec:multi-chain}
+
+\subsection{Overview}
+
+PoAI enables seamless cross-chain operations via the \textbf{Teleport Protocol}. Miners can earn on any chain, and tokens can flow freely across the ecosystem.
+
+\subsection{Supported Chains}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Chain} & \textbf{Chain ID} & \textbf{Token} & \textbf{Role} \\
+\midrule
+Hanzo L1 & 36963 & AI (native) & Mining Origin \\
+Hanzo EVM & 36963 & AI, ZOO & DeFi Hub \\
+Zoo EVM & 200200 & AI, ZOO & Research Focus \\
+Lux C-Chain & 96369 & AI, ZOO, LUX & General Purpose \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Global Supply Dynamics}
+
+\begin{property}[Expanding Global Cap]
+The global AI supply cap increases only when new chains join:
+\begin{equation}
+S_{\text{global}} = n \times 10^9 \text{ AI}
+\end{equation}
+where $n$ is the number of active chains. This creates predictable scarcity while allowing ecosystem growth.
+\end{property}
+
+\subsection{Teleport Protocol}
+
+\subsubsection{Architecture}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+    \node[draw, rectangle, fill=blue!20, minimum width=3cm, minimum height=1.5cm] (hanzo) at (0,3) {
+        \begin{tabular}{c}
+        \textbf{Hanzo L1} \\
+        Mining \& Consensus
+        \end{tabular}
+    };
+
+    \node[draw, diamond, fill=yellow!30, minimum width=2cm] (teleport) at (0,1) {Teleport};
+
+    \node[draw, rectangle, fill=green!10] (lux) at (-4,-1) {Lux C-Chain};
+    \node[draw, rectangle, fill=purple!10] (zoo) at (0,-1) {Zoo EVM};
+    \node[draw, rectangle, fill=orange!10] (hanzo_evm) at (4,-1) {Hanzo EVM};
+
+    \draw[->, thick] (hanzo) -- (teleport);
+    \draw[<->, thick] (teleport) -- (lux);
+    \draw[<->, thick] (teleport) -- (zoo);
+    \draw[<->, thick] (teleport) -- (hanzo_evm);
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Transfer Flow}
+
+\begin{enumerate}
+    \item \textbf{Lock/Burn}: Source chain locks or burns tokens
+    \item \textbf{MPC Validation}: Top 100 validators verify the transfer
+    \item \textbf{Threshold Signature}: CGGMP20 produces collective signature
+    \item \textbf{Mint/Release}: Destination chain mints or releases tokens
+\end{enumerate}
+
+\subsubsection{Transfer Message}
+
+\begin{lstlisting}[style=rust]
+pub struct TeleportTransfer {
+    pub teleport_id: [u8; 32],       // Unique transfer ID
+    pub source_chain: u64,           // Origin chain ID
+    pub destination_chain: u64,      // Target chain ID
+    pub sender: Vec<u8>,             // ML-DSA public key
+    pub recipient: String,           // Destination address
+    pub amount: u128,                // AI tokens (neurons)
+    pub nonce: u64,                  // Replay protection
+    pub timestamp: u64,              // Unix timestamp
+    pub signature: Vec<u8>,          // ML-DSA signature
+}
+\end{lstlisting}
+
+\subsection{Mining on Multiple Chains}
+
+A single GPU can mine for all chains simultaneously by:
+
+\begin{enumerate}
+    \item Creating separate WorkContext for each chain
+    \item Generating unique nonces per chain
+    \item Submitting receipts to respective chains
+\end{enumerate}
+
+\begin{lstlisting}[style=rust]
+// Mine for all three chains in parallel
+let hanzo_ctx = WorkContext::for_chain(ChainId::Hanzo, &job);
+let zoo_ctx = WorkContext::for_chain(ChainId::Zoo, &job);
+let lux_ctx = WorkContext::for_chain(ChainId::Lux, &job);
+
+// Execute and submit
+let hanzo_receipt = execute_and_attest(hanzo_ctx).await?;
+let zoo_receipt = execute_and_attest(zoo_ctx).await?;
+let lux_receipt = execute_and_attest(lux_ctx).await?;
+
+submit_to_chain(ChainId::Hanzo, hanzo_receipt).await?;
+submit_to_chain(ChainId::Zoo, zoo_receipt).await?;
+submit_to_chain(ChainId::Lux, lux_receipt).await?;
+\end{lstlisting}
+
+\textbf{Note}: Each submission requires \textit{separate work}---the same work cannot be submitted to multiple chains.
+
+\subsection{Cross-Chain Reward Claiming}
+
+Miners can claim rewards on any chain:
+
+\begin{lstlisting}[style=solidity]
+interface IRewardClaiming {
+    // Claim reward mined on current chain
+    function claimLocalReward(
+        bytes calldata proof,
+        bytes calldata signature
+    ) external returns (uint256);
+
+    // Claim reward mined on another chain via Teleport
+    function claimCrossChainReward(
+        bytes32 teleportId,
+        bytes32[] calldata merkleProof
+    ) external returns (uint256);
+}
+\end{lstlisting}
+
+\subsection{Liquidity Pools}
+
+Cross-chain liquidity enables efficient markets:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Pool} & \textbf{Chain} & \textbf{Purpose} \\
+\midrule
+AI/ETH & Lux C-Chain & External liquidity \\
+AI/ZOO & Zoo EVM & Governance pairing \\
+AI/LUX & All & Native pairing \\
+AI/USDC & All & Stable pairing \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Chain-Specific Features}
+
+\subsubsection{Lux C-Chain (96369)}
+\begin{itemize}
+    \item General-purpose EVM
+    \item Highest liquidity
+    \item Gateway to external ecosystems
+\end{itemize}
+
+\subsubsection{Hanzo EVM (36963)}
+\begin{itemize}
+    \item AI-focused applications
+    \item Native mining origin
+    \item Lowest latency for AI services
+\end{itemize}
+
+\subsubsection{Zoo EVM (200200)}
+\begin{itemize}
+    \item Research and DeSci focus
+    \item Higher treasury allocation (2\%)
+    \item Governance over research grants
+\end{itemize}
+
+\subsection{Adding New Chains}
+
+New chains can join the ecosystem by:
+
+\begin{enumerate}
+    \item \textbf{Governance Proposal}: Submit proposal to add chain
+    \item \textbf{Technical Integration}: Deploy Teleport contracts
+    \item \textbf{Validator Opt-In}: MPC nodes monitor new chain
+    \item \textbf{Supply Allocation}: 1B AI cap assigned to new chain
+\end{enumerate}
+
+\begin{equation}
+S_{\text{global}}^{\text{new}} = S_{\text{global}}^{\text{old}} + 10^9
+\end{equation}
