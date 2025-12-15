@@ -1,0 +1,293 @@
+---
+title: Attestation System
+description: Cryptographic verification and trust scoring for Lux AI inference
+---
+
+# Attestation System
+
+The Lux AI attestation system provides cryptographic proofs of inference quality, enabling trust in a decentralized network.
+
+## Overview
+
+Attestation solves the fundamental challenge of decentralized AI:
+
+> How do you trust that a remote miner actually ran the model correctly?
+
+The attestation system:
+- Verifies inference outputs match expected behavior
+- Assigns trust scores to miners
+- Enables consumers to verify response authenticity
+- Protects against fraudulent or low-quality outputs
+
+## How It Works
+
+### 1. Request Submission
+
+When a consumer sends a request:
+
+```
+Consumer → Router → Miner Selection → Inference → Attestation → Response
+```
+
+### 2. Inference Execution
+
+The miner executes the inference and generates:
+- The actual response
+- Intermediate computation hashes
+- Timing signatures
+
+### 3. Attestation Generation
+
+```json
+{
+  "response": "...",
+  "attestation": {
+    "miner_id": "miner_abc123",
+    "model": "llama-3.3-8b",
+    "timestamp": 1700000000,
+    "computation_hash": "0x...",
+    "signature": "0x..."
+  }
+}
+```
+
+### 4. Verification
+
+The network verifies attestations through:
+- **Spot Checks**: Random re-computation by validators
+- **Consistency Checks**: Same input should produce consistent output
+- **Challenge-Response**: Direct verification challenges
+
+## Trust Score
+
+Every miner has a trust score (0-100%) that affects:
+- Request routing priority
+- Reward multipliers
+- Stake requirements
+
+### Score Components
+
+| Component | Weight | Description |
+|-----------|--------|-------------|
+| Attestation Pass Rate | 40% | % of successful verifications |
+| Consistency | 25% | Output consistency for same inputs |
+| Latency | 20% | Meeting response time targets |
+| Uptime | 15% | Availability percentage |
+
+### Score Calculation
+
+```
+Trust Score = (0.4 × Attestation) + (0.25 × Consistency) + (0.2 × Latency) + (0.15 × Uptime)
+```
+
+### Score Tiers
+
+| Score | Tier | Benefits |
+|-------|------|----------|
+| 95-100% | Gold | 1.2x rewards, priority routing |
+| 85-94% | Silver | 1.0x rewards, standard routing |
+| 70-84% | Bronze | 0.8x rewards, lower priority |
+| Below 70% | Probation | Limited requests, review required |
+
+## Verification Methods
+
+### 1. Random Spot Checks
+
+Validators randomly re-execute requests and compare outputs:
+
+```
+Validator picks random request →
+Re-runs inference →
+Compares output hash →
+Updates trust score
+```
+
+**Frequency**: ~1% of requests
+**Tolerance**: Minor variations allowed for temperature > 0
+
+### 2. Consistency Probes
+
+Network sends identical requests to verify consistency:
+
+```python
+# Example: Deterministic request
+request = {
+    "prompt": "2+2=",
+    "temperature": 0,  # Deterministic
+    "seed": 12345
+}
+# Expected: Identical output every time
+```
+
+### 3. Challenge-Response
+
+Direct cryptographic challenges:
+
+```
+Challenge: "Prove you computed attention layer 12"
+Response: Hash of intermediate activation + merkle proof
+```
+
+## Attestation Proofs
+
+### Structure
+
+```json
+{
+  "attestation": {
+    "version": "1.0",
+    "miner_id": "miner_abc123",
+    "request_hash": "0x...",
+    "response_hash": "0x...",
+    "model_hash": "0x...",
+    "computation_proof": {
+      "type": "merkle",
+      "root": "0x...",
+      "checkpoints": ["0x...", "0x..."]
+    },
+    "timestamp": 1700000000,
+    "signature": "0x..."
+  }
+}
+```
+
+### Verification
+
+Consumers can verify attestations:
+
+```python
+from lux_ai import verify_attestation
+
+response = client.chat.completions.create(
+    model="llama-3.3-8b",
+    messages=[{"role": "user", "content": "Hello!"}],
+    extra_body={"lux_attestation": True}
+)
+
+# Verify the response
+is_valid = verify_attestation(
+    response.attestation,
+    public_key=response.miner_public_key
+)
+print(f"Attestation valid: {is_valid}")
+```
+
+## Slashing
+
+Miners who fail attestation may be slashed:
+
+| Violation | Penalty | Recovery |
+|-----------|---------|----------|
+| Single failure | Warning | None required |
+| Multiple failures | 1% stake | 24h cooldown |
+| Malicious output | 10% stake | Manual review |
+| Fraud attempt | 50% stake | Permanent ban |
+
+### Appeal Process
+
+1. Submit appeal via `lux-ai appeal <violation_id>`
+2. Provide evidence of legitimate failure
+3. Committee review (48h)
+4. Decision and stake restoration if approved
+
+## Consumer Options
+
+### Requiring Attestations
+
+```python
+response = client.chat.completions.create(
+    model="llama-3.3-8b",
+    messages=[{"role": "user", "content": "Hello!"}],
+    extra_body={
+        "lux_attestation": True,  # Require attestation
+        "lux_min_trust_score": 0.95,  # High-trust miners only
+    }
+)
+```
+
+### Verifying Responses
+
+```python
+# Full verification
+from lux_ai.attestation import verify
+
+result = verify(
+    response=response.choices[0].message.content,
+    attestation=response.attestation,
+    model=response.model
+)
+
+print(f"Verified: {result.verified}")
+print(f"Miner trust: {result.miner_trust_score}")
+print(f"Computation valid: {result.computation_valid}")
+```
+
+## Miner Best Practices
+
+### Maintaining High Trust Score
+
+1. **Use Official Models**: Only serve verified model weights
+2. **Stable Hardware**: Avoid thermal throttling
+3. **Reliable Network**: Minimize timeouts
+4. **Quick Updates**: Stay current with miner software
+
+### Monitoring Trust
+
+```bash
+# Check your trust score
+lux-ai status --trust
+
+# Output:
+# Trust Score: 97.3%
+# Attestation Pass: 99.1%
+# Consistency: 98.5%
+# Latency Score: 94.2%
+# Uptime: 99.8%
+```
+
+### Debugging Issues
+
+```bash
+# View recent attestation failures
+lux-ai attestation failures
+
+# Output:
+# 2024-01-15 14:23: Timeout (latency exceeded)
+# 2024-01-14 09:11: Hash mismatch (model update required)
+```
+
+## Advanced Topics
+
+### Custom Attestation
+
+For enterprise users with specific requirements:
+
+```yaml
+# Custom attestation config
+attestation:
+  enabled: true
+  checkpoints:
+    - layer: attention
+      frequency: every_10_layers
+    - layer: output
+      frequency: always
+  proof_type: merkle  # or: hash, full
+```
+
+### Hardware Attestation
+
+Integration with TEE (Trusted Execution Environment):
+
+```yaml
+# Enable hardware attestation
+attestation:
+  hardware:
+    enabled: true
+    type: sgx  # or: sev, trustzone
+```
+
+## Next Steps
+
+- [Rewards](/docs/rewards) - How trust affects earnings
+- [Mining Guide](/docs/mining) - Optimize your setup
+- [API Reference](/docs/api) - Include attestations in requests

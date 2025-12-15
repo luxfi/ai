@@ -1,171 +1,586 @@
 \section{Token Economics}
 \label{sec:tokenomics}
 
-\subsection{Global Supply Model}
+\subsection{Design Philosophy: Bitcoin for AI}
 
-AI Token launches across \textbf{10 chains} with a \textbf{2 billion} initial supply:
+AI Token applies Bitcoin's proven economic model to AI compute:
 
 \begin{center}
 \begin{tabular}{lcc}
 \toprule
-\textbf{Allocation} & \textbf{Per Chain} & \textbf{Total (10 chains)} \\
+\textbf{Property} & \textbf{Bitcoin} & \textbf{AI Token} \\
 \midrule
-LP Seeding & 100M AI & 1B AI \\
-Mining Airdrop & 100M AI & 1B AI \\
-\midrule
-\textbf{Chain Cap} & \textbf{200M AI} & \textbf{2B AI} \\
+Total Supply & 21M BTC & 1B AI per chain \\
+Mining Supply & 21M BTC & 900M AI (90\%) \\
+LP Supply & --- & 100M AI (10\%) \\
+Initial Reward & 50 BTC/block & 7.14 AI/block \\
+Halving Interval & 210,000 blocks & 63,072,000 blocks \\
+Block Time & 10 minutes & 2 seconds \\
+Halving Period & $\sim$4 years & $\sim$4 years \\
+Time to 50\% mined & $\sim$4 years & $\sim$4 years \\
+Time to 99\% mined & $\sim$27 years & $\sim$27 years \\
+Useful Work & Hash (wasteful) & AI Compute (useful) \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsubsection{Supply Expansion}
-
-\begin{equation}
-S_{\text{global}} = \text{chains} \times 200 \times 10^6 \text{ AI}
-\end{equation}
-
+\textbf{TRUE Bitcoin Alignment}: AI Token follows the \textit{exact} Bitcoin emission curve:
 \begin{itemize}
-    \item 10 chains (launch): 2B AI total
-    \item 100 chains (future): 20B AI total
-    \item Maximum (500 chains): 1T AI total
+    \item 4-year halving period (63M blocks at 2-sec = 126M sec = 4 years)
+    \item 50\% mined in first 4 years
+    \item 99\% mined in $\sim$27 years
+    \item Full emission over $\sim$100+ years
+    \item Same geometric series: $S = R_0 \times H \times 2$
 \end{itemize}
 
-\subsection{Launch Chains}
+\subsection{Global Supply Model}
+
+\begin{equation}
+S_{\text{chain}} = 1,000,000,000 \text{ AI (1B per chain)}
+\end{equation}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Phase} & \textbf{Chains} & \textbf{Total Supply} & \textbf{Market Access} \\
+\midrule
+Launch & 10 & 10B AI & \$100M depth \\
+Growth & 100 & 100B AI & \$1B depth \\
+Scale & 1,000 & 1T AI & \$10B depth \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key Insight}: Each new chain adds 1B AI supply, expanding the compute market. Communities vote on which chains to add next.
+
+\subsection{Launch Chains (10)}
+
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Chain} & \textbf{ID} & \textbf{Supply} & \textbf{LP Depth} & \textbf{DEX} & \textbf{Bridge} \\
+\midrule
+Lux C-Chain & 96369 & 1B & \$10M & LuxSwap & Warp \\
+Hanzo EVM & 36963 & 1B & \$10M & HanzoSwap & Warp \\
+Zoo EVM & 200200 & 1B & \$10M & ZooSwap & Warp \\
+Ethereum & 1 & 1B & \$10M & Uniswap V3 & Teleport \\
+Base & 8453 & 1B & \$10M & Uniswap V3 & Teleport \\
+BNB Chain & 56 & 1B & \$10M & PancakeSwap & Teleport \\
+Avalanche & 43114 & 1B & \$10M & TraderJoe & Teleport \\
+Arbitrum & 42161 & 1B & \$10M & Uniswap V3 & Teleport \\
+Optimism & 10 & 1B & \$10M & Uniswap V3 & Teleport \\
+Polygon & 137 & 1B & \$10M & Uniswap V3 & Teleport \\
+\midrule
+\textbf{Total} & --- & \textbf{10B} & \textbf{\$100M} & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Precise Launch Pricing}
+
+\subsubsection{Current GPU Compute Market (Dec 2025)}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Provider} & \textbf{H100 \$/hr} & \textbf{Type} \\
+\midrule
+AWS p5.48xlarge & \$3.90 & Hyperscaler \\
+Azure NC H100 v5 & \$6.98 & Hyperscaler \\
+Lambda Labs & \$2.99 & Specialized \\
+RunPod Secure & \$2.39 & Decentralized \\
+Hyperbolic & \$1.49 & Decentralized \\
+Reserved (1yr) & \$1.85 & Committed \\
+\midrule
+\textbf{Market Average} & \textbf{\$2.50} & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{Token Pricing Formula}
+
+Define: \textbf{1 AI = 1 GPU-hour of compute value}
+
+\begin{equation}
+P_{\text{launch}} = P_{\text{market}} \times \text{bootstrap\_discount}
+\end{equation}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Discount} & \textbf{AI Price} & \textbf{vs Market} & \textbf{Strategy} \\
+\midrule
+0\% & \$2.50 & 100\% & Equilibrium \\
+50\% & \$1.25 & 50\% & Conservative \\
+90\% & \$0.25 & 10\% & Aggressive \\
+96\% & \$0.10 & 4\% & Bootstrap \\
+99\% & \$0.025 & 1\% & Extreme bootstrap \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Recommended Launch Price:} \$\textbf{0.10}/AI (96\% discount)
+
+\textbf{Rationale:}
+\begin{itemize}
+    \item Creates massive demand (25x cheaper than market)
+    \item Allows 25x price appreciation to equilibrium
+    \item \$10M LP depth = meaningful liquidity
+    \item Attractive for early miners and users
+\end{itemize}
+
+\subsubsection{LP Pool Mathematics}
+
+For Uniswap V2 constant product AMM:
+
+\begin{equation}
+k = x \times y \quad \text{where } x = \text{AI}, \quad y = \text{ETH}
+\end{equation}
+
+\begin{equation}
+P = \frac{y}{x} \times P_{\text{ETH}}
+\end{equation}
+
+For \$10M total liquidity at \$0.10/AI:
+\begin{align}
+\text{AI value} &= \text{ETH value} = \$5\text{M} \\
+\text{AI amount} &= \$5\text{M} / \$0.10 = 50\text{M AI} \\
+\text{ETH amount} &= \$5\text{M} / \$4,000 = 1,250 \text{ ETH}
+\end{align}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Chain} & \textbf{AI in LP} & \textbf{Pair Token} & \textbf{Pair Amount} \\
+\midrule
+Ethereum & 50M & ETH & 1,250 ETH \\
+Base & 50M & ETH & 1,250 ETH \\
+Arbitrum & 50M & ETH & 1,250 ETH \\
+Optimism & 50M & ETH & 1,250 ETH \\
+BNB Chain & 50M & BNB & 7,350 BNB \\
+Avalanche & 50M & AVAX & 119,000 AVAX \\
+Polygon & 50M & MATIC & 8.3M MATIC \\
+Lux & 50M & LUX & TBD \\
+Hanzo & 50M & LUX & TBD \\
+Zoo & 50M & LUX & TBD \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Bitcoin-Aligned Halving Schedule}
+
+\subsubsection{Supply Distribution Formula}
+
+Total supply per chain following Bitcoin's geometric series:
+
+\begin{equation}
+S = \sum_{i=0}^{\infty} 210000 \times R_0 \times 2^{-i} = 420000 \times R_0
+\end{equation}
+
+For $S = 1,000,000,000$ AI:
+\begin{equation}
+R_0 = \frac{1,000,000,000}{420,000} = 2,381 \text{ AI per block}
+\end{equation}
+
+\subsubsection{Block Time Analysis}
 
 \begin{center}
 \begin{tabular}{lcccc}
 \toprule
-\textbf{Chain} & \textbf{ID} & \textbf{LP} & \textbf{Mining} & \textbf{Bridge} \\
+\textbf{Block Time} & \textbf{Halving Period} & \textbf{50\% Mined} & \textbf{99\% Mined} & \textbf{Annual Blocks} \\
 \midrule
-Lux C-Chain & 96369 & 100M & 100M & Warp \\
-Hanzo EVM & 36963 & 100M & 100M & Warp \\
-Zoo EVM & 200200 & 100M & 100M & Warp \\
-Ethereum & 1 & 100M & 100M & Teleport \\
-Base & 8453 & 100M & 100M & Teleport \\
-BNB Chain & 56 & 100M & 100M & Teleport \\
-Avalanche & 43114 & 100M & 100M & Teleport \\
-Arbitrum & 42161 & 100M & 100M & Teleport \\
-Optimism & 10 & 100M & 100M & Teleport \\
-Polygon & 137 & 100M & 100M & Teleport \\
-\midrule
-\textbf{Total} & --- & \textbf{1B} & \textbf{1B} & --- \\
+10 min (Bitcoin) & 4 years & 4 years & 27 years & 52,560 \\
+2 sec (Quasar) & 4.86 days & 4.86 days & 32 days & 15,768,000 \\
+12 sec (Ethereum) & 29 days & 29 days & 195 days & 2,628,000 \\
+\textbf{1 min (Balanced)} & \textbf{146 days} & \textbf{146 days} & \textbf{2.7 years} & \textbf{525,600} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection{Initial Pricing}
-
+\textbf{Recommendation:} Use 1-minute effective block time for mining rewards:
 \begin{itemize}
-    \item Price: \textbf{\$1 per AI} at launch
-    \item LP Value: \$100M liquidity per chain
-    \item Total LP Value: \$1B across 10 chains
-    \item Each chain can compete on price/compute performance
+    \item Halving every $\sim$146 days (vs 4.86 days with 2-sec blocks)
+    \item 50\% mined in first $\sim$5 months
+    \item 99\% mined in $\sim$2.7 years
+    \item Provides meaningful early miner incentives
+    \item Transitions to fee-based model within reasonable timeframe
 \end{itemize}
 
-\subsection{Bitcoin-Aligned Halving Schedule}
+\subsubsection{Adjusted Initial Reward}
 
-Mining rewards (100M per chain) follow Bitcoin's halving:
+With 1-minute blocks (525,600 blocks/year):
+\begin{equation}
+R_0 = \frac{1,000,000,000}{420,000} = 2,381 \text{ AI per block}
+\end{equation}
+
+But with 2-second blocks (to match Quasar consensus), scale the interval:
+\textbf{TRUE Bitcoin Alignment}:
+
+4 years at 2-second blocks:
+\begin{equation}
+\text{Halving Interval} = \frac{4 \times 365.25 \times 24 \times 60 \times 60}{2} = 63,072,000 \text{ blocks}
+\end{equation}
+
+Initial reward derived from mining supply (900M AI, not 1B since 100M is LP):
+\begin{equation}
+R_0 = \frac{900,000,000}{2 \times 63,072,000} \approx 7.14 \text{ AI per block}
+\end{equation}
+
+\subsection{Halving Timeline (2-sec blocks, 4-year epochs)}
+
+\textbf{Mathematical Verification}:
+\begin{equation}
+\text{Epoch Duration} = 63,072,000 \text{ blocks} \times 2 \text{ sec} = 126,144,000 \text{ sec} = 4 \text{ years}
+\end{equation}
+
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Epoch} & \textbf{Period} & \textbf{Reward} & \textbf{Epoch Supply} & \textbf{Cumulative \%} \\
+\midrule
+0 & Years 0--4 & 7.14 AI & 450M & 50\% \\
+1 & Years 4--8 & 3.57 AI & 225M & 75\% \\
+2 & Years 8--12 & 1.785 AI & 112.5M & 87.5\% \\
+3 & Years 12--16 & 0.893 AI & 56.25M & 93.75\% \\
+4 & Years 16--20 & 0.446 AI & 28.125M & 96.875\% \\
+5 & Years 20--24 & 0.223 AI & 14.0625M & 98.4375\% \\
+6 & Years 24--28 & 0.112 AI & 7.03M & 99.2\% \\
+\vdots & \vdots & \vdots & \vdots & \vdots \\
+25 & Years 100--104 & $\sim$0 AI & $\sim$0 & $\sim$100\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Bitcoin-Identical Emission Curve}:
+\begin{itemize}
+    \item 50\% mined in first 4 years (450M AI)
+    \item 75\% mined by Year 8 (675M AI)
+    \item 87.5\% mined by Year 12 (787.5M AI)
+    \item 99\% mined by Year 27 ($\sim$891M AI)
+    \item Full emission over 100+ years
+\end{itemize}
+
+This matches Bitcoin's exact emission schedule, providing:
+\begin{itemize}
+    \item Long-term predictability for miners and investors
+    \item Sustainable mining economics over decades
+    \item Alignment with Bitcoin's proven monetary policy
+\end{itemize}
+
+\subsection{Game Theory \& Price Discovery}
+
+\subsubsection{Bootstrap Phase: 96\% Discount}
+
+Starting at \$0.10/AI (vs \$2.50 market):
+
+\begin{enumerate}
+    \item \textbf{Demand Creation}: Users get 25x more compute per dollar
+    \item \textbf{Miner Incentive}: Mine AI, sell at discount, still profitable
+    \item \textbf{Price Pressure}: As demand exceeds supply, price rises
+    \item \textbf{Equilibrium}: Price approaches market rate as compute fills
+\end{enumerate}
+
+\subsubsection{Price Appreciation Mechanics}
 
 \begin{equation}
-R_{\text{block}}(h) = R_0 \times 2^{-\lfloor h / 210000 \rfloor}
+P(t) = P_0 \times \left(1 + \frac{D(t) - S(t)}{L}\right)
 \end{equation}
 
 where:
 \begin{itemize}
-    \item $R_{\text{block}}(h)$ = reward per block at height $h$
-    \item $R_0$ = initial block reward
-    \item $\lfloor \cdot \rfloor$ = floor function
+    \item $P_0$ = initial price (\$0.10)
+    \item $D(t)$ = cumulative demand
+    \item $S(t)$ = cumulative supply (mining)
+    \item $L$ = LP liquidity depth
 \end{itemize}
 
-\subsubsection{Initial Block Reward}
-
-To distribute 100M tokens per chain:
-
-\begin{equation}
-\sum_{i=0}^{\infty} 210000 \times R_0 \times 2^{-i} = 420000 \times R_0 = 100,000,000
-\end{equation}
-
-Solving for $R_0$:
-\begin{equation}
-R_0 = \frac{100,000,000}{420,000} \approx 238 \text{ AI per block}
-\end{equation}
-
-\subsection{Halving Timeline}
-
-With target block time of 2 seconds (Quasar consensus):
+\subsubsection{Expected Price Trajectory}
 
 \begin{center}
-\begin{tabular}{cccc}
+\begin{tabular}{lcccc}
 \toprule
-\textbf{Era} & \textbf{Block Range} & \textbf{Reward} & \textbf{Duration} \\
+\textbf{Phase} & \textbf{Time} & \textbf{Price} & \textbf{vs Market} & \textbf{Driver} \\
 \midrule
-1 & 0 -- 209,999 & 238 AI & $\sim$4.9 days \\
-2 & 210,000 -- 419,999 & 119 AI & $\sim$4.9 days \\
-3 & 420,000 -- 629,999 & 59.5 AI & $\sim$4.9 days \\
-4 & 630,000 -- 839,999 & 29.75 AI & $\sim$4.9 days \\
-\vdots & \vdots & \vdots & \vdots \\
-32 & 6,510,000+ & $<$0.01 AI & --- \\
+Launch & Day 0 & \$0.10 & 4\% & LP seed \\
+Bootstrap & Month 1 & \$0.25 & 10\% & Early demand \\
+Growth & Month 6 & \$0.50 & 20\% & Mining + usage \\
+Adoption & Year 1 & \$1.00 & 40\% & Network effects \\
+Maturity & Year 2+ & \$2.00+ & 80\%+ & Equilibrium \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection{Chain Competition}
+\subsection{Miner Economics}
 
-Each chain independently sets:
+\subsubsection{GPU Mining Profitability}
+
+At launch (\$0.10/AI, 7.14 AI/block):
+\begin{align}
+\text{Block Reward Value} &= 7.14 \times \$0.10 = \$0.714 \\
+\text{Blocks per hour} &= 1,800 \text{ (2-sec blocks)} \\
+\text{Hourly network reward} &= 1,800 \times \$0.714 = \$1,285
+\end{align}
+
+If 100 GPUs mining at launch:
+\begin{equation}
+\text{Per-GPU hourly} = \frac{\$1,285}{100} = \$12.85/\text{hr}
+\end{equation}
+
+\textbf{vs GPU operating cost: \$1.50--2.50/hr} $\Rightarrow$ \textbf{5x profitable at launch}
+
+\subsubsection{Miner Incentive Curve}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Network GPUs} & \textbf{Per-GPU \$/hr} & \textbf{vs Cost} & \textbf{Profitable?} \\
+\midrule
+50 & \$25.70 & 10x & \checkmark\checkmark\checkmark \\
+100 & \$12.85 & 5x & \checkmark\checkmark \\
+500 & \$2.57 & 1x & Break-even \\
+1,000 & \$1.29 & 0.5x & Fee-dependent \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Equilibrium}: Network grows until per-GPU rewards $\approx$ operating costs.
+
+\textbf{Long-term Economics}: With 4-year halvings, miners have:
+\begin{itemize}
+    \item Predictable 4-year planning horizons
+    \item Time to amortize hardware investments
+    \item Transition to fee-based revenue as rewards decline
+\end{itemize}
+
+\subsection{Compute Market Economics}
+
+\subsubsection{AI Service Pricing}
+
+1 AI token = 1 GPU-hour at market equilibrium:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Service} & \textbf{GPU-hours} & \textbf{AI Cost} & \textbf{USD (at \$2)} \\
+\midrule
+LLM inference (1M tokens) & 0.01 & 0.01 AI & \$0.02 \\
+Image generation (100) & 0.1 & 0.1 AI & \$0.20 \\
+Fine-tuning (7B model) & 10 & 10 AI & \$20 \\
+Training (70B model) & 10,000 & 10K AI & \$20,000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{Confidential Compute Premium}
+
+With NVTrust attestation, providers can charge premium:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Trust Level} & \textbf{Multiplier} & \textbf{Use Case} \\
+\midrule
+Public (no TEE) & 1.0x & General inference \\
+Private (SGX) & 1.2x & Sensitive data \\
+Confidential (H100 CC) & 1.5x & Enterprise \\
+Sovereign (Blackwell) & 2.0x & Government/Finance \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Long-term Contracts}
+
+\subsubsection{Prepaid Compute Contracts}
+
+Smart contract for committed compute:
+
+\begin{lstlisting}[style=solidity]
+contract ComputeContract {
+    struct Commitment {
+        address user;
+        uint256 aiAmount;      // Prepaid AI tokens
+        uint256 gpuHours;      // Committed hours
+        uint256 pricePerHour;  // Locked rate
+        uint256 expiry;        // Contract end
+        address provider;      // Assigned provider
+    }
+
+    // Lock AI tokens for 1-year commitment
+    // Get 20% discount vs spot
+    function createYearContract(
+        uint256 monthlyHours,
+        address preferredProvider
+    ) external {
+        uint256 totalHours = monthlyHours * 12;
+        uint256 discountedPrice = spotPrice * 80 / 100;
+        uint256 totalCost = totalHours * discountedPrice;
+
+        aiToken.transferFrom(msg.sender, address(this), totalCost);
+
+        commitments[msg.sender] = Commitment({
+            user: msg.sender,
+            aiAmount: totalCost,
+            gpuHours: totalHours,
+            pricePerHour: discountedPrice,
+            expiry: block.timestamp + 365 days,
+            provider: preferredProvider
+        });
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Contract Tiers}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Commitment} & \textbf{Discount} & \textbf{Min Hours} & \textbf{Lock Period} \\
+\midrule
+Spot & 0\% & 0 & None \\
+Monthly & 10\% & 100 hrs & 30 days \\
+Quarterly & 15\% & 500 hrs & 90 days \\
+Annual & 20\% & 2,000 hrs & 365 days \\
+Enterprise & 30\% & 10,000 hrs & Custom \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{LP Mining Rewards}
+
+\subsubsection{Liquidity Provider Incentives}
+
+LP token holders receive share of:
 
 \begin{enumerate}
-    \item \textbf{Mining Rates}: Block reward adjustments
-    \item \textbf{Compute Prices}: AI inference/training costs
-    \item \textbf{GPU Multipliers}: Hardware tier bonuses
-    \item \textbf{Treasury Rate}: 2\% default, adjustable
+    \item \textbf{Swap Fees}: 0.3\% of all trades
+    \item \textbf{Mining Rewards}: 10\% of block rewards
+    \item \textbf{Protocol Fees}: 5\% of compute payments
 \end{enumerate}
 
-This creates a competitive market where chains optimize for different use cases:
+\begin{equation}
+\text{LP APY} = \frac{\text{Fees} + \text{Mining Share}}{\text{LP Value}} \times 100\%
+\end{equation}
+
+Expected APY at launch: \textbf{50--200\%} (declining as TVL grows)
+
+\subsubsection{Community Ownership}
+
 \begin{itemize}
-    \item Ethereum: High security, DeFi integration
-    \item Base/Arbitrum: Low fees, fast finality
-    \item Lux/Hanzo: Native AI optimizations, Warp messaging
-    \item Zoo: Research focus, higher treasury allocation
+    \item Anyone can provide liquidity
+    \item LP tokens = ownership share of AI ecosystem
+    \item Mining rewards distributed proportionally
+    \item Governance rights via LP token staking
 \end{itemize}
 
 \subsection{Treasury Allocation}
 
-Each chain allocates 2\% of mining rewards to treasury:
-
 \begin{equation}
-\text{Treasury}(R) = 0.02 \times R
+\text{Treasury} = 2\% \times \text{Mining Rewards}
 \end{equation}
 
-Per-chain treasury funds:
+Per-chain treasury (over full mining emission):
+\begin{equation}
+\text{Treasury Total} = 0.02 \times 900\text{M} = 18\text{M AI per chain}
+\end{equation}
+
+\textbf{Note}: Treasury is 2\% of the 900M \textit{mining} allocation, not the full 1B supply. The 100M LP allocation does not contribute to treasury.
+
+\textbf{Treasury Uses}:
 \begin{itemize}
-    \item Lux/Hanzo: Protocol development
-    \item Zoo: Open AI research (DeSci)
-    \item External chains: Bridge security, audits
+    \item Protocol development (40\%)
+    \item Security audits (20\%)
+    \item Community grants (20\%)
+    \item Bridge security reserves (20\%)
 \end{itemize}
 
-\subsection{Token Utility}
+\subsection{Cross-Chain Dynamics}
 
-AI tokens serve multiple functions:
+\subsubsection{Teleport Arbitrage}
 
-\begin{enumerate}
-    \item \textbf{Payment}: Users pay for AI inference/training
-    \item \textbf{Governance}: Token holders vote on parameters
-    \item \textbf{Staking}: Miners stake for priority/rewards
-    \item \textbf{Cross-Chain}: Teleport enables DeFi
-    \item \textbf{Research}: Treasury funds open AI
-\end{enumerate}
-
-\subsection{Atomic Units}
-
-Like Bitcoin's satoshis, AI tokens have \textbf{neurons}:
+If AI trades at different prices across chains:
 
 \begin{equation}
-1 \text{ AI} = 10^{18} \text{ neurons}
+\text{Profit} = P_{\text{high}} - P_{\text{low}} - \text{bridge\_fee}
 \end{equation}
 
-Micropayment examples:
+Arbitrageurs will:
+\begin{enumerate}
+    \item Buy AI on low-price chain
+    \item Teleport to high-price chain
+    \item Sell for profit
+    \item Prices converge across chains
+\end{enumerate}
+
+\subsubsection{Per-Chain Supply Elasticity}
+
+Via Teleport, individual chain supplies can:
 \begin{itemize}
-    \item 1 token generation $\approx$ 1,000 neurons
-    \item 1 image generation $\approx$ 100,000 neurons
-    \item 1 minute speech $\approx$ 10,000 neurons
+    \item Rise above 1B (inflows from other chains)
+    \item Fall below 1B (outflows to other chains)
+    \item Global supply remains fixed at $n \times 1B$
+\end{itemize}
+
+\subsection{Adding New Chains}
+
+\subsubsection{Governance Process}
+
+\begin{enumerate}
+    \item \textbf{Proposal}: Submit chain addition proposal
+    \item \textbf{Discussion}: 7-day community discussion
+    \item \textbf{Vote}: Token holders vote (50\%+ approval)
+    \item \textbf{Deployment}: Auto-deploy contracts via factory
+    \item \textbf{Bridge}: Add to Teleport MPC config
+    \item \textbf{LP Seeding}: Seed initial liquidity pool
+\end{enumerate}
+
+\subsubsection{Self-Deployment Option}
+
+Anyone can deploy AI token to a new chain:
+
+\begin{lstlisting}[style=solidity]
+// Deploy AIToken to new chain
+AITokenFactory.deploy(
+    safe,           // MPC wallet address
+    treasury,       // Treasury address
+    teleportBridge  // Teleport bridge address
+);
+
+// Must be added to Teleport for cross-chain
+// Requires governance vote or MPC approval
+\end{lstlisting}
+
+\subsection{Summary: Bitcoin for AI Economics}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Supply per chain & 1,000,000,000 AI \\
+LP allocation & 100,000,000 AI (10\%) \\
+Mining allocation & 900,000,000 AI (90\%) \\
+Launch chains & 10 (10B total) \\
+Maximum chains & 1,000 (1T total) \\
+LP depth per chain & \$10M \\
+Launch price & \$0.10/AI \\
+Equilibrium price & \$2.00--2.50/AI \\
+Initial block reward & 7.14 AI \\
+Halving interval & 63,072,000 blocks \\
+Halving period & $\sim$4 years \\
+Block time & 2 seconds \\
+Treasury rate & 2\% of mining \\
+Treasury total & 18M AI per chain \\
+Time to 50\% mined & $\sim$4 years \\
+Time to 99\% mined & $\sim$27 years \\
+Time to 100\% mined & $\sim$100+ years \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Value Proposition}:
+\begin{itemize}
+    \item Users: 25x cheaper compute at launch
+    \item Miners: 5--10x profitable at launch
+    \item LPs: 50--200\% APY at launch
+    \item Community: Own their AI infrastructure
 \end{itemize}
