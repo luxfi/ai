@@ -1,0 +1,211 @@
+---
+title: Hardware Requirements
+description: GPU specifications and recommended configurations for Lux AI mining
+---
+
+# Hardware Requirements
+
+This guide covers the hardware requirements for running a Lux AI miner, with recommendations for different budget levels.
+
+## GPU Requirements
+
+### Minimum Requirements
+
+| Component | Requirement |
+|-----------|-------------|
+| GPU VRAM | 8 GB |
+| GPU Architecture | NVIDIA Turing (RTX 20xx) or newer |
+| System RAM | 16 GB |
+| Storage | 100 GB SSD |
+| Internet | 100 Mbps, low latency |
+
+### Recommended Specifications
+
+| Component | Recommendation |
+|-----------|----------------|
+| GPU VRAM | 24 GB+ |
+| GPU Architecture | NVIDIA Ada Lovelace (RTX 40xx) |
+| System RAM | 64 GB |
+| Storage | 500 GB NVMe SSD |
+| Internet | 1 Gbps, less than 20ms latency |
+
+## Supported GPUs
+
+### NVIDIA GPUs
+
+| GPU | VRAM | Supported Models | Est. Performance |
+|-----|------|-----------------|------------------|
+| RTX 4090 | 24 GB | llama-3.3-70b-q4, all 7-8B | Excellent |
+| RTX 4080 | 16 GB | llama-3.3-8b, mistral-7b | Very Good |
+| RTX 4070 Ti | 12 GB | llama-3.3-8b, qwen3-7b | Good |
+| RTX 3090 | 24 GB | llama-3.3-70b-q4, all 7-8B | Very Good |
+| RTX 3080 | 10 GB | 7-8B models | Good |
+| A100 | 40/80 GB | All models | Excellent |
+| H100 | 80 GB | All models | Best |
+
+### AMD GPUs
+
+| GPU | VRAM | Supported Models | Notes |
+|-----|------|-----------------|-------|
+| RX 7900 XTX | 24 GB | llama-3.3-8b, mistral-7b | ROCm required |
+| RX 7900 XT | 20 GB | 7-8B models | ROCm required |
+| MI250X | 128 GB | All models | Data center |
+| MI300X | 192 GB | All models | Data center |
+
+### Apple Silicon
+
+| Chip | Unified Memory | Supported Models | Notes |
+|------|---------------|------------------|-------|
+| M1 Pro/Max | 32 GB | 7-8B models | Metal acceleration |
+| M2 Pro/Max | 32 GB | 7-8B models | Metal acceleration |
+| M3 Pro/Max | 36-128 GB | Most models | Metal acceleration |
+| M4 Pro/Max | 64-128 GB | Most models | Best Apple option |
+
+## Model VRAM Requirements
+
+| Model | Min VRAM (Quantized) | Min VRAM (FP16) |
+|-------|---------------------|------------------|
+| Llama 3.3 8B | 6 GB | 16 GB |
+| Llama 3.3 70B | 24 GB (Q4) | 140 GB |
+| Mistral 7B | 6 GB | 14 GB |
+| Mixtral 8x7B | 24 GB | 96 GB |
+| Qwen3 7B | 6 GB | 14 GB |
+| Qwen3 72B | 24 GB (Q4) | 144 GB |
+
+## Configuration Examples
+
+### Entry Level ($500-1000)
+
+```yaml
+# RTX 4070 Ti setup
+hardware:
+  gpu: RTX 4070 Ti (12 GB)
+  ram: 32 GB DDR5
+  storage: 256 GB NVMe
+
+models:
+  - llama-3.3-8b
+  - mistral-7b
+
+inference:
+  quantization: q4_k_m
+  max_context_length: 4096
+```
+
+**Expected earnings**: 50-100 LUX/day
+
+### Mid Range ($2000-3000)
+
+```yaml
+# RTX 4090 setup
+hardware:
+  gpu: RTX 4090 (24 GB)
+  ram: 64 GB DDR5
+  storage: 1 TB NVMe
+
+models:
+  - llama-3.3-8b
+  - llama-3.3-70b-q4
+  - mistral-7b
+  - qwen3-7b
+
+inference:
+  quantization: q4_k_m
+  flash_attention: true
+  max_context_length: 8192
+```
+
+**Expected earnings**: 150-300 LUX/day
+
+### Professional ($5000-10000)
+
+```yaml
+# Multi-GPU setup
+hardware:
+  gpu: 2x RTX 4090 (48 GB total)
+  ram: 128 GB DDR5
+  storage: 2 TB NVMe
+
+models:
+  - llama-3.3-8b
+  - llama-3.3-70b
+  - mixtral-8x7b
+  - qwen3-72b-q4
+
+gpu:
+  devices: [0, 1]
+
+inference:
+  max_batch_size: 16
+  flash_attention: true
+```
+
+**Expected earnings**: 400-800 LUX/day
+
+### Data Center
+
+```yaml
+# H100 setup
+hardware:
+  gpu: NVIDIA H100 (80 GB)
+  ram: 256 GB
+  storage: 4 TB NVMe
+
+models:
+  - all supported models at full precision
+
+inference:
+  quantization: none
+  max_batch_size: 32
+  max_context_length: 32768
+```
+
+**Expected earnings**: 1000+ LUX/day
+
+## Cooling Requirements
+
+| GPU | TDP | Recommended Cooling |
+|-----|-----|---------------------|
+| RTX 4090 | 450W | Triple fan, open case |
+| RTX 4080 | 320W | Dual fan |
+| RTX 3090 | 350W | Triple fan, open case |
+| H100 | 700W | Liquid cooling, server rack |
+
+### Temperature Guidelines
+
+- **Target**: Below 70°C under load
+- **Warning**: 80°C - reduce load or improve cooling
+- **Critical**: 85°C+ - automatic throttling affects earnings
+
+## Power Consumption
+
+| Setup | Idle | Mining | Monthly Cost (@ $0.12/kWh) |
+|-------|------|--------|---------------------------|
+| RTX 4070 Ti | 30W | 250W | ~$22 |
+| RTX 4090 | 50W | 450W | ~$39 |
+| 2x RTX 4090 | 100W | 900W | ~$78 |
+| H100 | 100W | 700W | ~$61 |
+
+## Network Requirements
+
+| Metric | Minimum | Recommended |
+|--------|---------|-------------|
+| Download | 100 Mbps | 1 Gbps |
+| Upload | 50 Mbps | 500 Mbps |
+| Latency | 100ms max | 20ms max |
+| Reliability | 99% | 99.9% |
+
+### Bandwidth Estimation
+
+```
+Monthly bandwidth = Requests × Avg tokens × Token size
+Example: 100K requests × 500 tokens × 4 bytes = ~200 GB/month
+```
+
+## Recommendations
+
+1. **Start small**: Begin with a single GPU to learn the system
+2. **Prioritize VRAM**: More VRAM = more model options = more earnings
+3. **Stable power**: UPS recommended for uptime
+4. **Good cooling**: Essential for 24/7 operation
+5. **Wired network**: More reliable than WiFi
