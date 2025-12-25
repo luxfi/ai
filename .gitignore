@@ -39,3 +39,7 @@ models/
 .env
 .env.local
 .env.*.local
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+QWEN.md
