@@ -749,9 +749,9 @@ func TestCalculateReputationScoreVolumeBrackets(t *testing.T) {
 // TestCalculateUptimeScoreAllBrackets tests all LastSeenDelta time brackets
 func TestCalculateUptimeScoreAllBrackets(t *testing.T) {
 	tests := []struct {
-		name               string
-		lastSeenDelta      time.Duration
-		expectedHeartbeat  uint8 // Approximate expected heartbeat freshness score
+		name              string
+		lastSeenDelta     time.Duration
+		expectedHeartbeat uint8 // Approximate expected heartbeat freshness score
 	}{
 		{"< 1 minute", 30 * time.Second, 15},
 		{"1-5 minutes", 3 * time.Minute, 12},
@@ -811,9 +811,9 @@ func TestCalculateUptimeScoreConsecutiveHeartbeats(t *testing.T) {
 func TestCalculateUptimeScoreMaxBound(t *testing.T) {
 	input := &TrustScoreInput{
 		Tier:                  Tier1GPUNativeCC,
-		UptimePercentage:      100.0,               // +70
-		LastSeenDelta:         10 * time.Second,    // +15
-		ConsecutiveHeartbeats: 10000,               // +15
+		UptimePercentage:      100.0,            // +70
+		LastSeenDelta:         10 * time.Second, // +15
+		ConsecutiveHeartbeats: 10000,            // +15
 	}
 	// 70 + 15 + 15 = 100
 	score := calculateUptimeScore(input)
@@ -996,10 +996,10 @@ func TestCalculateReputationScore_AllBranches(t *testing.T) {
 		{
 			name: "Score below 0 clamps",
 			input: TrustScoreInput{
-				Tier:             Tier1GPUNativeCC,
-				TasksCompleted:   0, // No tasks
-				SlashingEvents:   10,
-				ReputationScore:  0,
+				Tier:            Tier1GPUNativeCC,
+				TasksCompleted:  0, // No tasks
+				SlashingEvents:  10,
+				ReputationScore: 0,
 			},
 		},
 		{
@@ -1032,41 +1032,41 @@ func TestCalculateUptimeScore_AllBranches(t *testing.T) {
 		{
 			name: "Very fresh heartbeat (<1 min)",
 			input: TrustScoreInput{
-				Tier:              Tier1GPUNativeCC,
-				UptimePercentage:  100,
-				LastSeenDelta:     30 * time.Second,
+				Tier:             Tier1GPUNativeCC,
+				UptimePercentage: 100,
+				LastSeenDelta:    30 * time.Second,
 			},
 		},
 		{
 			name: "Fresh heartbeat (<5 min)",
 			input: TrustScoreInput{
-				Tier:              Tier1GPUNativeCC,
-				UptimePercentage:  100,
-				LastSeenDelta:     3 * time.Minute,
+				Tier:             Tier1GPUNativeCC,
+				UptimePercentage: 100,
+				LastSeenDelta:    3 * time.Minute,
 			},
 		},
 		{
 			name: "Recent heartbeat (<15 min)",
 			input: TrustScoreInput{
-				Tier:              Tier1GPUNativeCC,
-				UptimePercentage:  100,
-				LastSeenDelta:     10 * time.Minute,
+				Tier:             Tier1GPUNativeCC,
+				UptimePercentage: 100,
+				LastSeenDelta:    10 * time.Minute,
 			},
 		},
 		{
 			name: "Stale heartbeat (<1 hour)",
 			input: TrustScoreInput{
-				Tier:              Tier1GPUNativeCC,
-				UptimePercentage:  100,
-				LastSeenDelta:     30 * time.Minute,
+				Tier:             Tier1GPUNativeCC,
+				UptimePercentage: 100,
+				LastSeenDelta:    30 * time.Minute,
 			},
 		},
 		{
 			name: "Very stale heartbeat (>1 hour)",
 			input: TrustScoreInput{
-				Tier:              Tier1GPUNativeCC,
-				UptimePercentage:  100,
-				LastSeenDelta:     2 * time.Hour,
+				Tier:             Tier1GPUNativeCC,
+				UptimePercentage: 100,
+				LastSeenDelta:    2 * time.Hour,
 			},
 		},
 		{
@@ -1188,8 +1188,8 @@ func TestQuickTrustScoreComprehensive(t *testing.T) {
 			name: "Tier1 with Blackwell GPU (9.0)",
 			tier: Tier1GPUNativeCC,
 			cap: &HardwareCapability{
-				ComputeCap:    "9.0",
-				GPUCCEnabled:  true,
+				ComputeCap:     "9.0",
+				GPUCCEnabled:   true,
 				TEEIOSupported: true,
 			},
 			minScore: 90,
@@ -1381,10 +1381,10 @@ func TestCalculateAttestationScoreFreshnessBrackets(t *testing.T) {
 		age        time.Duration
 		freshBonus uint8
 	}{
-		{"Very fresh (<25%)", 1 * time.Hour, 15},          // 1h / 6h = 16.7%
-		{"Fresh (25-50%)", 2 * time.Hour, 10},             // 2h / 6h = 33%
-		{"Medium (50-75%)", 4 * time.Hour, 5},             // 4h / 6h = 67%
-		{"Old (>75%)", 5 * time.Hour, 0},                  // 5h / 6h = 83%
+		{"Very fresh (<25%)", 1 * time.Hour, 15}, // 1h / 6h = 16.7%
+		{"Fresh (25-50%)", 2 * time.Hour, 10},    // 2h / 6h = 33%
+		{"Medium (50-75%)", 4 * time.Hour, 5},    // 4h / 6h = 67%
+		{"Old (>75%)", 5 * time.Hour, 0},         // 5h / 6h = 83%
 	}
 
 	for _, tt := range tests {

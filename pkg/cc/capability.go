@@ -63,31 +63,31 @@ const (
 type CPUTEEType string
 
 const (
-	TEESEVSNP    CPUTEEType = "SEV-SNP"
-	TEETDX       CPUTEEType = "TDX"
-	TEESGX       CPUTEEType = "SGX"
-	TEECCA       CPUTEEType = "CCA"
-	TEETrustZone CPUTEEType = "TrustZone"
+	TEESEVSNP        CPUTEEType = "SEV-SNP"
+	TEETDX           CPUTEEType = "TDX"
+	TEESGX           CPUTEEType = "SGX"
+	TEECCA           CPUTEEType = "CCA"
+	TEETrustZone     CPUTEEType = "TrustZone"
 	TEESecureEnclave CPUTEEType = "SecureEnclave"
-	TEENone      CPUTEEType = "None"
+	TEENone          CPUTEEType = "None"
 )
 
 // HardwareCapability represents detected hardware CC capabilities
 type HardwareCapability struct {
 	// GPU capabilities
-	GPUVendor      GPUVendor `json:"gpu_vendor"`
-	GPUModel       string    `json:"gpu_model"`
-	GPUSerial      string    `json:"gpu_serial"`
-	GPUMemoryMB    uint64    `json:"gpu_memory_mb"`
-	GPUDriverVer   string    `json:"gpu_driver_version"`
-	ComputeCap     string    `json:"compute_capability"` // e.g., "9.0" for Blackwell
+	GPUVendor    GPUVendor `json:"gpu_vendor"`
+	GPUModel     string    `json:"gpu_model"`
+	GPUSerial    string    `json:"gpu_serial"`
+	GPUMemoryMB  uint64    `json:"gpu_memory_mb"`
+	GPUDriverVer string    `json:"gpu_driver_version"`
+	ComputeCap   string    `json:"compute_capability"` // e.g., "9.0" for Blackwell
 
 	// GPU CC capabilities
-	GPUCCSupported bool `json:"gpu_cc_supported"` // Hardware supports CC
-	GPUCCEnabled   bool `json:"gpu_cc_enabled"`   // CC currently enabled
+	GPUCCSupported bool `json:"gpu_cc_supported"`  // Hardware supports CC
+	GPUCCEnabled   bool `json:"gpu_cc_enabled"`    // CC currently enabled
 	NVTrustAvail   bool `json:"nvtrust_available"` // nvtrust local verifier available
-	TEEIOSupported bool `json:"tee_io_supported"` // TEE-IO for Blackwell
-	MIGSupported   bool `json:"mig_supported"`    // Multi-Instance GPU
+	TEEIOSupported bool `json:"tee_io_supported"`  // TEE-IO for Blackwell
+	MIGSupported   bool `json:"mig_supported"`     // Multi-Instance GPU
 
 	// CPU TEE capabilities
 	CPUVendor    string     `json:"cpu_vendor"`

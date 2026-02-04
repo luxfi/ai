@@ -10,11 +10,12 @@
 //   - Rewards scaled by CC tier, modeling level, and trust score
 //
 // Modeling Levels (complexity of AI work):
-//   Level 1 — "Inference-Light": Embeddings, small models (<7B)
-//   Level 2 — "Inference-Standard": Medium models (7B-70B), chat
-//   Level 3 — "Inference-Heavy": Large models (70B+), multimodal
-//   Level 4 — "Training": Fine-tuning, RLHF, distributed training
-//   Level 5 — "Specialized": PQ crypto, ZK proofs, custom compute
+//
+//	Level 1 — "Inference-Light": Embeddings, small models (<7B)
+//	Level 2 — "Inference-Standard": Medium models (7B-70B), chat
+//	Level 3 — "Inference-Heavy": Large models (70B+), multimodal
+//	Level 4 — "Training": Fine-tuning, RLHF, distributed training
+//	Level 5 — "Specialized": PQ crypto, ZK proofs, custom compute
 package cc
 
 import (

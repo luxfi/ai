@@ -840,8 +840,8 @@ func TestCalculateTrustScore(t *testing.T) {
 		{
 			name: "tier 4 with slashing events",
 			input: TrustScoreInput{
-				Tier:           Tier4Standard,
-				SlashingEvents: 5,
+				Tier:             Tier4Standard,
+				SlashingEvents:   5,
 				UptimePercentage: 80.0,
 			},
 			minScore: 10,
@@ -850,12 +850,12 @@ func TestCalculateTrustScore(t *testing.T) {
 		{
 			name: "tier 3 high volume tasks",
 			input: TrustScoreInput{
-				Tier:              Tier3DeviceTEE,
-				TasksCompleted:    5000,
-				TasksFailed:       50,
-				ReputationScore:   0.95,
-				UptimePercentage:  99.5,
-				LastSeenDelta:     30 * time.Second,
+				Tier:                  Tier3DeviceTEE,
+				TasksCompleted:        5000,
+				TasksFailed:           50,
+				ReputationScore:       0.95,
+				UptimePercentage:      99.5,
+				LastSeenDelta:         30 * time.Second,
 				ConsecutiveHeartbeats: 2000,
 			},
 			minScore: 50,
@@ -1027,13 +1027,13 @@ func TestAdjustScoreForSlashingTiers(t *testing.T) {
 		severity float64
 		expected uint8
 	}{
-		{100, 0.1, 90},   // 10% slash
-		{100, 0.5, 50},   // 50% slash
-		{50, 0.5, 25},    // 50% of 50
-		{10, 1.0, 1},     // 100% slash -> minimum 1
-		{100, 0.0, 100},  // No slash
-		{1, 0.5, 1},      // Already at minimum
-		{100, 2.0, 1},    // Over 100% slash -> minimum 1
+		{100, 0.1, 90},  // 10% slash
+		{100, 0.5, 50},  // 50% slash
+		{50, 0.5, 25},   // 50% of 50
+		{10, 1.0, 1},    // 100% slash -> minimum 1
+		{100, 0.0, 100}, // No slash
+		{1, 0.5, 1},     // Already at minimum
+		{100, 2.0, 1},   // Over 100% slash -> minimum 1
 	}
 
 	for _, tt := range tests {
@@ -1163,12 +1163,12 @@ func TestHardwareCapability_GetSupportedTiers(t *testing.T) {
 
 func TestHardwareCapability_IsMethods(t *testing.T) {
 	tests := []struct {
-		name           string
-		cap            HardwareCapability
-		isGPUCC        bool
-		isCPUTEE       bool
-		isDeviceTEE    bool
-		requiresSetup  bool
+		name          string
+		cap           HardwareCapability
+		isGPUCC       bool
+		isCPUTEE      bool
+		isDeviceTEE   bool
+		requiresSetup bool
 	}{
 		{
 			name: "Full GPU CC capable",
