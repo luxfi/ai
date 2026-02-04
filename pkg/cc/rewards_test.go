@@ -79,8 +79,8 @@ func TestAIProviderRewardWeight(t *testing.T) {
 	now := time.Now()
 
 	tests := []struct {
-		name     string
-		provider *AIProvider
+		name      string
+		provider  *AIProvider
 		minWeight float64
 		maxWeight float64
 	}{
@@ -93,8 +93,8 @@ func TestAIProviderRewardWeight(t *testing.T) {
 					IssuedAt:  now.Add(-1 * time.Hour),
 					ExpiresAt: now.Add(5 * time.Hour),
 				},
-				MaxModelingLevel: ModelingLevelSpecialized,
-				StakeLUX:         100_000,
+				MaxModelingLevel:  ModelingLevelSpecialized,
+				StakeLUX:          100_000,
 				ConsecutiveEpochs: 500,
 				ReputationScore:   0.9,
 			},
@@ -110,8 +110,8 @@ func TestAIProviderRewardWeight(t *testing.T) {
 					IssuedAt:  now.Add(-1 * time.Hour),
 					ExpiresAt: now.Add(29 * 24 * time.Hour),
 				},
-				MaxModelingLevel: ModelingLevelInferenceLight,
-				StakeLUX:         1_000,
+				MaxModelingLevel:  ModelingLevelInferenceLight,
+				StakeLUX:          1_000,
 				ConsecutiveEpochs: 10,
 				ReputationScore:   0.5,
 			},
@@ -648,13 +648,13 @@ func TestEffectiveTierAllCases(t *testing.T) {
 // TestSqrtEdgeCases tests sqrt helper function edge cases
 func TestSqrtEdgeCases(t *testing.T) {
 	tests := []struct {
-		input    float64
-		expected float64
+		input     float64
+		expected  float64
 		tolerance float64
 	}{
 		{0, 0, 0},
-		{-1, 0, 0},          // Negative returns 0
-		{-100, 0, 0},        // Large negative returns 0
+		{-1, 0, 0},   // Negative returns 0
+		{-100, 0, 0}, // Large negative returns 0
 		{1, 1, 0.0001},
 		{4, 2, 0.0001},
 		{9, 3, 0.0001},

@@ -29,29 +29,29 @@ func DefaultWeights() TrustScoreWeight {
 // TrustScoreInput contains all inputs needed to calculate trust score
 type TrustScoreInput struct {
 	// Hardware-based inputs
-	Tier                  CCTier
-	GPUGeneration         uint8           // 1-10, higher = newer
-	CCFeaturesEnabled     bool            // GPU CC mode enabled
-	TEEIOEnabled          bool            // TEE-IO for Blackwell
-	RIMVerified           bool            // Reference Integrity Manifest verified
-	HardwareCapabilities  *HardwareCapability
+	Tier                 CCTier
+	GPUGeneration        uint8 // 1-10, higher = newer
+	CCFeaturesEnabled    bool  // GPU CC mode enabled
+	TEEIOEnabled         bool  // TEE-IO for Blackwell
+	RIMVerified          bool  // Reference Integrity Manifest verified
+	HardwareCapabilities *HardwareCapability
 
 	// Attestation-based inputs
-	AttestationAge        time.Duration   // Time since last attestation
-	AttestationMethod     string          // "nvtrust", "sev-snp", "tdx", "software"
-	LocalVerification     bool            // True if locally verified (no cloud)
-	CertChainValid        bool            // Certificate chain validated
+	AttestationAge    time.Duration // Time since last attestation
+	AttestationMethod string        // "nvtrust", "sev-snp", "tdx", "software"
+	LocalVerification bool          // True if locally verified (no cloud)
+	CertChainValid    bool          // Certificate chain validated
 
 	// Reputation-based inputs
-	TasksCompleted        uint64          // Total tasks completed
-	TasksFailed           uint64          // Total tasks failed
-	SlashingEvents        uint64          // Number of slashing events
-	ReputationScore       float64         // 0.0-1.0 historical reputation
+	TasksCompleted  uint64  // Total tasks completed
+	TasksFailed     uint64  // Total tasks failed
+	SlashingEvents  uint64  // Number of slashing events
+	ReputationScore float64 // 0.0-1.0 historical reputation
 
 	// Uptime-based inputs
-	UptimePercentage      float64         // 0.0-100.0 uptime percentage
-	LastSeenDelta         time.Duration   // Time since last heartbeat
-	ConsecutiveHeartbeats uint64          // Consecutive successful heartbeats
+	UptimePercentage      float64       // 0.0-100.0 uptime percentage
+	LastSeenDelta         time.Duration // Time since last heartbeat
+	ConsecutiveHeartbeats uint64        // Consecutive successful heartbeats
 }
 
 // TrustScoreResult contains the calculated trust score and breakdown
