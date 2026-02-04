@@ -782,12 +782,12 @@ func TestCheckTDXActive_NotActive(t *testing.T) {
 
 func TestDetectNVIDIACCCapabilitiesByModel(t *testing.T) {
 	tests := []struct {
-		name           string
-		model          string
-		expectCC       bool
-		expectTEEIO    bool
-		expectMIG      bool
-		expectCompute  string
+		name          string
+		model         string
+		expectCC      bool
+		expectTEEIO   bool
+		expectMIG     bool
+		expectCompute string
 	}{
 		{"B100", "NVIDIA B100", true, true, true, "9.0"},
 		{"B200", "NVIDIA B200", true, true, true, "9.0"},
@@ -834,14 +834,14 @@ func TestDetectNVIDIACCCapabilitiesByModel(t *testing.T) {
 func TestMockNoHardware(t *testing.T) {
 	// Simulates a standard machine with no CC capabilities
 	cap := &HardwareCapability{
-		GPUVendor:      VendorUnknown,
-		GPUModel:       "",
-		GPUMemoryMB:    0,
-		GPUCCSupported: false,
-		GPUCCEnabled:   false,
-		NVTrustAvail:   false,
-		CPUTEEType:     TEENone,
-		CPUTEEActive:   false,
+		GPUVendor:        VendorUnknown,
+		GPUModel:         "",
+		GPUMemoryMB:      0,
+		GPUCCSupported:   false,
+		GPUCCEnabled:     false,
+		NVTrustAvail:     false,
+		CPUTEEType:       TEENone,
+		CPUTEEActive:     false,
 		DeviceTEEEnabled: false,
 	}
 
@@ -970,7 +970,7 @@ func TestMockDatacenterGPUWithCC(t *testing.T) {
 			memory:       81920,
 			ccSupported:  true,
 			ccEnabled:    true,
-			nvtrustAvail: false, // nvtrust not installed
+			nvtrustAvail: false,         // nvtrust not installed
 			expected:     Tier4Standard, // Can't verify locally
 		},
 		{
@@ -1016,11 +1016,11 @@ func TestMockDatacenterGPUWithCC(t *testing.T) {
 // TestMockConfidentialVMNoGPU tests Confidential VMs without GPU CC
 func TestMockConfidentialVMNoGPU(t *testing.T) {
 	tests := []struct {
-		name       string
-		cpuTEE     CPUTEEType
-		teeActive  bool
-		gpuVendor  GPUVendor
-		expected   CCTier
+		name      string
+		cpuTEE    CPUTEEType
+		teeActive bool
+		gpuVendor GPUVendor
+		expected  CCTier
 	}{
 		{
 			name:      "SEV-SNP active with AMD Instinct",
@@ -1336,9 +1336,9 @@ func TestCalculateMaxTierTier2OverTier3(t *testing.T) {
 
 func TestCanAchieveTierBoundary(t *testing.T) {
 	tests := []struct {
-		name      string
-		maxTier   CCTier
-		testTier  CCTier
+		name       string
+		maxTier    CCTier
+		testTier   CCTier
 		canAchieve bool
 	}{
 		{"Tier1 can achieve Tier1", Tier1GPUNativeCC, Tier1GPUNativeCC, true},
@@ -1496,10 +1496,10 @@ func TestDetectCapabilities_System(t *testing.T) {
 
 	// MaxTier should be set to something valid
 	validTiers := map[CCTier]bool{
-		Tier1GPUNativeCC:     true,
-		Tier2ConfidentialVM:  true,
-		Tier3DeviceTEE:       true,
-		Tier4Standard:        true,
+		Tier1GPUNativeCC:    true,
+		Tier2ConfidentialVM: true,
+		Tier3DeviceTEE:      true,
+		Tier4Standard:       true,
 	}
 	if !validTiers[cap.MaxTier] {
 		t.Errorf("MaxTier %v is not a valid tier", cap.MaxTier)
@@ -1686,10 +1686,10 @@ func TestDetectLinuxCPUTEE_Mock(t *testing.T) {
 // TestCheckSEVSNPActive_Mock tests SEV-SNP active checking
 func TestCheckSEVSNPActive_Mock(t *testing.T) {
 	tests := []struct {
-		name       string
-		sysPath    string
-		devExists  bool
-		expected   bool
+		name      string
+		sysPath   string
+		devExists bool
+		expected  bool
 	}{
 		{
 			name:     "SEV active via sysfs",

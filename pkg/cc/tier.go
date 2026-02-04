@@ -4,10 +4,10 @@
 // Package cc implements Confidential Compute tier classification for the Lux AI Network.
 // This package defines the 3-tier CC system per LP-5610:
 //
-//   Tier 1 — "GPU-native CC": NVIDIA Blackwell, Hopper, RTX PRO 6000 with NVTrust
-//   Tier 2 — "Confidential VM + GPU": AMD SEV-SNP, Intel TDX, Arm CCA + GPU
-//   Tier 3 — "Device TEE + AI engine": Qualcomm TrustZone/SPU, Apple Secure Enclave
-//   Tier 4 — "Standard" (non-CC): Consumer GPUs, stake-based soft attestation
+//	Tier 1 — "GPU-native CC": NVIDIA Blackwell, Hopper, RTX PRO 6000 with NVTrust
+//	Tier 2 — "Confidential VM + GPU": AMD SEV-SNP, Intel TDX, Arm CCA + GPU
+//	Tier 3 — "Device TEE + AI engine": Qualcomm TrustZone/SPU, Apple Secure Enclave
+//	Tier 4 — "Standard" (non-CC): Consumer GPUs, stake-based soft attestation
 //
 // All attestation is LOCAL - no cloud dependencies (blockchain requirement).
 // See: https://github.com/luxfi/lps/blob/main/LPs/lp-5610-ai-confidential-compute-tiers.md
@@ -176,11 +176,11 @@ func (t CCTier) MeetsTierRequirement(required CCTier) bool {
 
 // Errors for tier operations
 var (
-	ErrInvalidTier         = errors.New("invalid CC tier")
-	ErrTierNotMet          = errors.New("provider tier does not meet requirement")
-	ErrAttestationExpired  = errors.New("attestation has expired")
-	ErrInvalidAttestation  = errors.New("invalid attestation evidence")
-	ErrInsufficientStake   = errors.New("insufficient stake for tier")
+	ErrInvalidTier          = errors.New("invalid CC tier")
+	ErrTierNotMet           = errors.New("provider tier does not meet requirement")
+	ErrAttestationExpired   = errors.New("attestation has expired")
+	ErrInvalidAttestation   = errors.New("invalid attestation evidence")
+	ErrInsufficientStake    = errors.New("insufficient stake for tier")
 	ErrHardwareNotSupported = errors.New("hardware does not support required CC tier")
 )
 
