@@ -159,13 +159,13 @@ func (nv *NvtrustVerifier) VerifyGPU(evidence *SPDMEvidence, gpuInfo *GPUHardwar
 	trustScore := nv.calculateLocalTrustScore(gpuInfo, rimVerified)
 
 	return &LocalVerificationResult{
-		Verified:       true,
-		RIMVerified:    rimVerified,
-		TrustScore:     trustScore,
-		GPUModel:       gpuInfo.Model,
-		DriverVersion:  gpuInfo.DriverVersion,
+		Verified:        true,
+		RIMVerified:     rimVerified,
+		TrustScore:      trustScore,
+		GPUModel:        gpuInfo.Model,
+		DriverVersion:   gpuInfo.DriverVersion,
 		MeasurementHash: evidence.MeasurementHash,
-		VerifiedAt:     time.Now(),
+		VerifiedAt:      time.Now(),
 	}, nil
 }
 
