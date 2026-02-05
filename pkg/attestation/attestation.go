@@ -472,24 +472,6 @@ func ParseTDXQuote(data []byte) (*TDXQuote, error) {
 	return quote, nil
 }
 
-// calculateTrustScore - legacy function for backward compatibility
-// Deprecated: use calculateLocalTrustScore for CC-capable GPUs
-func calculateTrustScore(att *GPUAttestation) uint8 {
-	return calculateLocalTrustScore(att, att.LocalEvidence)
-}
-
-// calculateHardwareCCTrustScore - legacy alias for calculateLocalTrustScore
-// Deprecated: use calculateLocalTrustScore directly
-func calculateHardwareCCTrustScore(att *GPUAttestation) uint8 {
-	return calculateLocalTrustScore(att, att.LocalEvidence)
-}
-
-// calculateLocalVerifierTrustScore - legacy alias for calculateLocalTrustScore
-// Deprecated: use calculateLocalTrustScore directly
-func calculateLocalVerifierTrustScore(att *GPUAttestation, ev *LocalGPUEvidence) uint8 {
-	return calculateLocalTrustScore(att, ev)
-}
-
 // calculateSoftwareTrustScore for consumer GPU software attestation
 // Max score: 60 (significantly lower - no hardware CC)
 func calculateSoftwareTrustScore(att *GPUAttestation, sw *SoftwareGPUAttestation) uint8 {
