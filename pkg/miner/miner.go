@@ -13,6 +13,10 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/luxfi/ai/pkg/miner/backend"
+	"github.com/luxfi/ai/pkg/miner/backend/noop"
+	"github.com/luxfi/ai/pkg/miner/backend/openai"
 )
 
 var (
@@ -66,6 +70,32 @@ type Config struct {
 	CacheSize     int64  `json:"cache_size"` // in bytes
 	ModelDir      string `json:"model_dir"`
 	APIPort       int    `json:"api_port"`
+
+	// Backend selects the inference-engine adapter used by the miner.
+	// Supported values: "noop" (default, deterministic mock), "openai"
+	// (OpenAI-compatible HTTP — works for the public OpenAI API and for
+	// local engines like llama.cpp server, vllm, ollama, and LocalAI that
+	// expose the same dialect).
+	//
+	// When the value is empty the miner falls back to the noop backend, so
+	// existing callers see no behaviour change.
+	Backend string `json:"backend,omitempty"`
+
+	// OpenAIBase overrides the OpenAI API base URL (e.g.
+	// "http://localhost:8080/v1" for llama.cpp, "http://localhost:11434/v1"
+	// for ollama). Only used when Backend == "openai".
+	OpenAIBase string `json:"openai_base,omitempty"`
+
+	// OpenAIAPIKey is the bearer token sent with OpenAI requests. Empty is
+	// fine for local engines that don't authenticate.
+	OpenAIAPIKey string `json:"openai_api_key,omitempty"`
+
+	// OpenAIModel is the default model name passed to the OpenAI backend
+	// when the caller doesn't set Task.Model.
+	OpenAIModel string `json:"openai_model,omitempty"`
+
+	// OpenAIEmbeddingModel overrides OpenAIModel for embedding tasks.
+	OpenAIEmbeddingModel string `json:"openai_embedding_model,omitempty"`
 }
 
 // DefaultConfig returns default configuration
@@ -89,6 +119,15 @@ type Miner struct {
 	tasks     map[string]*Task
 	mu        sync.RWMutex
 
+	// Pluggable inference backend. The miner's run* methods dispatch
+	// through this interface; Config.Backend selects the default at
+	// construction time, and callers can override via WithBackend.
+	backend backend.InferenceBackend
+
+	// Optional GPU-telemetry hook; see SetGPUStatsProvider. Leaving it nil
+	// keeps GetStats zero-cost on systems without GPU telemetry wired.
+	gpuStatsProvider GPUStatsProvider
+
 	// Channels
 	taskCh   chan *Task
 	resultCh chan *Task
@@ -98,15 +137,62 @@ type Miner struct {
 	server *http.Server
 }
 
-// New creates a new miner instance
+// New creates a new miner instance. The inference backend is selected from
+// config.Backend; when unset, a deterministic noop backend is used so legacy
+// callers see no behaviour change.
 func New(config Config) *Miner {
 	return &Miner{
 		config:   config,
 		tasks:    make(map[string]*Task),
+		backend:  newBackend(config),
 		taskCh:   make(chan *Task, config.MaxTasks),
 		resultCh: make(chan *Task, config.MaxTasks),
 		stopCh:   make(chan struct{}),
 	}
+}
+
+// newBackend picks a backend.InferenceBackend from config. Unknown or empty
+// Backend values fall back to noop (safe default).
+func newBackend(cfg Config) backend.InferenceBackend {
+	switch cfg.Backend {
+	case "openai":
+		return openai.New(openai.Config{
+			BaseURL:        cfg.OpenAIBase,
+			APIKey:         cfg.OpenAIAPIKey,
+			Model:          cfg.OpenAIModel,
+			EmbeddingModel: cfg.OpenAIEmbeddingModel,
+		})
+	case "", "noop":
+		return noop.New()
+	default:
+		// Unknown backend name: fall back to noop rather than failing.
+		// Operators who mistype a name will see "noop" in logs and can
+		// fix it without the miner crash-looping.
+		return noop.New()
+	}
+}
+
+// WithBackend swaps the inference backend at runtime. It is safe to call
+// before Start; calling it after Start may race with in-flight tasks, so
+// callers wanting hot-swap should stop the miner first.
+//
+// This is primarily intended for tests and for operators wiring custom
+// backends (e.g. a direct MLX/CUDA binding) from their own main package.
+func (m *Miner) WithBackend(b backend.InferenceBackend) *Miner {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if b != nil {
+		m.backend = b
+	}
+	return m
+}
+
+// Backend returns the currently configured inference backend. Useful for
+// tests and for exposing Capabilities() over the API.
+func (m *Miner) Backend() backend.InferenceBackend {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.backend
 }
 
 // Start begins mining operations
@@ -156,14 +242,45 @@ func (m *Miner) Stop() error {
 	return nil
 }
 
-// GetStats returns current mining statistics
+// GPUStatsProvider is an optional hook that populates GPU telemetry into
+// Stats. When set, GetStats invokes it and merges the result into the
+// returned snapshot. Leave unset for a zero-cost no-op (GPUUtilization stays
+// 0.0, which is the current pre-refactor behaviour).
+//
+// A follow-up PR will wire a real NVML/MLX provider; this hook keeps the
+// seam in place without pulling heavy bindings into the main miner binary.
+type GPUStatsProvider func() (utilization float64, memoryUsed uint64)
+
+// SetGPUStatsProvider installs a best-effort GPU telemetry source. Safe to
+// call before or after Start. Passing nil removes the hook.
+func (m *Miner) SetGPUStatsProvider(p GPUStatsProvider) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.gpuStatsProvider = p
+}
+
+// GetStats returns current mining statistics, including best-effort GPU
+// telemetry when a GPUStatsProvider has been installed.
 func (m *Miner) GetStats() Stats {
 	m.mu.RLock()
-	defer m.mu.RUnlock()
+	provider := m.gpuStatsProvider
+	m.mu.RUnlock()
 
+	m.mu.RLock()
 	stats := m.stats
 	if m.running {
 		stats.Uptime = time.Since(m.startTime)
+	}
+	m.mu.RUnlock()
+
+	// Populate GPU telemetry outside the lock so a slow provider can't
+	// stall unrelated callers.
+	if provider != nil {
+		util, mem := provider()
+		stats.GPUUtilization = util
+		if mem != 0 {
+			stats.MemoryUsed = mem
+		}
 	}
 	return stats
 }
@@ -312,9 +429,8 @@ func (m *Miner) processTask(ctx context.Context, task *Task) {
 	m.resultCh <- task
 }
 
-// runInference executes an inference task
+// runInference executes an inference task via the configured backend.
 func (m *Miner) runInference(ctx context.Context, task *Task) error {
-	// Parse input
 	var input struct {
 		Prompt    string `json:"prompt"`
 		MaxTokens int    `json:"max_tokens"`
@@ -323,12 +439,23 @@ func (m *Miner) runInference(ctx context.Context, task *Task) error {
 		return err
 	}
 
-	// TODO: Integrate with actual inference engine (llama.cpp, vllm, etc.)
-	// For now, return a placeholder response
+	// Dispatch to the pluggable backend. The noop default preserves the
+	// legacy placeholder shape ("Response to: <prompt>", tokens=10); the
+	// openai backend talks to any OpenAI-compatible server (llama.cpp,
+	// vllm, ollama, LocalAI, or api.openai.com itself).
+	resp, err := m.Backend().Inference(ctx, backend.InferenceRequest{
+		Model:     task.Model,
+		Prompt:    input.Prompt,
+		MaxTokens: input.MaxTokens,
+	})
+	if err != nil {
+		return err
+	}
+
 	output := map[string]interface{}{
-		"text":   fmt.Sprintf("Response to: %s", input.Prompt),
-		"tokens": 10,
-		"model":  task.Model,
+		"text":   resp.Text,
+		"tokens": resp.Tokens,
+		"model":  resp.Model,
 	}
 
 	outputBytes, err := json.Marshal(output)
@@ -340,7 +467,7 @@ func (m *Miner) runInference(ctx context.Context, task *Task) error {
 	return nil
 }
 
-// runChat handles chat-style inference
+// runChat handles chat-style inference via the configured backend.
 func (m *Miner) runChat(ctx context.Context, task *Task) error {
 	var input struct {
 		Messages []struct {
@@ -353,11 +480,24 @@ func (m *Miner) runChat(ctx context.Context, task *Task) error {
 		return err
 	}
 
-	// TODO: Integrate with actual chat model
+	msgs := make([]backend.Message, 0, len(input.Messages))
+	for _, m := range input.Messages {
+		msgs = append(msgs, backend.Message{Role: m.Role, Content: m.Content})
+	}
+
+	resp, err := m.Backend().Chat(ctx, backend.ChatRequest{
+		Model:     task.Model,
+		Messages:  msgs,
+		MaxTokens: input.MaxTokens,
+	})
+	if err != nil {
+		return err
+	}
+
 	output := map[string]interface{}{
-		"role":    "assistant",
-		"content": "I'm an AI assistant running on the Lux network.",
-		"model":   task.Model,
+		"role":    resp.Role,
+		"content": resp.Content,
+		"model":   resp.Model,
 	}
 
 	outputBytes, err := json.Marshal(output)
@@ -369,7 +509,7 @@ func (m *Miner) runChat(ctx context.Context, task *Task) error {
 	return nil
 }
 
-// runEmbedding generates embeddings
+// runEmbedding generates embeddings via the configured backend.
 func (m *Miner) runEmbedding(ctx context.Context, task *Task) error {
 	var input struct {
 		Text string `json:"text"`
@@ -378,16 +518,17 @@ func (m *Miner) runEmbedding(ctx context.Context, task *Task) error {
 		return err
 	}
 
-	// TODO: Integrate with embedding model
-	// Placeholder embedding vector
-	embedding := make([]float64, 384)
-	for i := range embedding {
-		embedding[i] = 0.0
+	resp, err := m.Backend().Embed(ctx, backend.EmbedRequest{
+		Model: task.Model,
+		Text:  input.Text,
+	})
+	if err != nil {
+		return err
 	}
 
 	output := map[string]interface{}{
-		"embedding": embedding,
-		"model":     task.Model,
+		"embedding": resp.Embedding,
+		"model":     resp.Model,
 	}
 
 	outputBytes, err := json.Marshal(output)
