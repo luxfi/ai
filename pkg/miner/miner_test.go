@@ -1,11 +1,15 @@
 package miner
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/luxfi/ai/pkg/miner/backend"
+	"github.com/luxfi/ai/pkg/miner/backend/noop"
 )
 
 func TestNewMiner(t *testing.T) {
@@ -243,4 +247,127 @@ func TestTaskJSON(t *testing.T) {
 	if !strings.Contains(string(data), "chat") {
 		t.Error("expected JSON to contain task type")
 	}
+}
+
+// TestDefaultBackendIsNoop locks in the zero-config behaviour: a Miner built
+// from DefaultConfig() uses the deterministic noop backend, so existing
+// deployments see no change.
+func TestDefaultBackendIsNoop(t *testing.T) {
+	m := New(DefaultConfig())
+	if name := m.Backend().Name(); name != "noop" {
+		t.Errorf("default backend: got %q want %q", name, "noop")
+	}
+}
+
+// TestBackendSelectionViaConfig confirms Config.Backend wires through.
+func TestBackendSelectionViaConfig(t *testing.T) {
+	cfg := DefaultConfig()
+	cfg.Backend = "openai"
+	m := New(cfg)
+	if name := m.Backend().Name(); name != "openai" {
+		t.Errorf("configured backend: got %q want %q", name, "openai")
+	}
+}
+
+// TestUnknownBackendFallsBackToNoop guards the operator-mistype path.
+func TestUnknownBackendFallsBackToNoop(t *testing.T) {
+	cfg := DefaultConfig()
+	cfg.Backend = "not-a-real-backend"
+	m := New(cfg)
+	if name := m.Backend().Name(); name != "noop" {
+		t.Errorf("unknown backend fallback: got %q want %q", name, "noop")
+	}
+}
+
+// TestWithBackendHotSwap checks the runtime override used by tests and by
+// operators wiring a custom backend from main.
+func TestWithBackendHotSwap(t *testing.T) {
+	m := New(DefaultConfig()).WithBackend(noop.New())
+	if name := m.Backend().Name(); name != "noop" {
+		t.Errorf("WithBackend: got %q want %q", name, "noop")
+	}
+}
+
+// TestRunChatUsesBackend end-to-end confirms the wiring: swapping the
+// backend changes the output of runChat.
+func TestRunChatUsesBackend(t *testing.T) {
+	m := New(DefaultConfig()).WithBackend(&recordingBackend{
+		chatContent: "custom response from swapped backend",
+	})
+
+	input, _ := json.Marshal(map[string]any{
+		"messages": []map[string]string{{"role": "user", "content": "hi"}},
+	})
+	task := &Task{Type: TaskChat, Model: "m", Input: input}
+
+	if err := m.runChat(context.Background(), task); err != nil {
+		t.Fatalf("runChat: %v", err)
+	}
+	if !strings.Contains(string(task.Output), "custom response from swapped backend") {
+		t.Errorf("runChat should route through backend, got: %s", task.Output)
+	}
+}
+
+// TestRunEmbeddingUsesBackend mirrors TestRunChatUsesBackend for embeddings.
+func TestRunEmbeddingUsesBackend(t *testing.T) {
+	m := New(DefaultConfig()).WithBackend(&recordingBackend{
+		embedding: []float64{1, 2, 3},
+	})
+
+	input, _ := json.Marshal(map[string]string{"text": "hello"})
+	task := &Task{Type: TaskEmbedding, Model: "m", Input: input}
+
+	if err := m.runEmbedding(context.Background(), task); err != nil {
+		t.Fatalf("runEmbedding: %v", err)
+	}
+	if !strings.Contains(string(task.Output), "[1,2,3]") {
+		t.Errorf("runEmbedding should route through backend, got: %s", task.Output)
+	}
+}
+
+// TestGPUStatsProviderPopulatesStats checks the sibling GPU-utilization
+// hook: GetStats merges provider output into the returned Stats without
+// breaking callers that don't install a provider.
+func TestGPUStatsProviderPopulatesStats(t *testing.T) {
+	m := New(DefaultConfig())
+
+	// No provider: GPUUtilization stays 0.0 (pre-refactor behaviour).
+	if got := m.GetStats().GPUUtilization; got != 0.0 {
+		t.Errorf("no provider: GPUUtilization = %v want 0.0", got)
+	}
+
+	m.SetGPUStatsProvider(func() (float64, uint64) { return 0.42, 12345 })
+	stats := m.GetStats()
+	if stats.GPUUtilization != 0.42 {
+		t.Errorf("GPUUtilization: got %v want 0.42", stats.GPUUtilization)
+	}
+	if stats.MemoryUsed != 12345 {
+		t.Errorf("MemoryUsed: got %d want 12345", stats.MemoryUsed)
+	}
+
+	// Removing the provider restores the zero-cost default.
+	m.SetGPUStatsProvider(nil)
+	if got := m.GetStats().GPUUtilization; got != 0.0 {
+		t.Errorf("provider removed: GPUUtilization = %v want 0.0", got)
+	}
+}
+
+// recordingBackend is a test double implementing backend.InferenceBackend.
+type recordingBackend struct {
+	chatContent string
+	embedding   []float64
+}
+
+func (*recordingBackend) Name() string { return "recording" }
+func (*recordingBackend) Capabilities() backend.Capabilities {
+	return backend.Capabilities{Chat: true, Inference: true, Embedding: true}
+}
+func (r *recordingBackend) Chat(_ context.Context, req backend.ChatRequest) (backend.ChatResponse, error) {
+	return backend.ChatResponse{Role: "assistant", Content: r.chatContent, Model: req.Model}, nil
+}
+func (r *recordingBackend) Inference(_ context.Context, req backend.InferenceRequest) (backend.InferenceResponse, error) {
+	return backend.InferenceResponse{Text: r.chatContent, Model: req.Model}, nil
+}
+func (r *recordingBackend) Embed(_ context.Context, req backend.EmbedRequest) (backend.EmbedResponse, error) {
+	return backend.EmbedResponse{Embedding: r.embedding, Model: req.Model}, nil
 }
