@@ -1,0 +1,266 @@
+---
+title: OpenAI Compatibility
+description: Drop-in replacement guide for OpenAI APIs
+---
+
+# OpenAI Compatibility
+
+Lux AI provides a drop-in replacement for OpenAI APIs. This guide covers compatibility details and migration steps.
+
+## Overview
+
+Lux AI implements the OpenAI API specification, allowing you to:
+
+- Use existing OpenAI SDKs (Python, TypeScript, etc.)
+- Migrate applications with minimal code changes
+- Access open models with the same API interface
+
+## Migration Guide
+
+### Step 1: Update Base URL
+
+**OpenAI (Before):**
+```python
+from openai import OpenAI
+client = OpenAI(api_key="sk-...")
+```
+
+**Lux AI (After):**
+```python
+from openai import OpenAI
+client = OpenAI(
+    api_key="YOUR_LUX_API_KEY",
+    base_url="https://api.lux.ai/v1"
+)
+```
+
+### Step 2: Update Model Names
+
+| OpenAI Model | Lux AI Equivalent |
+|--------------|-------------------|
+| gpt-4 | llama-3.3-70b |
+| gpt-4-turbo | llama-3.3-70b |
+| gpt-3.5-turbo | llama-3.3-8b |
+| text-embedding-3-small | nomic-embed-text |
+| text-embedding-3-large | bge-large-en |
+
+### Step 3: Test Your Application
+
+```python
+# Quick test
+response = client.chat.completions.create(
+    model="llama-3.3-8b",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)
+```
+
+## Supported Endpoints
+
+### Fully Supported
+
+| Endpoint | Status | Notes |
+|----------|--------|-------|
+| `/v1/chat/completions` | Full | Including streaming |
+| `/v1/completions` | Full | Legacy completions |
+| `/v1/embeddings` | Full | Vector embeddings |
+| `/v1/models` | Full | List available models |
+
+### Partially Supported
+
+| Endpoint | Status | Notes |
+|----------|--------|-------|
+| `/v1/audio/transcriptions` | Beta | Whisper models |
+| `/v1/images/generations` | Beta | SDXL, Flux |
+
+### Not Supported
+
+| Endpoint | Status | Alternative |
+|----------|--------|-------------|
+| `/v1/fine-tuning` | No | Use custom training pipelines |
+| `/v1/assistants` | No | Use direct API |
+| `/v1/threads` | No | Use direct API |
+
+## Parameter Compatibility
+
+### Chat Completions
+
+| Parameter | OpenAI | Lux AI | Notes |
+|-----------|--------|--------|-------|
+| model | Yes | Yes | Different model names |
+| messages | Yes | Yes | Full support |
+| temperature | Yes | Yes | 0-2 range |
+| max_tokens | Yes | Yes | Model-dependent limits |
+| top_p | Yes | Yes | Nucleus sampling |
+| n | Yes | Yes | Multiple completions |
+| stream | Yes | Yes | SSE streaming |
+| stop | Yes | Yes | Stop sequences |
+| presence_penalty | Yes | Yes | -2 to 2 |
+| frequency_penalty | Yes | Yes | -2 to 2 |
+| logit_bias | Yes | Yes | Token biasing |
+| user | Yes | Yes | User identifier |
+| functions | Yes | Partial | Function calling |
+| tools | Yes | Partial | Tool use |
+| response_format | Yes | Yes | JSON mode |
+| seed | Yes | Yes | Reproducibility |
+
+### Extended Parameters
+
+Lux AI adds parameters not in OpenAI's API:
+
+```python
+response = client.chat.completions.create(
+    model="llama-3.3-8b",
+    messages=[{"role": "user", "content": "Hello!"}],
+    extra_body={
+        "lux_min_trust_score": 0.95,  # Minimum miner quality
+        "lux_prefer_region": "us-west",  # Geographic preference
+        "lux_attestation": True,  # Include cryptographic proof
+    }
+)
+```
+
+## Function Calling
+
+Function calling is supported with compatible models:
+
+```python
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get current weather",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {"type": "string"}
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+response = client.chat.completions.create(
+    model="llama-3.3-70b",
+    messages=[{"role": "user", "content": "What's the weather in Tokyo?"}],
+    tools=tools,
+    tool_choice="auto"
+)
+```
+
+## JSON Mode
+
+Request structured JSON output:
+
+```python
+response = client.chat.completions.create(
+    model="llama-3.3-8b",
+    messages=[
+        {"role": "user", "content": "List 3 colors as JSON"}
+    ],
+    response_format={"type": "json_object"}
+)
+```
+
+## Streaming
+
+Streaming works identically to OpenAI:
+
+```python
+stream = client.chat.completions.create(
+    model="llama-3.3-8b",
+    messages=[{"role": "user", "content": "Tell me a story"}],
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+```
+
+## Error Handling
+
+Lux AI returns OpenAI-compatible error formats:
+
+```python
+from openai import OpenAI, APIError, RateLimitError
+
+client = OpenAI(
+    api_key="YOUR_API_KEY",
+    base_url="https://api.lux.ai/v1"
+)
+
+try:
+    response = client.chat.completions.create(
+        model="llama-3.3-8b",
+        messages=[{"role": "user", "content": "Hello!"}]
+    )
+except RateLimitError:
+    print("Rate limited, retrying...")
+except APIError as e:
+    print(f"API error: {e}")
+```
+
+## Framework Compatibility
+
+### LangChain
+
+```python
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    model="llama-3.3-8b",
+    openai_api_key="YOUR_LUX_API_KEY",
+    openai_api_base="https://api.lux.ai/v1"
+)
+
+response = llm.invoke("Hello!")
+```
+
+### LlamaIndex
+
+```python
+from llama_index.llms.openai import OpenAI
+
+llm = OpenAI(
+    model="llama-3.3-8b",
+    api_key="YOUR_LUX_API_KEY",
+    api_base="https://api.lux.ai/v1"
+)
+```
+
+### Vercel AI SDK
+
+```typescript
+import { createOpenAI } from '@ai-sdk/openai';
+
+const lux = createOpenAI({
+  apiKey: 'YOUR_LUX_API_KEY',
+  baseURL: 'https://api.lux.ai/v1',
+});
+
+const result = await generateText({
+  model: lux('llama-3.3-8b'),
+  prompt: 'Hello!',
+});
+```
+
+## Best Practices
+
+1. **Test Thoroughly**: Run your test suite after migration
+2. **Model Selection**: Choose appropriate Lux AI model replacements
+3. **Error Handling**: Implement proper retry logic
+4. **Monitor Costs**: Lux AI pricing may differ from OpenAI
+5. **Use Attestations**: Verify response authenticity for critical applications
+
+## Differences from OpenAI
+
+| Aspect | OpenAI | Lux AI |
+|--------|--------|--------|
+| Hosting | Centralized | Decentralized |
+| Models | Proprietary | Open source |
+| Verification | None | Attestation proofs |
+| Pricing | Per-token | LUX tokens |
+| Privacy | OpenAI policy | Miner-dependent |

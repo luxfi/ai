@@ -1,0 +1,81 @@
+---
+title: Lux AI Documentation
+description: Decentralized AI compute network for GPU mining and inference
+---
+
+# Lux AI
+
+Welcome to the Lux AI documentation. Lux AI is a decentralized compute network that enables GPU mining for AI inference workloads.
+
+## What is Lux AI?
+
+Lux AI creates a marketplace where:
+
+- **Miners** contribute GPU compute power and earn LUX token rewards
+- **Consumers** access AI inference via OpenAI-compatible APIs
+- **Validators** ensure quality through cryptographic attestations
+
+## Key Features
+
+### GPU Mining
+Run AI inference workloads on your GPU and earn rewards. Support for NVIDIA, AMD, and Apple Silicon.
+
+### OpenAI-Compatible API
+Drop-in replacement for OpenAI APIs. Use existing SDKs, tools, and applications without code changes.
+
+### Attestation System
+Cryptographic proofs verify inference quality. Trust scores incentivize high-quality outputs.
+
+### Multi-Model Support
+Run any open model - Llama, Mistral, Qwen, and more. Choose models based on your hardware capabilities.
+
+## Quick Links
+
+- [Getting Started](/docs/getting-started) - Install and start mining in minutes
+- [Mining Guide](/docs/mining) - Detailed mining configuration
+- [Hardware Requirements](/docs/mining/hardware) - GPU specifications
+- [API Reference](/docs/api) - OpenAI-compatible endpoints
+- [Rewards](/docs/rewards) - Token economics and payouts
+- [Attestation](/docs/attestation) - Trust and verification system
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Lux AI Network                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────┐     ┌─────────────┐     ┌─────────────────┐  │
+│  │ Consumer│────▶│   Router    │────▶│  GPU Miner      │  │
+│  │  (API)  │     │  (Routing)  │     │  (Inference)    │  │
+│  └─────────┘     └─────────────┘     └─────────────────┘  │
+│                         │                     │            │
+│                         ▼                     ▼            │
+│                  ┌─────────────┐     ┌─────────────────┐  │
+│                  │ Attestation │◀────│   Response      │  │
+│                  │   Layer     │     │   + Proof       │  │
+│                  └─────────────┘     └─────────────────┘  │
+│                         │                                  │
+│                         ▼                                  │
+│                  ┌─────────────┐                          │
+│                  │   Rewards   │                          │
+│                  │  (LUX)      │                          │
+│                  └─────────────┘                          │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Getting Started
+
+The fastest way to get started is to follow the [Getting Started guide](/docs/getting-started).
+
+```bash
+# Install the Lux AI miner
+curl -fsSL https://get.lux.ai | sh
+
+# Initialize with your wallet
+lux-ai init --wallet <YOUR_WALLET_ADDRESS>
+
+# Start mining
+lux-ai start
+```

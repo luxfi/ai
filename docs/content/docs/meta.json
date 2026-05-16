@@ -1,0 +1,16 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "getting-started",
+    "---Mining---",
+    "mining/index",
+    "mining/hardware",
+    "---API---",
+    "api/index",
+    "api/openai",
+    "---Economics---",
+    "rewards/index",
+    "attestation/index"
+  ]
+}

@@ -1,0 +1,216 @@
+---
+title: Mining Guide
+description: Configure and optimize your GPU mining setup for Lux AI
+---
+
+# Mining Guide
+
+This guide covers advanced mining configuration, optimization, and best practices.
+
+## Overview
+
+Lux AI mining involves running AI inference workloads on your GPU and receiving LUX token rewards for successful completions.
+
+### How Mining Works
+
+1. **Registration**: Stake LUX tokens and register your GPU with the network
+2. **Model Loading**: Download and load supported AI models into VRAM
+3. **Request Routing**: Network routes inference requests to your miner
+4. **Inference**: Execute the request and return results with attestation
+5. **Rewards**: Receive LUX tokens for successful, verified completions
+
+## Configuration
+
+### GPU Selection
+
+Specify which GPUs to use:
+
+```yaml
+# ~/.lux-ai/config.yaml
+gpu:
+  enabled: true
+  devices: [0, 1]  # Use GPU 0 and 1
+  memory_limit: 0.85  # 85% VRAM usage
+```
+
+### Model Selection
+
+Choose models based on your VRAM capacity:
+
+```yaml
+models:
+  # Small models (8GB+ VRAM)
+  - llama-3.3-8b
+  - mistral-7b
+  - qwen3-7b
+
+  # Medium models (24GB+ VRAM)
+  - llama-3.3-70b-q4
+  - mixtral-8x7b
+
+  # Large models (48GB+ VRAM)
+  - llama-3.3-70b
+  - qwen3-72b
+```
+
+### Inference Settings
+
+```yaml
+inference:
+  max_batch_size: 8
+  max_context_length: 8192
+  timeout_seconds: 60
+
+  # Quantization for memory efficiency
+  quantization: q4_k_m
+
+  # Flash attention for speed
+  flash_attention: true
+```
+
+## Multi-GPU Setup
+
+### Load Balancing
+
+```yaml
+gpu:
+  devices: [0, 1, 2, 3]
+  strategy: round_robin  # or: least_loaded, random
+```
+
+### Model Sharding
+
+For large models across multiple GPUs:
+
+```yaml
+models:
+  - name: llama-3.3-70b
+    sharding:
+      enabled: true
+      devices: [0, 1]
+```
+
+## Monitoring
+
+### Real-time Stats
+
+```bash
+# Live monitoring
+lux-ai monitor
+
+# Output:
+# GPU 0: 78% util, 45°C, 18.2GB/24GB VRAM
+# Requests/min: 42
+# Avg latency: 234ms
+# Trust score: 98.7%
+```
+
+### Prometheus Metrics
+
+Enable metrics endpoint:
+
+```yaml
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9090
+```
+
+Available metrics:
+- `luxai_requests_total` - Total requests processed
+- `luxai_request_latency_seconds` - Request latency histogram
+- `luxai_tokens_generated_total` - Total tokens generated
+- `luxai_gpu_utilization` - GPU utilization percentage
+- `luxai_rewards_earned` - LUX rewards earned
+
+## Performance Optimization
+
+### VRAM Management
+
+```yaml
+memory:
+  # Aggressive memory management
+  gc_threshold: 0.9
+
+  # Model caching
+  cache_models: true
+  max_cached_models: 3
+```
+
+### Request Batching
+
+```yaml
+batching:
+  enabled: true
+  max_batch_size: 8
+  max_wait_ms: 50
+```
+
+### Network Optimization
+
+```yaml
+network:
+  # Keep connections alive
+  keepalive: true
+
+  # Compression
+  compression: gzip
+
+  # Connection pooling
+  max_connections: 100
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**GPU Not Detected**
+```bash
+# Verify GPU visibility
+nvidia-smi  # NVIDIA
+rocm-smi    # AMD
+
+# Check CUDA installation
+nvcc --version
+```
+
+**Out of Memory**
+```bash
+# Reduce memory limit
+lux-ai config set gpu.memory_limit 0.7
+
+# Use quantized models
+lux-ai config set inference.quantization q4_k_m
+```
+
+**Low Trust Score**
+- Ensure stable internet connection
+- Verify model integrity with `lux-ai verify`
+- Check for hardware errors in logs
+
+### Logs
+
+```bash
+# View recent logs
+lux-ai logs
+
+# Follow logs in real-time
+lux-ai logs -f
+
+# Filter by level
+lux-ai logs --level error
+```
+
+## Best Practices
+
+1. **Stable Power**: Use a UPS to prevent unexpected shutdowns
+2. **Cooling**: Maintain GPU temperatures below 80°C
+3. **Network**: Wired connection recommended for reliability
+4. **Updates**: Keep miner software up to date
+5. **Monitoring**: Set up alerts for downtime and errors
+
+## Next Steps
+
+- [Hardware Requirements](/docs/mining/hardware) - Detailed GPU specifications
+- [Rewards](/docs/rewards) - Understand the reward system
+- [Attestation](/docs/attestation) - Learn about trust scoring

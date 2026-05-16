@@ -1,0 +1,243 @@
+---
+title: Rewards System
+description: Token economics and reward distribution for Lux AI miners
+---
+
+# Rewards System
+
+Lux AI miners earn LUX tokens for contributing GPU compute to the network. This guide explains the reward system and how to maximize earnings.
+
+## Overview
+
+The reward system incentivizes:
+
+- **Quality**: High-quality inference outputs
+- **Availability**: Consistent uptime
+- **Performance**: Fast response times
+- **Reliability**: Successful request completions
+
+## Reward Formula
+
+Miner rewards are calculated as:
+
+```
+Reward = Base_Rate × Quality_Multiplier × Performance_Multiplier × Availability_Bonus
+```
+
+Where:
+- `Base_Rate` = Token reward per 1000 tokens generated
+- `Quality_Multiplier` = Trust score (0.5 - 1.2)
+- `Performance_Multiplier` = Latency bonus (0.8 - 1.2)
+- `Availability_Bonus` = Uptime bonus (1.0 - 1.1)
+
+## Token Economics
+
+### Supply
+
+| Metric | Value |
+|--------|-------|
+| Total Supply | 1,000,000,000 LUX |
+| Mining Allocation | 30% (300M LUX) |
+| Emission Schedule | 10 years |
+| Block Reward | Variable |
+
+### Emission Curve
+
+```
+Year 1: 60M LUX (20%)
+Year 2: 48M LUX (16%)
+Year 3: 38M LUX (13%)
+Year 4: 30M LUX (10%)
+Year 5+: Declining curve
+```
+
+### Current Rates
+
+| Model | Tokens/LUX | Est. Hourly (RTX 4090) |
+|-------|-----------|------------------------|
+| llama-3.3-8b | 50,000 | 5-10 LUX |
+| llama-3.3-70b | 10,000 | 15-30 LUX |
+| mistral-7b | 50,000 | 5-10 LUX |
+| embeddings | 200,000 | 2-5 LUX |
+
+*Rates vary based on network demand*
+
+## Staking Requirements
+
+### Minimum Stake
+
+| Tier | Stake | Benefits |
+|------|-------|----------|
+| Basic | 100 LUX | Mining access |
+| Standard | 500 LUX | Priority routing |
+| Premium | 2,000 LUX | Higher reward multiplier |
+| Enterprise | 10,000 LUX | Dedicated allocation |
+
+### Stake Benefits
+
+Higher stakes provide:
+- Priority request routing
+- Reward multiplier bonuses
+- Slashing protection
+- Governance voting weight
+
+## Trust Score Impact
+
+Your trust score directly affects rewards:
+
+| Trust Score | Reward Multiplier |
+|-------------|-------------------|
+| 99-100% | 1.2x |
+| 95-98% | 1.0x |
+| 90-94% | 0.9x |
+| 80-89% | 0.7x |
+| Below 80% | 0.5x |
+
+### Improving Trust Score
+
+1. **Consistency**: Provide identical outputs for identical inputs
+2. **Speed**: Meet latency requirements
+3. **Uptime**: Minimize downtime
+4. **Verification**: Pass attestation challenges
+
+## Claiming Rewards
+
+### Automatic Claims
+
+Rewards accumulate in your miner account and can be claimed anytime:
+
+```bash
+# Check pending rewards
+lux-ai rewards
+
+# Output:
+# Pending: 234.56 LUX
+# Last claim: 2024-01-15
+# Next estimate: ~45 LUX/day
+```
+
+### Manual Claim
+
+```bash
+# Claim all pending rewards
+lux-ai rewards claim
+
+# Claim to specific address
+lux-ai rewards claim --to lux1abc...
+```
+
+### Auto-Claim
+
+Configure automatic claiming:
+
+```yaml
+# ~/.lux-ai/config.yaml
+rewards:
+  auto_claim: true
+  claim_threshold: 100  # Claim when >= 100 LUX
+  claim_address: lux1abc...
+```
+
+## Fee Structure
+
+### Network Fees
+
+| Fee Type | Rate |
+|----------|------|
+| Claim fee | 0.1 LUX |
+| Transfer fee | 0.01 LUX |
+| Unstaking | 0.5 LUX |
+
+### Slashing
+
+Misbehavior results in stake slashing:
+
+| Violation | Penalty |
+|-----------|---------|
+| Failed attestation | 1% stake |
+| Malicious output | 10% stake |
+| Repeated failures | Up to 50% stake |
+
+## Reward Optimization
+
+### Hardware Optimization
+
+```bash
+# Check performance metrics
+lux-ai benchmark
+
+# Output:
+# Model: llama-3.3-8b
+# Throughput: 45 tokens/sec
+# Latency: 23ms first token
+# Est. daily: 180 LUX
+```
+
+### Model Selection
+
+Choose models based on your hardware:
+
+| VRAM | Optimal Models | Est. Daily |
+|------|---------------|------------|
+| 8 GB | 7B quantized | 50-100 LUX |
+| 12 GB | 7B full precision | 80-150 LUX |
+| 24 GB | 7B + 70B quantized | 150-300 LUX |
+| 48 GB+ | All models | 300-600+ LUX |
+
+### Timing
+
+Network demand varies:
+
+| Time (UTC) | Demand | Rewards |
+|------------|--------|---------|
+| 00:00-06:00 | Low | 0.8x |
+| 06:00-12:00 | Medium | 1.0x |
+| 12:00-18:00 | High | 1.2x |
+| 18:00-24:00 | Peak | 1.3x |
+
+## Monitoring Earnings
+
+### Dashboard
+
+```bash
+# Open web dashboard
+lux-ai dashboard
+```
+
+### API
+
+```bash
+# Get earnings via API
+curl -H "Authorization: Bearer $API_KEY" \
+  https://api.lux.ai/v1/miner/rewards
+```
+
+### Prometheus Metrics
+
+```
+luxai_rewards_earned_total
+luxai_rewards_pending
+luxai_rewards_claimed_total
+luxai_reward_rate
+```
+
+## Tax Considerations
+
+Lux AI provides earnings reports:
+
+```bash
+# Generate tax report
+lux-ai rewards report --year 2024 --format csv
+```
+
+Report includes:
+- Date/time of each reward
+- Amount in LUX
+- USD value at time of receipt
+- Transaction hashes
+
+## Next Steps
+
+- [Attestation](/docs/attestation) - Understand trust scoring
+- [Mining Guide](/docs/mining) - Optimize your setup
+- [Hardware Requirements](/docs/mining/hardware) - Upgrade recommendations
