@@ -1,0 +1,228 @@
+\contentsline {section}{\numberline {1}Introduction}{7}{section.1}%
+\contentsline {subsection}{\numberline {1.1}The Vision: Open AI for Everyone}{7}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Design Philosophy}{7}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Core Innovation: Chain-Bound AI Work}{7}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Ecosystem Overview}{7}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Document Structure}{8}{subsection.1.5}%
+\contentsline {section}{\numberline {2}Token Economics}{8}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Design Philosophy: Bitcoin for AI}{8}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Global Supply Model}{8}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Launch Chains (10)}{9}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Precise Launch Pricing}{9}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Current GPU Compute Market (Dec 2025)}{9}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Token Pricing Formula}{9}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}LP Pool Mathematics}{10}{subsubsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.5}Bitcoin-Aligned Halving Schedule}{10}{subsection.2.5}%
+\contentsline {subsubsection}{\numberline {2.5.1}Supply Distribution Formula}{10}{subsubsection.2.5.1}%
+\contentsline {subsubsection}{\numberline {2.5.2}Block Time Analysis}{11}{subsubsection.2.5.2}%
+\contentsline {subsubsection}{\numberline {2.5.3}Adjusted Initial Reward}{11}{subsubsection.2.5.3}%
+\contentsline {subsection}{\numberline {2.6}Halving Timeline (2-sec blocks, 4-year halving)}{11}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}Game Theory \& Price Discovery}{11}{subsection.2.7}%
+\contentsline {subsubsection}{\numberline {2.7.1}Bootstrap Phase: 96\% Discount}{11}{subsubsection.2.7.1}%
+\contentsline {subsubsection}{\numberline {2.7.2}Price Appreciation Mechanics}{12}{subsubsection.2.7.2}%
+\contentsline {subsubsection}{\numberline {2.7.3}Expected Price Trajectory}{12}{subsubsection.2.7.3}%
+\contentsline {subsection}{\numberline {2.8}Miner Economics}{12}{subsection.2.8}%
+\contentsline {subsubsection}{\numberline {2.8.1}GPU Mining Profitability}{12}{subsubsection.2.8.1}%
+\contentsline {subsubsection}{\numberline {2.8.2}Miner Incentive Curve}{12}{subsubsection.2.8.2}%
+\contentsline {subsection}{\numberline {2.9}Compute Market Economics}{13}{subsection.2.9}%
+\contentsline {subsubsection}{\numberline {2.9.1}AI Service Pricing}{13}{subsubsection.2.9.1}%
+\contentsline {subsubsection}{\numberline {2.9.2}Confidential Compute Premium}{13}{subsubsection.2.9.2}%
+\contentsline {subsection}{\numberline {2.10}Long-term Contracts}{13}{subsection.2.10}%
+\contentsline {subsubsection}{\numberline {2.10.1}Prepaid Compute Contracts}{13}{subsubsection.2.10.1}%
+\contentsline {subsubsection}{\numberline {2.10.2}Contract Tiers}{14}{subsubsection.2.10.2}%
+\contentsline {subsection}{\numberline {2.11}LP Mining Rewards}{14}{subsection.2.11}%
+\contentsline {subsubsection}{\numberline {2.11.1}Liquidity Provider Incentives}{14}{subsubsection.2.11.1}%
+\contentsline {subsubsection}{\numberline {2.11.2}Community Ownership}{14}{subsubsection.2.11.2}%
+\contentsline {subsection}{\numberline {2.12}Treasury Allocation}{14}{subsection.2.12}%
+\contentsline {subsection}{\numberline {2.13}Cross-Chain Dynamics}{15}{subsection.2.13}%
+\contentsline {subsubsection}{\numberline {2.13.1}Teleport Arbitrage}{15}{subsubsection.2.13.1}%
+\contentsline {subsubsection}{\numberline {2.13.2}Per-Chain Supply Elasticity}{15}{subsubsection.2.13.2}%
+\contentsline {subsection}{\numberline {2.14}Adding New Chains}{15}{subsection.2.14}%
+\contentsline {subsubsection}{\numberline {2.14.1}Governance Process}{15}{subsubsection.2.14.1}%
+\contentsline {subsubsection}{\numberline {2.14.2}Self-Deployment Option}{15}{subsubsection.2.14.2}%
+\contentsline {subsection}{\numberline {2.15}Summary: Bitcoin for AI Economics}{16}{subsection.2.15}%
+\contentsline {section}{\numberline {3}Proof of AI Consensus}{16}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Overview}{16}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Work Types}{16}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Reward Calculation}{16}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}GPU Tier Multipliers}{17}{subsubsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.4}Work Proof Structure}{17}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Validation Rules}{17}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Block Structure}{18}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Integration with Quasar Consensus}{19}{subsection.3.7}%
+\contentsline {section}{\numberline {4}NVTrust Chain-Binding}{19}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Double-Spend Prevention}{19}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Work Context Structure}{19}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}NVTrust Attestation Flow}{20}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Attested Receipt}{20}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Spent Set}{20}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Chain ID Validation}{21}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Multi-Chain Mining}{21}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Supported GPU Hardware}{21}{subsection.4.8}%
+\contentsline {section}{\numberline {5}Difficulty Adjustment}{22}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Overview}{22}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Difficulty Target}{22}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Adjustment Algorithm}{22}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Per-Chain Difficulty}{22}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Compute Unit Standardization}{22}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}GPU Tier Adjustment}{23}{subsection.5.6}%
+\contentsline {subsection}{\numberline {5.7}Emergency Difficulty Adjustment}{23}{subsection.5.7}%
+\contentsline {subsection}{\numberline {5.8}Difficulty and Rewards}{23}{subsection.5.8}%
+\contentsline {subsection}{\numberline {5.9}Economic Equilibrium}{23}{subsection.5.9}%
+\contentsline {section}{\numberline {6}Market Dynamics and Payment}{24}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Overview}{24}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Payment Flow}{24}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Pricing Models}{24}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Market-Driven Pricing}{24}{subsection.6.4}%
+\contentsline {subsubsection}{\numberline {6.4.1}Price Update Algorithm}{24}{subsubsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.5}Escrow Contract}{24}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Fee Structure}{25}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}Provider Registration}{25}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}Slashing Conditions}{26}{subsection.6.8}%
+\contentsline {subsection}{\numberline {6.9}Economic Incentives}{26}{subsection.6.9}%
+\contentsline {subsection}{\numberline {6.10}Per-Chain Fee Customization}{26}{subsection.6.10}%
+\contentsline {section}{\numberline {7}Multi-Chain Mining with Teleport}{26}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Overview}{26}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Supported Chains}{26}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Global Supply Dynamics}{26}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Teleport Protocol}{27}{subsection.7.4}%
+\contentsline {subsubsection}{\numberline {7.4.1}Architecture}{27}{subsubsection.7.4.1}%
+\contentsline {subsubsection}{\numberline {7.4.2}Transfer Flow}{27}{subsubsection.7.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.3}Transfer Message}{27}{subsubsection.7.4.3}%
+\contentsline {subsection}{\numberline {7.5}Mining on Multiple Chains}{27}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Cross-Chain Reward Claiming}{28}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Liquidity Pools}{28}{subsection.7.7}%
+\contentsline {subsection}{\numberline {7.8}Chain-Specific Features}{28}{subsection.7.8}%
+\contentsline {subsubsection}{\numberline {7.8.1}Lux C-Chain (96369)}{28}{subsubsection.7.8.1}%
+\contentsline {subsubsection}{\numberline {7.8.2}Hanzo EVM (36963)}{28}{subsubsection.7.8.2}%
+\contentsline {subsubsection}{\numberline {7.8.3}Zoo EVM (200200)}{29}{subsubsection.7.8.3}%
+\contentsline {subsection}{\numberline {7.9}Adding New Chains}{29}{subsection.7.9}%
+\contentsline {section}{\numberline {8}EVM Contracts}{29}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Overview}{29}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Contract Architecture}{29}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}AIToken.sol}{29}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}AIMining.sol}{30}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}ChainConfig.sol}{31}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}ComputeMarket.sol}{32}{subsection.8.6}%
+\contentsline {subsection}{\numberline {8.7}Precompile Interface}{33}{subsection.8.7}%
+\contentsline {subsection}{\numberline {8.8}Gas Costs}{34}{subsection.8.8}%
+\contentsline {subsection}{\numberline {8.9}Deployment Addresses}{34}{subsection.8.9}%
+\contentsline {section}{\numberline {9}Security Analysis}{34}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Threat Model}{34}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Quantum Safety}{34}{subsection.9.2}%
+\contentsline {subsubsection}{\numberline {9.2.1}ML-DSA Signatures}{34}{subsubsection.9.2.1}%
+\contentsline {subsubsection}{\numberline {9.2.2}Quantum Timeline}{35}{subsubsection.9.2.2}%
+\contentsline {subsection}{\numberline {9.3}Double-Spend Prevention}{35}{subsection.9.3}%
+\contentsline {subsubsection}{\numberline {9.3.1}Spent Set Security}{35}{subsubsection.9.3.1}%
+\contentsline {subsubsection}{\numberline {9.3.2}Chain Binding Security}{35}{subsubsection.9.3.2}%
+\contentsline {subsection}{\numberline {9.4}NVTrust Security}{35}{subsection.9.4}%
+\contentsline {subsubsection}{\numberline {9.4.1}Trust Assumptions}{35}{subsubsection.9.4.1}%
+\contentsline {subsubsection}{\numberline {9.4.2}Attestation Chain}{36}{subsubsection.9.4.2}%
+\contentsline {subsection}{\numberline {9.5}Consensus Security}{36}{subsection.9.5}%
+\contentsline {subsubsection}{\numberline {9.5.1}Quasar BFT Guarantees}{36}{subsubsection.9.5.1}%
+\contentsline {subsection}{\numberline {9.6}Teleport Security}{36}{subsection.9.6}%
+\contentsline {subsubsection}{\numberline {9.6.1}MPC Security}{36}{subsubsection.9.6.1}%
+\contentsline {subsubsection}{\numberline {9.6.2}Replay Protection}{36}{subsubsection.9.6.2}%
+\contentsline {subsection}{\numberline {9.7}Economic Security}{36}{subsection.9.7}%
+\contentsline {subsubsection}{\numberline {9.7.1}Mining Attacks}{36}{subsubsection.9.7.1}%
+\contentsline {subsubsection}{\numberline {9.7.2}Slashing Conditions}{36}{subsubsection.9.7.2}%
+\contentsline {subsection}{\numberline {9.8}Key Zeroization}{37}{subsection.9.8}%
+\contentsline {subsection}{\numberline {9.9}Audit Status}{37}{subsection.9.9}%
+\contentsline {section}{\numberline {10}Conclusion}{37}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Summary}{37}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Ecosystem Benefits}{38}{subsection.10.2}%
+\contentsline {subsubsection}{\numberline {10.2.1}For Miners}{38}{subsubsection.10.2.1}%
+\contentsline {subsubsection}{\numberline {10.2.2}For Users}{38}{subsubsection.10.2.2}%
+\contentsline {subsubsection}{\numberline {10.2.3}For Developers}{38}{subsubsection.10.2.3}%
+\contentsline {subsection}{\numberline {10.3}Comparison with Alternatives}{38}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}Roadmap}{38}{subsection.10.4}%
+\contentsline {subsection}{\numberline {10.5}Future Work}{39}{subsection.10.5}%
+\contentsline {subsubsection}{\numberline {10.5.1}Near-Term}{39}{subsubsection.10.5.1}%
+\contentsline {subsubsection}{\numberline {10.5.2}Medium-Term}{39}{subsubsection.10.5.2}%
+\contentsline {subsubsection}{\numberline {10.5.3}Long-Term}{39}{subsubsection.10.5.3}%
+\contentsline {subsection}{\numberline {10.6}Open Source}{39}{subsection.10.6}%
+\contentsline {subsection}{\numberline {10.7}Acknowledgments}{39}{subsection.10.7}%
+\contentsline {subsection}{\numberline {10.8}Closing Remarks}{40}{subsection.10.8}%
+\contentsline {section}{\numberline {11}Shielded Mining via Zero-Knowledge Proofs}{40}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Overview}{40}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Z-Chain Integration}{40}{subsection.11.2}%
+\contentsline {subsubsection}{\numberline {11.2.1}Commitment Scheme}{40}{subsubsection.11.2.1}%
+\contentsline {subsection}{\numberline {11.3}Nullifier Scheme}{41}{subsection.11.3}%
+\contentsline {subsubsection}{\numberline {11.3.1}Nullifier Properties}{41}{subsubsection.11.3.1}%
+\contentsline {subsection}{\numberline {11.4}ZK Circuit Design}{41}{subsection.11.4}%
+\contentsline {subsubsection}{\numberline {11.4.1}Circuit Statement}{41}{subsubsection.11.4.1}%
+\contentsline {subsubsection}{\numberline {11.4.2}Circuit Pseudocode}{43}{subsubsection.11.4.2}%
+\contentsline {subsubsection}{\numberline {11.4.3}Proving System Selection}{43}{subsubsection.11.4.3}%
+\contentsline {subsubsection}{\numberline {11.4.4}Circuit Constraints}{43}{subsubsection.11.4.4}%
+\contentsline {subsection}{\numberline {11.5}Privacy Levels}{43}{subsection.11.5}%
+\contentsline {subsubsection}{\numberline {11.5.1}Level 1: Hidden Miner Identity}{44}{subsubsection.11.5.1}%
+\contentsline {subsubsection}{\numberline {11.5.2}Level 2: Hidden Workload}{44}{subsubsection.11.5.2}%
+\contentsline {subsubsection}{\numberline {11.5.3}Level 3: Fully Shielded}{44}{subsubsection.11.5.3}%
+\contentsline {subsection}{\numberline {11.6}Selective Disclosure}{45}{subsection.11.6}%
+\contentsline {subsubsection}{\numberline {11.6.1}Disclosure Levels}{45}{subsubsection.11.6.1}%
+\contentsline {subsection}{\numberline {11.7}Upgrade Path}{45}{subsection.11.7}%
+\contentsline {subsubsection}{\numberline {11.7.1}v1.0: Public Mining (Current)}{45}{subsubsection.11.7.1}%
+\contentsline {subsubsection}{\numberline {11.7.2}v2.0: Optional Shielded Mining}{46}{subsubsection.11.7.2}%
+\contentsline {subsubsection}{\numberline {11.7.3}v3.0: Default Shielded}{46}{subsubsection.11.7.3}%
+\contentsline {subsection}{\numberline {11.8}Security Analysis}{46}{subsection.11.8}%
+\contentsline {subsubsection}{\numberline {11.8.1}Threat Model}{46}{subsubsection.11.8.1}%
+\contentsline {subsubsection}{\numberline {11.8.2}Security Properties}{46}{subsubsection.11.8.2}%
+\contentsline {subsubsection}{\numberline {11.8.3}NVTrust in ZK}{47}{subsubsection.11.8.3}%
+\contentsline {subsection}{\numberline {11.9}Implementation Notes}{47}{subsection.11.9}%
+\contentsline {subsubsection}{\numberline {11.9.1}Prover Infrastructure}{47}{subsubsection.11.9.1}%
+\contentsline {subsubsection}{\numberline {11.9.2}Verifier Contract}{47}{subsubsection.11.9.2}%
+\contentsline {subsubsection}{\numberline {11.9.3}Gas Costs}{48}{subsubsection.11.9.3}%
+\contentsline {subsection}{\numberline {11.10}Summary}{48}{subsection.11.10}%
+\contentsline {section}{\numberline {12}Teleport Integration \& Governance}{48}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Architecture Overview}{48}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}Warp Messaging Integration}{49}{subsection.12.2}%
+\contentsline {subsubsection}{\numberline {12.2.1}Message Flow}{49}{subsubsection.12.2.1}%
+\contentsline {subsection}{\numberline {12.3}Teleport Protocol}{49}{subsection.12.3}%
+\contentsline {subsubsection}{\numberline {12.3.1}T-Chain Validator MPC}{50}{subsubsection.12.3.1}%
+\contentsline {subsection}{\numberline {12.4}Safe Multi-sig Management}{50}{subsection.12.4}%
+\contentsline {subsubsection}{\numberline {12.4.1}Safe Capabilities}{50}{subsubsection.12.4.1}%
+\contentsline {subsection}{\numberline {12.5}Initial LP Seeding}{50}{subsection.12.5}%
+\contentsline {subsubsection}{\numberline {12.5.1}LP Setup Process}{51}{subsubsection.12.5.1}%
+\contentsline {subsection}{\numberline {12.6}Governance Roadmap}{51}{subsection.12.6}%
+\contentsline {subsubsection}{\numberline {12.6.1}Phase 1: Safe Multi-sig}{51}{subsubsection.12.6.1}%
+\contentsline {subsubsection}{\numberline {12.6.2}Phase 2: DAO Governance}{51}{subsubsection.12.6.2}%
+\contentsline {subsubsection}{\numberline {12.6.3}Phase 3: Cross-chain DAO}{51}{subsubsection.12.6.3}%
+\contentsline {subsection}{\numberline {12.7}Top 20 EVM Deployment}{52}{subsection.12.7}%
+\contentsline {subsection}{\numberline {12.8}Contract Addresses}{52}{subsection.12.8}%
+\contentsline {subsection}{\numberline {12.9}Security Properties}{52}{subsection.12.9}%
+\contentsline {section}{\numberline {13}Multi-Chain Deployment Guide}{53}{section.13}%
+\contentsline {subsection}{\numberline {13.1}Overview}{53}{subsection.13.1}%
+\contentsline {subsection}{\numberline {13.2}Deployment Sequence}{53}{subsection.13.2}%
+\contentsline {subsubsection}{\numberline {13.2.1}Phase 1: Contract Deployment}{53}{subsubsection.13.2.1}%
+\contentsline {subsubsection}{\numberline {13.2.2}Deployment Order}{53}{subsubsection.13.2.2}%
+\contentsline {subsection}{\numberline {13.3}Safe Multi-sig Setup}{54}{subsection.13.3}%
+\contentsline {subsubsection}{\numberline {13.3.1}Safe Configuration}{54}{subsubsection.13.3.1}%
+\contentsline {subsubsection}{\numberline {13.3.2}Initial Admin Operations}{54}{subsubsection.13.3.2}%
+\contentsline {subsection}{\numberline {13.4}LP Seeding Protocol}{54}{subsection.13.4}%
+\contentsline {subsubsection}{\numberline {13.4.1}One-Sided LP Strategy}{54}{subsubsection.13.4.1}%
+\contentsline {subsubsection}{\numberline {13.4.2}LP Pool Creation}{54}{subsubsection.13.4.2}%
+\contentsline {subsubsection}{\numberline {13.4.3}Initial Price Discovery}{55}{subsubsection.13.4.3}%
+\contentsline {subsection}{\numberline {13.5}Bridge Authorization}{55}{subsection.13.5}%
+\contentsline {subsubsection}{\numberline {13.5.1}Lux Native Chains (Warp)}{55}{subsubsection.13.5.1}%
+\contentsline {subsubsection}{\numberline {13.5.2}External Chains (Teleport)}{55}{subsubsection.13.5.2}%
+\contentsline {subsection}{\numberline {13.6}Mining Contract Deployment}{56}{subsection.13.6}%
+\contentsline {subsubsection}{\numberline {13.6.1}Mining Contract Setup}{56}{subsubsection.13.6.1}%
+\contentsline {subsubsection}{\numberline {13.6.2}Mining Authorization}{56}{subsubsection.13.6.2}%
+\contentsline {subsection}{\numberline {13.7}Genesis Block Configuration}{56}{subsection.13.7}%
+\contentsline {subsubsection}{\numberline {13.7.1}Setting Genesis}{56}{subsubsection.13.7.1}%
+\contentsline {subsubsection}{\numberline {13.7.2}Genesis Timing}{57}{subsubsection.13.7.2}%
+\contentsline {subsection}{\numberline {13.8}Post-Deployment Verification}{57}{subsection.13.8}%
+\contentsline {subsubsection}{\numberline {13.8.1}Verification Checklist}{57}{subsubsection.13.8.1}%
+\contentsline {subsubsection}{\numberline {13.8.2}On-Chain Verification}{57}{subsubsection.13.8.2}%
+\contentsline {subsection}{\numberline {13.9}Emergency Procedures}{58}{subsection.13.9}%
+\contentsline {subsubsection}{\numberline {13.9.1}Pause Operations}{58}{subsubsection.13.9.1}%
+\contentsline {subsubsection}{\numberline {13.9.2}Bridge Revocation}{58}{subsubsection.13.9.2}%
+\contentsline {subsection}{\numberline {13.10}Governance Transition}{58}{subsection.13.10}%
+\contentsline {subsubsection}{\numberline {13.10.1}Phase 1: Safe Multi-sig (Launch)}{58}{subsubsection.13.10.1}%
+\contentsline {subsubsection}{\numberline {13.10.2}Phase 2: DAO Governance (Month 6+)}{59}{subsubsection.13.10.2}%
+\contentsline {subsubsection}{\numberline {13.10.3}Phase 3: Cross-chain Governance (Year 2+)}{59}{subsubsection.13.10.3}%
+\contentsline {subsection}{\numberline {13.11}Deployment Addresses}{59}{subsection.13.11}%
+\contentsline {subsubsection}{\numberline {13.11.1}Deterministic Addresses (CREATE2)}{59}{subsubsection.13.11.1}%
+\contentsline {subsection}{\numberline {13.12}Monitoring \& Analytics}{59}{subsection.13.12}%
+\contentsline {subsubsection}{\numberline {13.12.1}Key Metrics}{59}{subsubsection.13.12.1}%
+\contentsline {subsubsection}{\numberline {13.12.2}Dashboard Endpoints}{60}{subsubsection.13.12.2}%

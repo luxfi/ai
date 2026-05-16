@@ -1,0 +1,158 @@
+---
+title: Getting Started
+description: Install the Lux AI miner and start earning rewards in minutes
+---
+
+# Getting Started
+
+This guide will help you set up the Lux AI miner and start contributing GPU compute to the network.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- A GPU with at least 8GB VRAM (see [Hardware Requirements](/docs/mining/hardware))
+- Linux, macOS, or Windows with WSL2
+- A Lux Network wallet address
+- LUX tokens for staking (minimum 100 LUX)
+
+## Installation
+
+### Quick Install (Recommended)
+
+```bash
+# Download and install the Lux AI miner
+curl -fsSL https://get.lux.ai | sh
+
+# Verify installation
+lux-ai --version
+```
+
+### Manual Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/luxfi/ai.git
+cd ai
+
+# Build from source
+make build
+
+# Install
+sudo make install
+```
+
+### Docker Installation
+
+```bash
+# Pull the official image
+docker pull luxfi/ai-miner:latest
+
+# Run with GPU support
+docker run --gpus all -d \
+  -e WALLET_ADDRESS=<YOUR_WALLET> \
+  -v ~/.lux-ai:/data \
+  luxfi/ai-miner:latest
+```
+
+## Configuration
+
+### Initialize Your Miner
+
+```bash
+# Initialize with your wallet address
+lux-ai init --wallet <YOUR_WALLET_ADDRESS>
+
+# This creates ~/.lux-ai/config.yaml
+```
+
+### Configuration File
+
+Edit `~/.lux-ai/config.yaml` to customize your setup:
+
+```yaml
+# Wallet configuration
+wallet:
+  address: "lux1..."
+
+# GPU settings
+gpu:
+  enabled: true
+  devices: [0]  # GPU indices to use
+  memory_limit: 0.9  # Use 90% of VRAM
+
+# Models to serve
+models:
+  - llama-3.3-8b
+  - llama-3.3-70b
+
+# Network settings
+network:
+  port: 8080
+  api_key: ""  # Auto-generated if empty
+
+# Staking
+staking:
+  amount: 100  # LUX tokens to stake
+```
+
+## Start Mining
+
+```bash
+# Start the miner
+lux-ai start
+
+# View logs
+lux-ai logs -f
+
+# Check status
+lux-ai status
+```
+
+### Expected Output
+
+```
+[INFO] Lux AI Miner v1.0.0
+[INFO] Wallet: lux1qp8h...
+[INFO] GPU: NVIDIA RTX 4090 (24GB)
+[INFO] Loading model: llama-3.3-8b
+[INFO] Model loaded in 4.2s
+[INFO] Registering with network...
+[INFO] Registered successfully
+[INFO] Ready to accept requests
+[INFO] Listening on port 8080
+```
+
+## Verify Operation
+
+### Check Your Status
+
+```bash
+# View miner status
+lux-ai status
+```
+
+```
+Status: Online
+Uptime: 2h 34m
+Requests: 1,247
+Rewards: 45.23 LUX
+Trust Score: 98.5%
+```
+
+### View Earnings
+
+```bash
+# Check accumulated rewards
+lux-ai rewards
+
+# Claim rewards to wallet
+lux-ai rewards claim
+```
+
+## Next Steps
+
+- [Mining Configuration](/docs/mining) - Advanced mining settings
+- [Hardware Guide](/docs/mining/hardware) - Optimize your setup
+- [API Reference](/docs/api) - Use the API directly
+- [Rewards System](/docs/rewards) - Understand token economics
