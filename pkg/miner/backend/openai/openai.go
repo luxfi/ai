@@ -20,6 +20,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/luxfi/ai/pkg/miner/backend"
@@ -58,6 +59,12 @@ type Config struct {
 type Backend struct {
 	cfg    Config
 	client *http.Client
+
+	// skipLegacyCompletions is latched to true the first time the
+	// server tells us /completions is not available (HTTP 404 or 405).
+	// Subsequent Inference calls go straight to the Chat fallback,
+	// avoiding a useless round-trip on every task.
+	skipLegacyCompletions atomic.Bool
 }
 
 // New returns a backend configured against cfg. If cfg.BaseURL is empty,
@@ -72,6 +79,29 @@ func New(cfg Config) *Backend {
 		c = &http.Client{Timeout: DefaultTimeout}
 	}
 	return &Backend{cfg: cfg, client: c}
+}
+
+// StatusError reports a non-2xx HTTP response from the OpenAI-compatible
+// endpoint. Callers can `errors.As` against it to react to specific
+// status codes (e.g. 401 for re-auth, 429 for backoff).
+type StatusError struct {
+	// StatusCode is the HTTP response status code.
+	StatusCode int
+	// APIMessage is the structured `error.message` field returned in the
+	// JSON body, if the server provided one. Empty for non-JSON errors.
+	APIMessage string
+	// RawBody is the verbatim response body. Used only in the fallback
+	// rendering when the server didn't return a structured error.
+	RawBody string
+}
+
+// Error matches the legacy non-typed error format so log scrapers and
+// metric labels don't change when a caller upgrades.
+func (e *StatusError) Error() string {
+	if e.APIMessage != "" {
+		return fmt.Sprintf("openai: %s (status %d)", e.APIMessage, e.StatusCode)
+	}
+	return fmt.Sprintf("openai: status %d: %s", e.StatusCode, strings.TrimSpace(e.RawBody))
 }
 
 // Name implements backend.InferenceBackend.
@@ -175,35 +205,73 @@ type completionResponse struct {
 	Usage   chatUsage          `json:"usage"`
 }
 
-// Inference implements backend.InferenceBackend by calling /completions. Most
-// OpenAI-compatible local servers support this path; when they don't, the
-// caller should route inference tasks through Chat with a single user message
-// instead.
+// Inference implements backend.InferenceBackend. It prefers the legacy
+// /completions endpoint (still served by OpenAI, llama.cpp's `--legacy`,
+// and older ollama/vllm builds). When the server returns 404/405 — modern
+// vllm, recent ollama, LocalAI without the completions plugin — we fall
+// back to /chat/completions with a single user message and remember the
+// decision so subsequent tasks skip the /completions probe entirely.
+//
+// The fallback semantics match what callers had to implement by hand
+// before: a one-message chat completion. Token counts and the response
+// model name carry through unchanged.
 func (b *Backend) Inference(ctx context.Context, req backend.InferenceRequest) (backend.InferenceResponse, error) {
 	model := req.Model
 	if model == "" {
 		model = b.cfg.Model
 	}
 
-	payload := completionRequest{
-		Model:     model,
-		Prompt:    req.Prompt,
-		MaxTokens: req.MaxTokens,
+	if !b.skipLegacyCompletions.Load() {
+		payload := completionRequest{
+			Model:     model,
+			Prompt:    req.Prompt,
+			MaxTokens: req.MaxTokens,
+		}
+		var resp completionResponse
+		err := b.post(ctx, "/completions", payload, &resp)
+		switch {
+		case err == nil:
+			if len(resp.Choices) == 0 {
+				return backend.InferenceResponse{}, errors.New("openai: completion response has no choices")
+			}
+			return backend.InferenceResponse{
+				Text:   resp.Choices[0].Text,
+				Tokens: resp.Usage.CompletionTokens,
+				Model:  resp.Model,
+			}, nil
+		case isLegacyCompletionsMissing(err):
+			b.skipLegacyCompletions.Store(true)
+			// fall through to /chat/completions fallback
+		default:
+			return backend.InferenceResponse{}, err
+		}
 	}
 
-	var resp completionResponse
-	if err := b.post(ctx, "/completions", payload, &resp); err != nil {
+	chat, err := b.Chat(ctx, backend.ChatRequest{
+		Model:     model,
+		Messages:  []backend.Message{{Role: "user", Content: req.Prompt}},
+		MaxTokens: req.MaxTokens,
+	})
+	if err != nil {
 		return backend.InferenceResponse{}, err
 	}
-
-	if len(resp.Choices) == 0 {
-		return backend.InferenceResponse{}, errors.New("openai: completion response has no choices")
-	}
 	return backend.InferenceResponse{
-		Text:   resp.Choices[0].Text,
-		Tokens: resp.Usage.CompletionTokens,
-		Model:  resp.Model,
+		Text:   chat.Content,
+		Tokens: chat.Tokens,
+		Model:  chat.Model,
 	}, nil
+}
+
+// isLegacyCompletionsMissing reports whether err indicates the server
+// has no /completions endpoint. We treat 404 (Not Found) and 405 (Method
+// Not Allowed) as missing — both shapes appear in the wild depending on
+// the router. Any other status, including 4xx auth failures, is real.
+func isLegacyCompletionsMissing(err error) bool {
+	var se *StatusError
+	if !errors.As(err, &se) {
+		return false
+	}
+	return se.StatusCode == http.StatusNotFound || se.StatusCode == http.StatusMethodNotAllowed
 }
 
 // --- embeddings ---
@@ -288,10 +356,11 @@ func (b *Backend) post(ctx context.Context, path string, payload any, out any) e
 				Type    string `json:"type"`
 			} `json:"error"`
 		}
+		statusErr := &StatusError{StatusCode: resp.StatusCode, RawBody: string(respBody)}
 		if jerr := json.Unmarshal(respBody, &errEnv); jerr == nil && errEnv.Error.Message != "" {
-			return fmt.Errorf("openai: %s (status %d)", errEnv.Error.Message, resp.StatusCode)
+			statusErr.APIMessage = errEnv.Error.Message
 		}
-		return fmt.Errorf("openai: status %d: %s", resp.StatusCode, strings.TrimSpace(string(respBody)))
+		return statusErr
 	}
 
 	if err := json.Unmarshal(respBody, out); err != nil {
