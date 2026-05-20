@@ -1,0 +1,25 @@
+{
+  "brand": {
+    "name": "Lux",
+    "fullName": "Lux Cloud",
+    "description": "Decentralized cloud — Linux machines, Docker, Kubernetes, all powered by Hanzo Zero Trust.",
+    "website": "https://lux.cloud",
+    "copyright": "© 2026 Lux Industries Inc. All rights reserved.",
+    "colors": {
+      "primary": "#000000",
+      "secondary": "#222222",
+      "accent": "#FFD400",
+      "background": "#000000",
+      "foreground": "#FFFFFF"
+    },
+    "features": {
+      "enableMachines": true,
+      "enableStore": true,
+      "enableBackgroundMode": true
+    },
+    "paths": {
+      "nodeManager": "lux-node-manager",
+      "desktop": "lux-desktop"
+    }
+  }
+}
