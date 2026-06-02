@@ -72,7 +72,14 @@ func main() {
 
 	// ---- CalculateReward vectors (covers every branch) ----
 	var rv []rewardVector
-	gpus := []string{"GB200", "B200", "H200", "H100", "A100", "RTX 4090", "unknown", ""}
+	gpus := []string{
+		"GB200", "B200", "H200", "H100", "RTX PRO 6000", "GB10", "DGX Spark", // frontier
+		"A100", "MI300X", "L40S", // datacenter
+		"RTX 5090", "RTX 4090", "M4 Ultra", "RTX A6000", // prosumer
+		"RTX 4080", "Radeon RX 7900 XTX", "Strix Halo", "Ryzen AI Max+ 395", "Apple M4 Max", // consumer/APU
+		"Intel Arc A770", "Apple M4 Pro", "Apple M4", // integrated/entry
+		"CPU", "unknown", "", // baseline
+	}
 	times := []uint64{50, 99, 100, 999, 1000, 9999, 10000, 50000}
 	model := fill(1)
 	add := func(name, gpu string, t uint64, hasStats bool, uptime float64) {
