@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Cpu, MessageSquare, Settings, Coins, Send, Bot, User, Loader2 } from "lucide-react";
+import { BRAND } from "./brand";
 
 interface Message {
   role: "user" | "assistant";
@@ -128,7 +129,7 @@ function App() {
       {/* Sidebar */}
       <div className="w-16 bg-gray-950 flex flex-col items-center py-4 space-y-4">
         <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center font-bold text-lg">
-          L
+          {BRAND.name.charAt(0)}
         </div>
         <div className="flex-1 flex flex-col space-y-2 mt-4">
           <button
@@ -167,7 +168,7 @@ function App() {
           <>
             {/* Chat Header */}
             <div className="h-14 border-b border-gray-800 flex items-center px-4 justify-between">
-              <h1 className="text-lg font-semibold">Lux AI Chat</h1>
+              <h1 className="text-lg font-semibold">{BRAND.name} AI Chat</h1>
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
@@ -186,7 +187,7 @@ function App() {
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-gray-500">
                   <Bot size={48} className="mb-4" />
-                  <p>Start a conversation with Lux AI</p>
+                  <p>Start a conversation with {BRAND.name} AI</p>
                 </div>
               )}
               {messages.map((msg, i) => (
@@ -276,7 +277,7 @@ function App() {
                   <span className="text-sm">Rewards</span>
                 </div>
                 <p className="text-xl font-semibold">
-                  {minerStatus?.total_rewards.toFixed(4) ?? "0.0000"} LUX
+                  {minerStatus?.total_rewards.toFixed(4) ?? "0.0000"} {BRAND.nativeToken}
                 </p>
               </div>
               <div className="bg-gray-800 rounded-xl p-4">
@@ -383,10 +384,9 @@ function App() {
 
               <div className="bg-gray-800 rounded-xl p-6">
                 <h2 className="text-lg font-semibold mb-2">About</h2>
-                <p className="text-gray-400">Lux AI Desktop v0.1.0</p>
+                <p className="text-gray-400">{BRAND.productName} v0.1.0</p>
                 <p className="text-gray-500 text-sm mt-2">
-                  Mine AI tokens by contributing GPU compute and chat with AI models
-                  running on the Lux network.
+                  {BRAND.tagline}
                 </p>
               </div>
             </div>
