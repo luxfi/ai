@@ -16,7 +16,7 @@ env:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, spark]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Go
@@ -56,7 +56,7 @@ jobs:
         - goos: windows
           goarch: amd64
           name: lux-ai-windows-amd64.exe
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, spark]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Go
@@ -89,7 +89,7 @@ jobs:
   create-release:
     name: Create Release
     needs: build-binaries
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, spark]
     steps:
     - uses: actions/checkout@v4
       with:
