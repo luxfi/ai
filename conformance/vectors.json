@@ -330,6 +330,222 @@
       "expected_reward_wei": "3450000000000000"
     },
     {
+      "name": "gpu=\"RTX PRO 6000\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "RTX PRO 6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"RTX PRO 6000\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "RTX PRO 6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"RTX PRO 6000\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "RTX PRO 6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"RTX PRO 6000\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "RTX PRO 6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"RTX PRO 6000\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "RTX PRO 6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"RTX PRO 6000\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "RTX PRO 6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"RTX PRO 6000\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "RTX PRO 6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"RTX PRO 6000\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "RTX PRO 6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"GB10\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "GB10",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"GB10\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "GB10",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"GB10\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "GB10",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"GB10\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "GB10",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"GB10\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "GB10",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"GB10\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "GB10",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"GB10\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "GB10",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"GB10\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "GB10",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"DGX Spark\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "DGX Spark",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"DGX Spark\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "DGX Spark",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"DGX Spark\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "DGX Spark",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"DGX Spark\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "DGX Spark",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"DGX Spark\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "DGX Spark",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"DGX Spark\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "DGX Spark",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"DGX Spark\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "DGX Spark",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"DGX Spark\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "DGX Spark",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
       "name": "gpu=\"A100\"/t=50/nostats",
       "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
       "compute_time_ms": 50,
@@ -402,13 +618,229 @@
       "expected_reward_wei": "3300000000000000"
     },
     {
+      "name": "gpu=\"MI300X\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "MI300X",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1155000000000000"
+    },
+    {
+      "name": "gpu=\"MI300X\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "MI300X",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1155000000000000"
+    },
+    {
+      "name": "gpu=\"MI300X\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "MI300X",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1650000000000000"
+    },
+    {
+      "name": "gpu=\"MI300X\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "MI300X",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1650000000000000"
+    },
+    {
+      "name": "gpu=\"MI300X\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "MI300X",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2200000000000000"
+    },
+    {
+      "name": "gpu=\"MI300X\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "MI300X",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2200000000000000"
+    },
+    {
+      "name": "gpu=\"MI300X\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "MI300X",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3300000000000000"
+    },
+    {
+      "name": "gpu=\"MI300X\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "MI300X",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3300000000000000"
+    },
+    {
+      "name": "gpu=\"L40S\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "L40S",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1155000000000000"
+    },
+    {
+      "name": "gpu=\"L40S\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "L40S",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1155000000000000"
+    },
+    {
+      "name": "gpu=\"L40S\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "L40S",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1650000000000000"
+    },
+    {
+      "name": "gpu=\"L40S\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "L40S",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1650000000000000"
+    },
+    {
+      "name": "gpu=\"L40S\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "L40S",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2200000000000000"
+    },
+    {
+      "name": "gpu=\"L40S\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "L40S",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2200000000000000"
+    },
+    {
+      "name": "gpu=\"L40S\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "L40S",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3300000000000000"
+    },
+    {
+      "name": "gpu=\"L40S\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "L40S",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3300000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 5090\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "RTX 5090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1134000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 5090\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "RTX 5090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1134000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 5090\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "RTX 5090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1620000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 5090\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "RTX 5090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1620000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 5090\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "RTX 5090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2160000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 5090\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "RTX 5090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2160000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 5090\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "RTX 5090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3240000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 5090\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "RTX 5090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3240000000000000"
+    },
+    {
       "name": "gpu=\"RTX 4090\"/t=50/nostats",
       "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
       "compute_time_ms": 50,
       "gpu_model": "RTX 4090",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1102500000000000"
+      "expected_reward_wei": "1134000000000000"
     },
     {
       "name": "gpu=\"RTX 4090\"/t=99/nostats",
@@ -417,7 +849,7 @@
       "gpu_model": "RTX 4090",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1102500000000000"
+      "expected_reward_wei": "1134000000000000"
     },
     {
       "name": "gpu=\"RTX 4090\"/t=100/nostats",
@@ -426,7 +858,7 @@
       "gpu_model": "RTX 4090",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1575000000000000"
+      "expected_reward_wei": "1620000000000000"
     },
     {
       "name": "gpu=\"RTX 4090\"/t=999/nostats",
@@ -435,7 +867,7 @@
       "gpu_model": "RTX 4090",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1575000000000000"
+      "expected_reward_wei": "1620000000000000"
     },
     {
       "name": "gpu=\"RTX 4090\"/t=1000/nostats",
@@ -444,7 +876,7 @@
       "gpu_model": "RTX 4090",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "2100000000000000"
+      "expected_reward_wei": "2160000000000000"
     },
     {
       "name": "gpu=\"RTX 4090\"/t=9999/nostats",
@@ -453,7 +885,7 @@
       "gpu_model": "RTX 4090",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "2100000000000000"
+      "expected_reward_wei": "2160000000000000"
     },
     {
       "name": "gpu=\"RTX 4090\"/t=10000/nostats",
@@ -462,7 +894,7 @@
       "gpu_model": "RTX 4090",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "3150000000000000"
+      "expected_reward_wei": "3240000000000000"
     },
     {
       "name": "gpu=\"RTX 4090\"/t=50000/nostats",
@@ -471,7 +903,799 @@
       "gpu_model": "RTX 4090",
       "has_stats": false,
       "uptime": 0,
+      "expected_reward_wei": "3240000000000000"
+    },
+    {
+      "name": "gpu=\"M4 Ultra\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "M4 Ultra",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1134000000000000"
+    },
+    {
+      "name": "gpu=\"M4 Ultra\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "M4 Ultra",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1134000000000000"
+    },
+    {
+      "name": "gpu=\"M4 Ultra\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "M4 Ultra",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1620000000000000"
+    },
+    {
+      "name": "gpu=\"M4 Ultra\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "M4 Ultra",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1620000000000000"
+    },
+    {
+      "name": "gpu=\"M4 Ultra\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "M4 Ultra",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2160000000000000"
+    },
+    {
+      "name": "gpu=\"M4 Ultra\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "M4 Ultra",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2160000000000000"
+    },
+    {
+      "name": "gpu=\"M4 Ultra\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "M4 Ultra",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3240000000000000"
+    },
+    {
+      "name": "gpu=\"M4 Ultra\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "M4 Ultra",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3240000000000000"
+    },
+    {
+      "name": "gpu=\"RTX A6000\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "RTX A6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1134000000000000"
+    },
+    {
+      "name": "gpu=\"RTX A6000\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "RTX A6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1134000000000000"
+    },
+    {
+      "name": "gpu=\"RTX A6000\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "RTX A6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1620000000000000"
+    },
+    {
+      "name": "gpu=\"RTX A6000\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "RTX A6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1620000000000000"
+    },
+    {
+      "name": "gpu=\"RTX A6000\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "RTX A6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2160000000000000"
+    },
+    {
+      "name": "gpu=\"RTX A6000\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "RTX A6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2160000000000000"
+    },
+    {
+      "name": "gpu=\"RTX A6000\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "RTX A6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3240000000000000"
+    },
+    {
+      "name": "gpu=\"RTX A6000\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "RTX A6000",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3240000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4080\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "RTX 4080",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4080\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "RTX 4080",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4080\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "RTX 4080",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4080\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "RTX 4080",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4080\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "RTX 4080",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4080\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "RTX 4080",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4080\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "RTX 4080",
+      "has_stats": false,
+      "uptime": 0,
       "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4080\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "RTX 4080",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Radeon RX 7900 XTX\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "Radeon RX 7900 XTX",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"Radeon RX 7900 XTX\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "Radeon RX 7900 XTX",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"Radeon RX 7900 XTX\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "Radeon RX 7900 XTX",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"Radeon RX 7900 XTX\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "Radeon RX 7900 XTX",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"Radeon RX 7900 XTX\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "Radeon RX 7900 XTX",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"Radeon RX 7900 XTX\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "Radeon RX 7900 XTX",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"Radeon RX 7900 XTX\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "Radeon RX 7900 XTX",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Radeon RX 7900 XTX\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "Radeon RX 7900 XTX",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Strix Halo\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "Strix Halo",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"Strix Halo\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "Strix Halo",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"Strix Halo\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "Strix Halo",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"Strix Halo\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "Strix Halo",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"Strix Halo\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "Strix Halo",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"Strix Halo\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "Strix Halo",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"Strix Halo\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "Strix Halo",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Strix Halo\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "Strix Halo",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Ryzen AI Max+ 395\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "Ryzen AI Max+ 395",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"Ryzen AI Max+ 395\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "Ryzen AI Max+ 395",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"Ryzen AI Max+ 395\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "Ryzen AI Max+ 395",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"Ryzen AI Max+ 395\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "Ryzen AI Max+ 395",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"Ryzen AI Max+ 395\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "Ryzen AI Max+ 395",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"Ryzen AI Max+ 395\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "Ryzen AI Max+ 395",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"Ryzen AI Max+ 395\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "Ryzen AI Max+ 395",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Ryzen AI Max+ 395\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "Ryzen AI Max+ 395",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Max\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "Apple M4 Max",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Max\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "Apple M4 Max",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Max\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "Apple M4 Max",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Max\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "Apple M4 Max",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Max\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "Apple M4 Max",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Max\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "Apple M4 Max",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Max\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "Apple M4 Max",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Max\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "Apple M4 Max",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"Intel Arc A770\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "Intel Arc A770",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1081500000000000"
+    },
+    {
+      "name": "gpu=\"Intel Arc A770\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "Intel Arc A770",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1081500000000000"
+    },
+    {
+      "name": "gpu=\"Intel Arc A770\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "Intel Arc A770",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1545000000000000"
+    },
+    {
+      "name": "gpu=\"Intel Arc A770\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "Intel Arc A770",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1545000000000000"
+    },
+    {
+      "name": "gpu=\"Intel Arc A770\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "Intel Arc A770",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2060000000000000"
+    },
+    {
+      "name": "gpu=\"Intel Arc A770\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "Intel Arc A770",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2060000000000000"
+    },
+    {
+      "name": "gpu=\"Intel Arc A770\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "Intel Arc A770",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3090000000000000"
+    },
+    {
+      "name": "gpu=\"Intel Arc A770\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "Intel Arc A770",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3090000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Pro\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "Apple M4 Pro",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1081500000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Pro\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "Apple M4 Pro",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1081500000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Pro\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "Apple M4 Pro",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1545000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Pro\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "Apple M4 Pro",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1545000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Pro\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "Apple M4 Pro",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2060000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Pro\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "Apple M4 Pro",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2060000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Pro\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "Apple M4 Pro",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3090000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4 Pro\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "Apple M4 Pro",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3090000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "Apple M4",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1081500000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "Apple M4",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1081500000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "Apple M4",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1545000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "Apple M4",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1545000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "Apple M4",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2060000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "Apple M4",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2060000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "Apple M4",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3090000000000000"
+    },
+    {
+      "name": "gpu=\"Apple M4\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "Apple M4",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3090000000000000"
+    },
+    {
+      "name": "gpu=\"CPU\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "CPU",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1060500000000000"
+    },
+    {
+      "name": "gpu=\"CPU\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "CPU",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1060500000000000"
+    },
+    {
+      "name": "gpu=\"CPU\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "CPU",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1515000000000000"
+    },
+    {
+      "name": "gpu=\"CPU\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "CPU",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1515000000000000"
+    },
+    {
+      "name": "gpu=\"CPU\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "CPU",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2020000000000000"
+    },
+    {
+      "name": "gpu=\"CPU\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "CPU",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2020000000000000"
+    },
+    {
+      "name": "gpu=\"CPU\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "CPU",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3030000000000000"
+    },
+    {
+      "name": "gpu=\"CPU\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "CPU",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3030000000000000"
     },
     {
       "name": "gpu=\"unknown\"/t=50/nostats",
@@ -480,7 +1704,7 @@
       "gpu_model": "unknown",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1050000000000000"
+      "expected_reward_wei": "1060500000000000"
     },
     {
       "name": "gpu=\"unknown\"/t=99/nostats",
@@ -489,7 +1713,7 @@
       "gpu_model": "unknown",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1050000000000000"
+      "expected_reward_wei": "1060500000000000"
     },
     {
       "name": "gpu=\"unknown\"/t=100/nostats",
@@ -498,7 +1722,7 @@
       "gpu_model": "unknown",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1500000000000000"
+      "expected_reward_wei": "1515000000000000"
     },
     {
       "name": "gpu=\"unknown\"/t=999/nostats",
@@ -507,7 +1731,7 @@
       "gpu_model": "unknown",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1500000000000000"
+      "expected_reward_wei": "1515000000000000"
     },
     {
       "name": "gpu=\"unknown\"/t=1000/nostats",
@@ -516,7 +1740,7 @@
       "gpu_model": "unknown",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "2000000000000000"
+      "expected_reward_wei": "2020000000000000"
     },
     {
       "name": "gpu=\"unknown\"/t=9999/nostats",
@@ -525,7 +1749,7 @@
       "gpu_model": "unknown",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "2000000000000000"
+      "expected_reward_wei": "2020000000000000"
     },
     {
       "name": "gpu=\"unknown\"/t=10000/nostats",
@@ -534,7 +1758,7 @@
       "gpu_model": "unknown",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "3000000000000000"
+      "expected_reward_wei": "3030000000000000"
     },
     {
       "name": "gpu=\"unknown\"/t=50000/nostats",
@@ -543,7 +1767,7 @@
       "gpu_model": "unknown",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "3000000000000000"
+      "expected_reward_wei": "3030000000000000"
     },
     {
       "name": "gpu=\"\"/t=50/nostats",
@@ -552,7 +1776,7 @@
       "gpu_model": "",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1050000000000000"
+      "expected_reward_wei": "1060500000000000"
     },
     {
       "name": "gpu=\"\"/t=99/nostats",
@@ -561,7 +1785,7 @@
       "gpu_model": "",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1050000000000000"
+      "expected_reward_wei": "1060500000000000"
     },
     {
       "name": "gpu=\"\"/t=100/nostats",
@@ -570,7 +1794,7 @@
       "gpu_model": "",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1500000000000000"
+      "expected_reward_wei": "1515000000000000"
     },
     {
       "name": "gpu=\"\"/t=999/nostats",
@@ -579,7 +1803,7 @@
       "gpu_model": "",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "1500000000000000"
+      "expected_reward_wei": "1515000000000000"
     },
     {
       "name": "gpu=\"\"/t=1000/nostats",
@@ -588,7 +1812,7 @@
       "gpu_model": "",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "2000000000000000"
+      "expected_reward_wei": "2020000000000000"
     },
     {
       "name": "gpu=\"\"/t=9999/nostats",
@@ -597,7 +1821,7 @@
       "gpu_model": "",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "2000000000000000"
+      "expected_reward_wei": "2020000000000000"
     },
     {
       "name": "gpu=\"\"/t=10000/nostats",
@@ -606,7 +1830,7 @@
       "gpu_model": "",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "3000000000000000"
+      "expected_reward_wei": "3030000000000000"
     },
     {
       "name": "gpu=\"\"/t=50000/nostats",
@@ -615,7 +1839,7 @@
       "gpu_model": "",
       "has_stats": false,
       "uptime": 0,
-      "expected_reward_wei": "3000000000000000"
+      "expected_reward_wei": "3030000000000000"
     },
     {
       "name": "uptime=0/t=50",

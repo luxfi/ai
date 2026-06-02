@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math/big"
+	"strings"
 	"sync"
 	"time"
 )
@@ -118,19 +119,76 @@ func (rc *RewardCalculator) getComputeFactor(computeTimeMs uint64) float64 {
 	return 3.0
 }
 
-func (rc *RewardCalculator) getGPUBonus(gpuModel string) float64 {
-	switch gpuModel {
-	case "GB200", "B200": // Blackwell
+// GPUTier classifies ANY accelerator by capability so every device maps to a
+// reward bonus — no exhaustive model list, future/unknown hardware ("etc") is
+// covered by construction. The miner reports a vendor/model string; the mapping
+// is deterministic, lowercase keyword-based, and MUST stay identical in the Rust
+// port so Go and Rust agree byte-for-byte (see conformance/SPEC.md).
+type GPUTier int
+
+const (
+	TierUnknown           GPUTier = iota // CPU-only / unrecognized — still earns a baseline
+	TierIntegrated                       // integrated / entry GPU & base APU / base Apple Silicon
+	TierConsumer                         // mainstream discrete GPU / AI APU / Apple M*Max
+	TierProsumer                         // top desktop / workstation / Apple M*Ultra
+	TierDatacenter                       // datacenter inference/training (A100 / Instinct MI / L40)
+	TierFrontierHopper                   // NVIDIA Hopper + Blackwell workstation/desktop
+	TierFrontierBlackwell                // NVIDIA Blackwell datacenter
+)
+
+// Bonus is the additive reward multiplier for a tier. These are tokenomics
+// values — tunable; the tiers (not the numbers) are the durable structure.
+func (t GPUTier) Bonus() float64 {
+	switch t {
+	case TierFrontierBlackwell:
 		return 0.20
-	case "H200", "H100": // Hopper
+	case TierFrontierHopper:
 		return 0.15
-	case "A100":
+	case TierDatacenter:
 		return 0.10
-	case "RTX 4090":
+	case TierProsumer:
+		return 0.08
+	case TierConsumer:
 		return 0.05
+	case TierIntegrated:
+		return 0.03
 	default:
-		return 0.0
+		return 0.01 // CPU / unknown — every device earns something
 	}
+}
+
+// ClassifyGPU maps a device string (any vendor: NVIDIA/AMD/Apple/Intel, or CPU)
+// to a tier via deterministic, ordered keyword matching. Keep IDENTICAL in Rust.
+func ClassifyGPU(model string) GPUTier {
+	m := strings.ToLower(strings.TrimSpace(model))
+	has := func(subs ...string) bool {
+		for _, s := range subs {
+			if strings.Contains(m, s) {
+				return true
+			}
+		}
+		return false
+	}
+	switch {
+	case has("gb200", "b200", "b100"): // NVIDIA Blackwell datacenter
+		return TierFrontierBlackwell
+	case has("h100", "h200", "gh200", "rtx pro 6000", "rtx 6000", "6000 blackwell", "gb10", "dgx spark", "spark"): // Hopper DC + Blackwell workstation/desktop
+		return TierFrontierHopper
+	case has("a100", "l40", "a40", "a30", "mi300", "mi250", "mi210", "instinct"): // datacenter
+		return TierDatacenter
+	case has("5090", "4090", "ultra", "a6000", "6000 ada"): // top prosumer / Apple M*Ultra
+		return TierProsumer
+	case has("rtx 40", "rtx 30", "4080", "3090", "3080", "radeon rx", "rx 7", "rx 9", "strix halo", "ryzen ai max", "evo x2", " max"): // consumer discrete / AI APU / Apple M*Max
+		return TierConsumer
+	case has("arc", "iris", "vega", "apple m", "m1", "m2", "m3", "m4", " pro", "radeon"): // integrated / entry / base Apple / Intel
+		return TierIntegrated
+	default:
+		return TierUnknown // CPU-only / unrecognized
+	}
+}
+
+func (rc *RewardCalculator) getGPUBonus(gpuModel string) float64 {
+	return ClassifyGPU(gpuModel).Bonus()
 }
 
 // ProviderStats tracks provider statistics

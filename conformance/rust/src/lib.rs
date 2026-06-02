@@ -30,13 +30,25 @@ fn compute_factor(compute_time_ms: u64) -> f64 {
     else { 3.0 }
 }
 
+/// Tier classifier — keyword-identical to the Go `ClassifyGPU`+`GPUTier::Bonus`
+/// (see ../SPEC.md). Order matters; keep in lockstep with the Go source.
 fn gpu_bonus(gpu_model: &str) -> f64 {
-    match gpu_model {
-        "GB200" | "B200" => 0.20,
-        "H200" | "H100" => 0.15,
-        "A100" => 0.10,
-        "RTX 4090" => 0.05,
-        _ => 0.0,
+    let m = gpu_model.trim().to_lowercase();
+    let has = |subs: &[&str]| subs.iter().any(|s| m.contains(s));
+    if has(&["gb200", "b200", "b100"]) {
+        0.20 // Blackwell datacenter
+    } else if has(&["h100", "h200", "gh200", "rtx pro 6000", "rtx 6000", "6000 blackwell", "gb10", "dgx spark", "spark"]) {
+        0.15 // Hopper DC + Blackwell workstation/desktop
+    } else if has(&["a100", "l40", "a40", "a30", "mi300", "mi250", "mi210", "instinct"]) {
+        0.10 // datacenter
+    } else if has(&["5090", "4090", "ultra", "a6000", "6000 ada"]) {
+        0.08 // top prosumer / Apple M*Ultra
+    } else if has(&["rtx 40", "rtx 30", "4080", "3090", "3080", "radeon rx", "rx 7", "rx 9", "strix halo", "ryzen ai max", "evo x2", " max"]) {
+        0.05 // consumer discrete / AI APU / Apple M*Max
+    } else if has(&["arc", "iris", "vega", "apple m", "m1", "m2", "m3", "m4", " pro", "radeon"]) {
+        0.03 // integrated / entry / base Apple / Intel
+    } else {
+        0.01 // CPU / unknown — every device earns something
     }
 }
 
