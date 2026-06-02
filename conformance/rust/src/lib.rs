@@ -30,26 +30,50 @@ fn compute_factor(compute_time_ms: u64) -> f64 {
     else { 3.0 }
 }
 
-/// Tier classifier — keyword-identical to the Go `ClassifyGPU`+`GPUTier::Bonus`
-/// (see ../SPEC.md). Order matters; keep in lockstep with the Go source.
-fn gpu_bonus(gpu_model: &str) -> f64 {
+// Two orthogonal axes (keyword-identical to the Go `ClassifyCompute` +
+// `ClassifyConfidentialComputeByModel`, see ../SPEC.md): raw compute class and
+// confidential-compute trust. Integer percent throughout — no float truncation.
+// Order matters; keep in lockstep with the Go source.
+
+fn compute_base_bonus_pct(gpu_model: &str) -> u128 {
     let m = gpu_model.trim().to_lowercase();
     let has = |subs: &[&str]| subs.iter().any(|s| m.contains(s));
     if has(&["gb200", "b200", "b100"]) {
-        0.20 // Blackwell datacenter
-    } else if has(&["h100", "h200", "gh200", "rtx pro 6000", "rtx 6000", "6000 blackwell", "gb10", "dgx spark", "spark"]) {
-        0.15 // Hopper DC + Blackwell workstation/desktop
-    } else if has(&["a100", "l40", "a40", "a30", "mi300", "mi250", "mi210", "instinct"]) {
-        0.10 // datacenter
-    } else if has(&["5090", "4090", "ultra", "a6000", "6000 ada"]) {
-        0.08 // top prosumer / Apple M*Ultra
+        20 // frontier datacenter
+    } else if has(&["h100", "h200", "gh200", "mi300"]) {
+        15 // premium datacenter
+    } else if has(&["a100", "l40", "a40", "a30", "mi250", "mi210", "instinct"]) {
+        10 // datacenter
+    } else if has(&["rtx pro 6000", "rtx 6000", "6000 blackwell", "6000 ada", "a6000"]) {
+        8 // workstation-AI (RTX PRO 6000 ~7x a Spark)
+    } else if has(&["5090", "4090", "ultra", "gb10", "dgx spark", "spark"]) {
+        6 // prosumer high-end / Apple M*Ultra / desktop appliance
     } else if has(&["rtx 40", "rtx 30", "4080", "3090", "3080", "radeon rx", "rx 7", "rx 9", "strix halo", "ryzen ai max", "evo x2", " max"]) {
-        0.05 // consumer discrete / AI APU / Apple M*Max
+        4 // consumer discrete / AI APU / Apple M*Max
     } else if has(&["arc", "iris", "vega", "apple m", "m1", "m2", "m3", "m4", " pro", "radeon"]) {
-        0.03 // integrated / entry / base Apple / Intel
+        2 // integrated / entry / base Apple / Intel
     } else {
-        0.01 // CPU / unknown — every device earns something
+        1 // CPU / unknown — every device earns something
     }
+}
+
+// model string -> at most CapableGpuTee (4%). DGX Spark/GB10 explicitly excluded.
+fn confidential_compute_bonus_pct(gpu_model: &str) -> u128 {
+    let m = gpu_model.trim().to_lowercase();
+    let has = |subs: &[&str]| subs.iter().any(|s| m.contains(s));
+    if has(&["dgx spark", "gb10", "spark"]) {
+        0 // local desktop AI — NOT GPU-TEE class
+    } else if has(&["gb200", "b200", "b100", "h100", "h200", "gh200"]) {
+        4 // Hopper/Blackwell datacenter GPU CC (CapableGpuTee)
+    } else if has(&["rtx pro 6000 blackwell", "rtx pro 6000", "rtx 6000 blackwell"]) {
+        4 // Blackwell workstation CC (exact, not generic rtx 6000)
+    } else {
+        0
+    }
+}
+
+fn node_capability_bonus_pct(gpu_model: &str) -> u128 {
+    compute_base_bonus_pct(gpu_model) + confidential_compute_bonus_pct(gpu_model)
 }
 
 /// PINNED ROUNDING RULE (see SPEC.md): scale a float factor to an integer
@@ -69,8 +93,8 @@ pub fn calculate_reward(model_complexity: f64, compute_time_ms: u64, gpu_model: 
     reward = reward * pct(model_complexity) / 100;
     // compute time factor — multiplicative
     reward = reward * pct(compute_factor(compute_time_ms)) / 100;
-    // gpu tier bonus — additive percentage of running reward
-    let bonus = reward * pct(gpu_bonus(gpu_model)) / 100;
+    // node capability bonus (compute class + confidential-compute trust), integer %
+    let bonus = reward * node_capability_bonus_pct(gpu_model) / 100;
     reward += bonus;
     // uptime bonus (>= 0.999)
     if let Some(uptime) = stats {
