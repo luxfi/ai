@@ -79,9 +79,9 @@ func (rc *RewardCalculator) CalculateReward(receipt *Receipt, providerStats *Pro
 	reward.Mul(reward, big.NewInt(int64(computeFactor*100)))
 	reward.Div(reward, big.NewInt(100))
 
-	// GPU tier bonus
-	gpuBonus := rc.getGPUBonus(receipt.GPUModel)
-	bonusAmount := new(big.Int).Mul(reward, big.NewInt(int64(gpuBonus*100)))
+	// Node capability bonus: compute class + confidential-compute trust (integer %).
+	pct := nodeCapabilityBonusPct(receipt.GPUModel)
+	bonusAmount := new(big.Int).Mul(reward, big.NewInt(pct))
 	bonusAmount.Div(bonusAmount, big.NewInt(100))
 	reward.Add(reward, bonusAmount)
 
@@ -119,76 +119,131 @@ func (rc *RewardCalculator) getComputeFactor(computeTimeMs uint64) float64 {
 	return 3.0
 }
 
-// GPUTier classifies ANY accelerator by capability so every device maps to a
-// reward bonus — no exhaustive model list, future/unknown hardware ("etc") is
-// covered by construction. The miner reports a vendor/model string; the mapping
-// is deterministic, lowercase keyword-based, and MUST stay identical in the Rust
-// port so Go and Rust agree byte-for-byte (see conformance/SPEC.md).
-type GPUTier int
+// Two orthogonal axes price a node: ComputeClass (raw throughput) and
+// ConfidentialCompute (TEE trust). Both are deterministic keyword maps that MUST
+// stay identical in the Rust port (see conformance/SPEC.md). These tiers are the
+// durable structure; the integer percents are BOOTSTRAP tokenomics — once the HMM
+// compute market is live they become a reserve/quality signal feeding the market,
+// not the final price (the market prices fair value from supply/demand).
+
+// ComputeClass ranks raw AI-compute capability of a device.
+type ComputeClass int
 
 const (
-	TierUnknown           GPUTier = iota // CPU-only / unrecognized — still earns a baseline
-	TierIntegrated                       // integrated / entry GPU & base APU / base Apple Silicon
-	TierConsumer                         // mainstream discrete GPU / AI APU / Apple M*Max
-	TierProsumer                         // top desktop / workstation / Apple M*Ultra
-	TierDatacenter                       // datacenter inference/training (A100 / Instinct MI / L40)
-	TierFrontierHopper                   // NVIDIA Hopper + Blackwell workstation/desktop
-	TierFrontierBlackwell                // NVIDIA Blackwell datacenter
+	ClassCpuOrUnknown      ComputeClass = iota // CPU-only / unrecognized — still earns a baseline
+	ClassIntegratedOrEntry                     // integrated / entry GPU, base Apple Silicon, Intel Arc
+	ClassConsumerDiscrete                      // mainstream discrete GPU / AI APU / Apple M*Max
+	ClassProsumerHighEnd                       // RTX 5090/4090, Apple M*Ultra, DGX Spark/GB10 desktop appliance
+	ClassWorkstationAi                         // RTX PRO 6000 Blackwell / 6000 Ada / A6000 (~7x a Spark)
+	ClassDatacenter                            // A100 / L40S / A40 / Instinct MI250
+	ClassPremiumDatacenter                     // H100 / H200 / GH200 / MI300
+	ClassFrontierDatacenter                    // GB200 / B200
 )
 
-// Bonus is the additive reward multiplier for a tier. These are tokenomics
-// values — tunable; the tiers (not the numbers) are the durable structure.
-func (t GPUTier) Bonus() float64 {
-	switch t {
-	case TierFrontierBlackwell:
-		return 0.20
-	case TierFrontierHopper:
-		return 0.15
-	case TierDatacenter:
-		return 0.10
-	case TierProsumer:
-		return 0.08
-	case TierConsumer:
-		return 0.05
-	case TierIntegrated:
-		return 0.03
+// BaseBonusPct is an INTEGER percent (no float, so no truncation artifacts).
+func (c ComputeClass) BaseBonusPct() int64 {
+	switch c {
+	case ClassFrontierDatacenter:
+		return 20
+	case ClassPremiumDatacenter:
+		return 15
+	case ClassDatacenter:
+		return 10
+	case ClassWorkstationAi:
+		return 8
+	case ClassProsumerHighEnd:
+		return 6
+	case ClassConsumerDiscrete:
+		return 4
+	case ClassIntegratedOrEntry:
+		return 2
 	default:
-		return 0.01 // CPU / unknown — every device earns something
+		return 1 // CPU / unknown — every device earns something
 	}
 }
 
-// ClassifyGPU maps a device string (any vendor: NVIDIA/AMD/Apple/Intel, or CPU)
-// to a tier via deterministic, ordered keyword matching. Keep IDENTICAL in Rust.
-func ClassifyGPU(model string) GPUTier {
-	m := strings.ToLower(strings.TrimSpace(model))
-	has := func(subs ...string) bool {
-		for _, s := range subs {
-			if strings.Contains(m, s) {
-				return true
-			}
+// ConfidentialCompute ranks trusted-execution capability — ORTHOGONAL to throughput.
+// NVIDIA GPU confidential computing began with Hopper/H100; Blackwell strengthens
+// attestation. A model string yields at most CapableGpuTee; runtime attestation
+// (attested GPU TEE + IO path) upgrades to VerifiedGpuTee. DGX Spark/GB10 are NOT
+// GPU-TEE class regardless of Blackwell branding.
+type ConfidentialCompute int
+
+const (
+	CCNone           ConfidentialCompute = iota // no GPU TEE
+	CCUnknown                                   // undetermined
+	CCCpuTeeOnly                                // CPU TEE (SEV/TDX) but GPU unprotected
+	CCCapableGpuTee                             // hardware family supports GPU TEE, not yet attested
+	CCVerifiedGpuTee                            // attested CC mode with verified IO path
+)
+
+// CapabilityBonusPct is the trust premium (integer percent).
+func (cc ConfidentialCompute) CapabilityBonusPct() int64 {
+	switch cc {
+	case CCVerifiedGpuTee:
+		return 8
+	case CCCapableGpuTee:
+		return 4
+	case CCCpuTeeOnly:
+		return 1
+	default:
+		return 0 // None / Unknown
+	}
+}
+
+func hasAny(m string, subs ...string) bool {
+	for _, s := range subs {
+		if strings.Contains(m, s) {
+			return true
 		}
-		return false
 	}
+	return false
+}
+
+// ClassifyCompute maps any vendor/model string to a ComputeClass. Keep IDENTICAL in Rust.
+func ClassifyCompute(model string) ComputeClass {
+	m := strings.ToLower(strings.TrimSpace(model))
 	switch {
-	case has("gb200", "b200", "b100"): // NVIDIA Blackwell datacenter
-		return TierFrontierBlackwell
-	case has("h100", "h200", "gh200", "rtx pro 6000", "rtx 6000", "6000 blackwell", "gb10", "dgx spark", "spark"): // Hopper DC + Blackwell workstation/desktop
-		return TierFrontierHopper
-	case has("a100", "l40", "a40", "a30", "mi300", "mi250", "mi210", "instinct"): // datacenter
-		return TierDatacenter
-	case has("5090", "4090", "ultra", "a6000", "6000 ada"): // top prosumer / Apple M*Ultra
-		return TierProsumer
-	case has("rtx 40", "rtx 30", "4080", "3090", "3080", "radeon rx", "rx 7", "rx 9", "strix halo", "ryzen ai max", "evo x2", " max"): // consumer discrete / AI APU / Apple M*Max
-		return TierConsumer
-	case has("arc", "iris", "vega", "apple m", "m1", "m2", "m3", "m4", " pro", "radeon"): // integrated / entry / base Apple / Intel
-		return TierIntegrated
+	case hasAny(m, "gb200", "b200", "b100"):
+		return ClassFrontierDatacenter
+	case hasAny(m, "h100", "h200", "gh200", "mi300"):
+		return ClassPremiumDatacenter
+	case hasAny(m, "a100", "l40", "a40", "a30", "mi250", "mi210", "instinct"):
+		return ClassDatacenter
+	// RTX PRO 6000 Blackwell is ~7x a DGX Spark (GDDR7 ~1.8TB/s, far more FLOPs) -> workstation, above Spark.
+	case hasAny(m, "rtx pro 6000", "rtx 6000", "6000 blackwell", "6000 ada", "a6000"):
+		return ClassWorkstationAi
+	case hasAny(m, "5090", "4090", "ultra", "gb10", "dgx spark", "spark"):
+		return ClassProsumerHighEnd
+	case hasAny(m, "rtx 40", "rtx 30", "4080", "3090", "3080", "radeon rx", "rx 7", "rx 9", "strix halo", "ryzen ai max", "evo x2", " max"):
+		return ClassConsumerDiscrete
+	case hasAny(m, "arc", "iris", "vega", "apple m", "m1", "m2", "m3", "m4", " pro", "radeon"):
+		return ClassIntegratedOrEntry
 	default:
-		return TierUnknown // CPU-only / unrecognized
+		return ClassCpuOrUnknown
 	}
 }
 
-func (rc *RewardCalculator) getGPUBonus(gpuModel string) float64 {
-	return ClassifyGPU(gpuModel).Bonus()
+// ClassifyConfidentialComputeByModel maps a model string to at most CapableGpuTee.
+// DGX Spark/GB10 are explicitly excluded. Keep IDENTICAL in Rust.
+func ClassifyConfidentialComputeByModel(model string) ConfidentialCompute {
+	m := strings.ToLower(strings.TrimSpace(model))
+	switch {
+	case hasAny(m, "dgx spark", "gb10", "spark"): // local desktop AI — NOT GPU-TEE class
+		return CCNone
+	case hasAny(m, "gb200", "b200", "b100", "h100", "h200", "gh200"): // Hopper/Blackwell datacenter GPU CC
+		return CCCapableGpuTee
+	case hasAny(m, "rtx pro 6000 blackwell", "rtx pro 6000", "rtx 6000 blackwell"): // Blackwell workstation CC (exact, not generic rtx 6000)
+		return CCCapableGpuTee
+	default:
+		return CCNone
+	}
+}
+
+// nodeCapabilityBonusPct = raw compute class + confidential-compute trust (integer %).
+// Runtime attestation can add the Verified delta on top of the model-derived value.
+func nodeCapabilityBonusPct(gpuModel string) int64 {
+	return ClassifyCompute(gpuModel).BaseBonusPct() + ClassifyConfidentialComputeByModel(gpuModel).CapabilityBonusPct()
 }
 
 // ProviderStats tracks provider statistics
