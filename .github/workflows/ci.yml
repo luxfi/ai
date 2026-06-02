@@ -16,7 +16,7 @@ jobs:
   # Quick checks that should pass before running expensive tests
   pre-checks:
     name: Pre-flight Checks
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
       - uses: actions/checkout@v4
 
@@ -43,7 +43,7 @@ jobs:
   # Unit tests
   unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     needs: pre-checks
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +69,7 @@ jobs:
   # Integration tests
   integration-tests:
     name: Integration Tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     needs: pre-checks
     steps:
       - uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
   # Security audit
   security-audit:
     name: Security Audit
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     needs: pre-checks
     steps:
       - uses: actions/checkout@v4
@@ -126,9 +126,10 @@ jobs:
   # Build release binaries
   build-release:
     name: Build ${{ matrix.goos }}-${{ matrix.goarch }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     needs: [unit-tests, integration-tests]
     strategy:
+      fail-fast: false
       matrix:
         include:
           - goos: linux
@@ -168,7 +169,7 @@ jobs:
   # Final status check
   status-check:
     name: CI Status Check
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     needs:
       - pre-checks
       - unit-tests
