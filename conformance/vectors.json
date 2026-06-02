@@ -1,0 +1,693 @@
+{
+  "_reference": "github.com/luxfi/ai/pkg/rewards",
+  "_spec": "../SPEC.md",
+  "base_reward_wei": "1000000000000000",
+  "hash_vectors": [
+    {
+      "name": "zeros",
+      "job_id": "",
+      "provider_id": "",
+      "model_hash": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "input_hash": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "output_hash": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_hash": "b11eb469e77f6577dbc8d7ca1562f599efc5701b26868d2726ae5581099df6a1"
+    },
+    {
+      "name": "basic",
+      "job_id": "job-1",
+      "provider_id": "prov-1",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "input_hash": "02030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021",
+      "output_hash": "030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122",
+      "expected_hash": "f5e436aec330dcb52427363c57bdd626db4a7c16ba6e6f9a00d6aa3092355e2e"
+    },
+    {
+      "name": "unicode",
+      "job_id": "jöb-π",
+      "provider_id": "prov-本",
+      "model_hash": "090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728",
+      "input_hash": "08090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627",
+      "output_hash": "0708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20212223242526",
+      "expected_hash": "2e77d75ff2345c2c35a33edcc28a2bb697268b3f135b5d77303abeb7fe5943f2"
+    },
+    {
+      "name": "long-ids",
+      "job_id": "job-0123456789abcdef",
+      "provider_id": "provider-fedcba9876543210",
+      "model_hash": "404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f",
+      "input_hash": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+      "output_hash": "c0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedf",
+      "expected_hash": "4a576de3c4df15f888c8b6a15951349fcc3ea53ed6ba26358cf0a1eb2648e529"
+    }
+  ],
+  "reward_vectors": [
+    {
+      "name": "gpu=\"GB200\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "GB200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1260000000000000"
+    },
+    {
+      "name": "gpu=\"GB200\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "GB200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1260000000000000"
+    },
+    {
+      "name": "gpu=\"GB200\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "GB200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1800000000000000"
+    },
+    {
+      "name": "gpu=\"GB200\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "GB200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1800000000000000"
+    },
+    {
+      "name": "gpu=\"GB200\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "GB200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2400000000000000"
+    },
+    {
+      "name": "gpu=\"GB200\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "GB200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2400000000000000"
+    },
+    {
+      "name": "gpu=\"GB200\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "GB200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3600000000000000"
+    },
+    {
+      "name": "gpu=\"GB200\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "GB200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3600000000000000"
+    },
+    {
+      "name": "gpu=\"B200\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "B200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1260000000000000"
+    },
+    {
+      "name": "gpu=\"B200\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "B200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1260000000000000"
+    },
+    {
+      "name": "gpu=\"B200\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "B200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1800000000000000"
+    },
+    {
+      "name": "gpu=\"B200\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "B200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1800000000000000"
+    },
+    {
+      "name": "gpu=\"B200\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "B200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2400000000000000"
+    },
+    {
+      "name": "gpu=\"B200\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "B200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2400000000000000"
+    },
+    {
+      "name": "gpu=\"B200\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "B200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3600000000000000"
+    },
+    {
+      "name": "gpu=\"B200\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "B200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3600000000000000"
+    },
+    {
+      "name": "gpu=\"H200\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "H200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"H200\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "H200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"H200\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "H200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"H200\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "H200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"H200\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "H200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"H200\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "H200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"H200\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "H200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"H200\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "H200",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"H100\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "H100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"H100\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "H100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "gpu=\"H100\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "H100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"H100\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "H100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1725000000000000"
+    },
+    {
+      "name": "gpu=\"H100\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "H100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"H100\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "H100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "gpu=\"H100\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "H100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"H100\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "H100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3450000000000000"
+    },
+    {
+      "name": "gpu=\"A100\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "A100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1155000000000000"
+    },
+    {
+      "name": "gpu=\"A100\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "A100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1155000000000000"
+    },
+    {
+      "name": "gpu=\"A100\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "A100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1650000000000000"
+    },
+    {
+      "name": "gpu=\"A100\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "A100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1650000000000000"
+    },
+    {
+      "name": "gpu=\"A100\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "A100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2200000000000000"
+    },
+    {
+      "name": "gpu=\"A100\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "A100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2200000000000000"
+    },
+    {
+      "name": "gpu=\"A100\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "A100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3300000000000000"
+    },
+    {
+      "name": "gpu=\"A100\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "A100",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3300000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4090\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "RTX 4090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4090\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "RTX 4090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1102500000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4090\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "RTX 4090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4090\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "RTX 4090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1575000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4090\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "RTX 4090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4090\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "RTX 4090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2100000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4090\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "RTX 4090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"RTX 4090\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "RTX 4090",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3150000000000000"
+    },
+    {
+      "name": "gpu=\"unknown\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "unknown",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1050000000000000"
+    },
+    {
+      "name": "gpu=\"unknown\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "unknown",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1050000000000000"
+    },
+    {
+      "name": "gpu=\"unknown\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "unknown",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1500000000000000"
+    },
+    {
+      "name": "gpu=\"unknown\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "unknown",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1500000000000000"
+    },
+    {
+      "name": "gpu=\"unknown\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "unknown",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2000000000000000"
+    },
+    {
+      "name": "gpu=\"unknown\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "unknown",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2000000000000000"
+    },
+    {
+      "name": "gpu=\"unknown\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "unknown",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3000000000000000"
+    },
+    {
+      "name": "gpu=\"unknown\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "unknown",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3000000000000000"
+    },
+    {
+      "name": "gpu=\"\"/t=50/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1050000000000000"
+    },
+    {
+      "name": "gpu=\"\"/t=99/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 99,
+      "gpu_model": "",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1050000000000000"
+    },
+    {
+      "name": "gpu=\"\"/t=100/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 100,
+      "gpu_model": "",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1500000000000000"
+    },
+    {
+      "name": "gpu=\"\"/t=999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 999,
+      "gpu_model": "",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "1500000000000000"
+    },
+    {
+      "name": "gpu=\"\"/t=1000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 1000,
+      "gpu_model": "",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2000000000000000"
+    },
+    {
+      "name": "gpu=\"\"/t=9999/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 9999,
+      "gpu_model": "",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "2000000000000000"
+    },
+    {
+      "name": "gpu=\"\"/t=10000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 10000,
+      "gpu_model": "",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3000000000000000"
+    },
+    {
+      "name": "gpu=\"\"/t=50000/nostats",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50000,
+      "gpu_model": "",
+      "has_stats": false,
+      "uptime": 0,
+      "expected_reward_wei": "3000000000000000"
+    },
+    {
+      "name": "uptime=0/t=50",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "H100",
+      "has_stats": true,
+      "uptime": 0,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "uptime=0/t=5000",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 5000,
+      "gpu_model": "H100",
+      "has_stats": true,
+      "uptime": 0,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "uptime=0.998/t=50",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "H100",
+      "has_stats": true,
+      "uptime": 0.998,
+      "expected_reward_wei": "1207500000000000"
+    },
+    {
+      "name": "uptime=0.998/t=5000",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 5000,
+      "gpu_model": "H100",
+      "has_stats": true,
+      "uptime": 0.998,
+      "expected_reward_wei": "2300000000000000"
+    },
+    {
+      "name": "uptime=0.999/t=50",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "H100",
+      "has_stats": true,
+      "uptime": 0.999,
+      "expected_reward_wei": "1328250000000000"
+    },
+    {
+      "name": "uptime=0.999/t=5000",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 5000,
+      "gpu_model": "H100",
+      "has_stats": true,
+      "uptime": 0.999,
+      "expected_reward_wei": "2530000000000000"
+    },
+    {
+      "name": "uptime=1/t=50",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 50,
+      "gpu_model": "H100",
+      "has_stats": true,
+      "uptime": 1,
+      "expected_reward_wei": "1328250000000000"
+    },
+    {
+      "name": "uptime=1/t=5000",
+      "model_hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "compute_time_ms": 5000,
+      "gpu_model": "H100",
+      "has_stats": true,
+      "uptime": 1,
+      "expected_reward_wei": "2530000000000000"
+    }
+  ]
+}
