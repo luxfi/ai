@@ -18,10 +18,10 @@ import (
 
 // BenchmarkConfig holds configuration for database benchmarks
 type BenchmarkConfig struct {
-	Name       string
-	DBType     string
-	NumBlocks  int
-	BlockSize  int // bytes per block
+	Name          string
+	DBType        string
+	NumBlocks     int
+	BlockSize     int // bytes per block
 	NumTxPerBlock int
 }
 
@@ -62,10 +62,10 @@ func serializeBlock(block *BlockData) []byte {
 // BenchmarkZapDBBlockWrite benchmarks writing blocks to ZapDB
 func BenchmarkZapDBBlockWrite(b *testing.B) {
 	configs := []BenchmarkConfig{
-		{"SmallBlocks", "zapdb", 1000, 1024, 10},           // 1KB blocks, 10 tx
-		{"MediumBlocks", "zapdb", 1000, 32768, 100},        // 32KB blocks, 100 tx
-		{"LargeBlocks", "zapdb", 1000, 131072, 500},        // 128KB blocks, 500 tx
-		{"XLargeBlocks", "zapdb", 500, 524288, 1000},       // 512KB blocks, 1000 tx
+		{"SmallBlocks", "zapdb", 1000, 1024, 10},     // 1KB blocks, 10 tx
+		{"MediumBlocks", "zapdb", 1000, 32768, 100},  // 32KB blocks, 100 tx
+		{"LargeBlocks", "zapdb", 1000, 131072, 500},  // 128KB blocks, 500 tx
+		{"XLargeBlocks", "zapdb", 500, 524288, 1000}, // 512KB blocks, 1000 tx
 	}
 
 	for _, cfg := range configs {
