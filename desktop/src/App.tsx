@@ -25,7 +25,7 @@ function App() {
   const [models, setModels] = useState<string[]>([]);
   const [minerStatus, setMinerStatus] = useState<MinerStatus | null>(null);
   const [wallet, setWallet] = useState("");
-  const [nodeUrl, setNodeUrl] = useState("http://localhost:9090");
+  const [nodeUrl, setNodeUrl] = useState("http://localhost:36900");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -351,7 +351,7 @@ function App() {
                   type="text"
                   value={nodeUrl}
                   onChange={(e) => setNodeUrl(e.target.value)}
-                  placeholder="http://localhost:9090"
+                  placeholder="http://localhost:36900"
                   className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
                 <button
