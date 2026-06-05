@@ -70,8 +70,8 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
                             tauri::async_runtime::spawn(async move {
                                 match recreate_window(app_handle_clone.clone(), Window::Main, true) {
                                     Ok(window) => {
-                                        window.once("zoo-app-ready", move |_| {
-                                            log::info!("zoo-app-ready event received, emitting store-deep-link");
+                                        window.once("hanzo-app-ready", move |_| {
+                                            log::info!("hanzo-app-ready event received, emitting store-deep-link");
                                             let _ = app_handle_clone.emit_to(
                                                 Window::Main.as_str(),
                                                 "store-deep-link",
@@ -143,8 +143,8 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
                             tauri::async_runtime::spawn(async move {
                                 match recreate_window(app_handle_clone.clone(), Window::Main, true) {
                                     Ok(window) => {
-                                        window.once("zoo-app-ready", move |_| {
-                                            log::info!("zoo-app-ready event received, emitting config-deep-link");
+                                        window.once("hanzo-app-ready", move |_| {
+                                            log::info!("hanzo-app-ready event received, emitting config-deep-link");
                                             let _ = app_handle_clone.emit_to(
                                                 Window::Main.as_str(),
                                                 "config-deep-link",
