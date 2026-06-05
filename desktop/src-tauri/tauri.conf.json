@@ -1,7 +1,7 @@
 {
   "build": {
-    "beforeDevCommand": "bun x vite",
-    "beforeBuildCommand": "bun x vite build",
+    "beforeDevCommand": "VITE_BRAND=lux bun x vite",
+    "beforeBuildCommand": "VITE_BRAND=lux bun x vite build",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173"
   },
