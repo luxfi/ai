@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoo Logo Final Adjuster</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 20px;
+            margin: 0 0 20px 0;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            width: 250px;
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .control-group h3 {
+            margin: 0 0 10px 0;
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            width: 120px;
+        }
+
+        input[type="number"] {
+            width: 50px;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 3px;
+            font-size: 11px;
+        }
+
+        .value {
+            width: 40px;
+            text-align: right;
+            font-family: monospace;
+            color: #4CAF50;
+            font-size: 11px;
+        }
+
+        .canvas-container {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .canvas-wrapper {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .canvas-wrapper h3 {
+            text-align: center;
+            margin: 0 0 10px 0;
+            font-size: 12px;
+            color: #999;
+        }
+
+        svg {
+            display: block;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+            font-size: 11px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        #exportBtn {
+            background: #2196F3;
+        }
+
+        #exportBtn:hover {
+            background: #1976D2;
+        }
+
+        .constraint-indicator {
+            position: absolute;
+            border: 2px dashed rgba(255, 0, 0, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .status {
+            padding: 5px;
+            text-align: center;
+            font-size: 11px;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+
+        .status.good {
+            background: #1b5e20;
+            color: #4CAF50;
+        }
+
+        .status.warning {
+            background: #b71c1c;
+            color: #ff5252;
+        }
+    </style>
+</head>
+<body>
+    <h1>Zoo Logo Final Adjuster - Fine Tune Within Circle</h1>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <button id="colorTab" onclick="switchTab('color')" style="padding: 10px 20px; margin-right: 10px; background: #4CAF50;">Color Version</button>
+        <button id="monoTab" onclick="switchTab('mono')" style="padding: 10px 20px; background: #666;">Monochrome (Menu Bar)</button>
+    </div>
+
+    <div class="main-container">
+        <div class="controls">
+            <div id="status" class="status good">All circles within bounds ✓</div>
+
+            <div class="control-group">
+                <h3>Outer Circle</h3>
+                <label>
+                    Radius:
+                    <input type="number" id="outerRadius" value="259" min="150" max="512">
+                </label>
+                <label>
+                    X:
+                    <input type="number" id="outerX" value="515" min="200" max="824">
+                </label>
+                <label>
+                    Y:
+                    <input type="number" id="outerY" value="515" min="200" max="824">
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Circle Size</h3>
+                <label>
+                    All Radius:
+                    <input type="number" id="circleRadius" value="224" min="150" max="300">
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Circle Positions</h3>
+                <label>
+                    Green X:
+                    <input type="range" id="greenX" min="200" max="824" value="515">
+                    <span class="value" id="greenXVal">515</span>
+                </label>
+                <label>
+                    Green Y:
+                    <input type="range" id="greenY" min="200" max="824" value="373">
+                    <span class="value" id="greenYVal">373</span>
+                </label>
+                <label>
+                    Red X:
+                    <input type="range" id="redX" min="200" max="824" value="376">
+                    <span class="value" id="redXVal">376</span>
+                </label>
+                <label>
+                    Red Y:
+                    <input type="range" id="redY" min="200" max="824" value="595">
+                    <span class="value" id="redYVal">595</span>
+                </label>
+                <label>
+                    Blue X:
+                    <input type="range" id="blueX" min="200" max="824" value="658">
+                    <span class="value" id="blueXVal">658</span>
+                </label>
+                <label>
+                    Blue Y:
+                    <input type="range" id="blueY" min="200" max="824" value="596">
+                    <span class="value" id="blueYVal">596</span>
+                </label>
+            </div>
+
+            <div class="control-group" id="monoControls" style="display: none;">
+                <h3>Template Settings</h3>
+                <label>
+                    Stroke Width:
+                    <input type="range" id="strokeWidth" min="4" max="24" value="12">
+                    <span class="value" id="strokeWidthVal">12</span>
+                </label>
+                <label>
+                    Show Outer Ring:
+                    <input type="checkbox" id="showOuter" checked onchange="updateSVG()">
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Original Overlay</h3>
+                <label>
+                    Opacity:
+                    <input type="range" id="opacity" min="0" max="100" value="50">
+                    <span class="value" id="opacityVal">50%</span>
+                </label>
+                <label>
+                    Scale:
+                    <input type="range" id="overlayScale" min="10" max="200" value="103">
+                    <span class="value" id="overlayScaleVal">103%</span>
+                </label>
+                <label>
+                    X Offset:
+                    <input type="range" id="overlayX" min="-200" max="200" value="0">
+                    <span class="value" id="overlayXVal">0</span>
+                </label>
+                <label>
+                    Y Offset:
+                    <input type="range" id="overlayY" min="-200" max="200" value="0">
+                    <span class="value" id="overlayYVal">0</span>
+                </label>
+            </div>
+
+            <button onclick="resetToSaved()">Reset to Saved</button>
+            <button onclick="saveValues()">Save Values</button>
+            <button onclick="copyCode()">Copy SVG Code</button>
+            <button id="exportBtn" onclick="exportSVG()">Export Final SVG</button>
+        </div>
+
+        <div class="canvas-container">
+            <div class="canvas-wrapper">
+                <h3>Original PNG</h3>
+                <div style="position: relative; width: 400px; height: 400px; display: flex; align-items: center; justify-content: center; background: #111;">
+                    <img id="originalStandalone" src="original-zoo-logo.png"
+                         style="width: 200px; height: 200px;">
+                </div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <h3>Generated SVG</h3>
+                <div style="position: relative;">
+                    <svg id="svgCanvas" width="400" height="400" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Will be populated by JavaScript -->
+                    </svg>
+                    <div id="constraint" class="constraint-indicator"></div>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <h3>Overlay Comparison</h3>
+                <div style="position: relative; width: 400px; height: 400px;">
+                    <svg id="overlaySVG" width="400" height="400" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Will be populated by JavaScript -->
+                    </svg>
+                    <img id="overlayImage" src="original-zoo-logo.png"
+                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; opacity: 0.5; pointer-events: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'color';
+
+        function switchTab(mode) {
+            currentMode = mode;
+            document.getElementById('colorTab').style.background = mode === 'color' ? '#4CAF50' : '#666';
+            document.getElementById('monoTab').style.background = mode === 'mono' ? '#4CAF50' : '#666';
+            document.getElementById('monoControls').style.display = mode === 'mono' ? 'block' : 'none';
+
+            // Show/hide overlay controls and canvas
+            const allControlGroups = document.querySelectorAll('.control-group');
+            let overlayControlGroup = null;
+            allControlGroups.forEach(group => {
+                if (group.querySelector('h3') && group.querySelector('h3').textContent === 'Original Overlay') {
+                    overlayControlGroup = group;
+                }
+            });
+
+            const overlayCanvas = document.querySelector('.canvas-wrapper:last-child');
+            const originalCanvas = document.querySelector('.canvas-wrapper:first-child');
+
+            if (overlayControlGroup) overlayControlGroup.style.display = mode === 'mono' ? 'none' : 'block';
+            if (overlayCanvas) overlayCanvas.style.display = mode === 'mono' ? 'none' : 'block';
+            if (originalCanvas) originalCanvas.style.display = mode === 'mono' ? 'none' : 'block';
+
+            updateSVG();
+        }
+
+        // Perfect symmetrical values based on your adjustments
+        const defaultValues = {
+            outerRadius: 260,
+            outerX: 512,
+            outerY: 512,
+            circleRadius: 225,
+            greenX: 512,
+            greenY: 375,
+            redX: 390,
+            redY: 595,
+            blueX: 634,
+            blueY: 595
+        };
+
+        function updateSVG() {
+            const outerRadius = parseInt(document.getElementById('outerRadius').value);
+            const outerX = parseInt(document.getElementById('outerX').value);
+            const outerY = parseInt(document.getElementById('outerY').value);
+            const circleRadius = parseInt(document.getElementById('circleRadius').value);
+            const greenX = parseInt(document.getElementById('greenX').value);
+            const greenY = parseInt(document.getElementById('greenY').value);
+            const redX = parseInt(document.getElementById('redX').value);
+            const redY = parseInt(document.getElementById('redY').value);
+            const blueX = parseInt(document.getElementById('blueX').value);
+            const blueY = parseInt(document.getElementById('blueY').value);
+
+            // Check if circles are within bounds
+            const checkBounds = () => {
+                const circles = [
+                    {x: greenX, y: greenY},
+                    {x: redX, y: redY},
+                    {x: blueX, y: blueY}
+                ];
+
+                for (let circle of circles) {
+                    const dist = Math.sqrt(
+                        Math.pow(circle.x - outerX, 2) +
+                        Math.pow(circle.y - outerY, 2)
+                    );
+                    if (dist + circleRadius > outerRadius) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            const withinBounds = checkBounds();
+            const status = document.getElementById('status');
+            if (withinBounds) {
+                status.className = 'status good';
+                status.textContent = 'All circles within bounds ✓';
+            } else {
+                status.className = 'status warning';
+                status.textContent = 'Warning: Circles exceed boundary!';
+            }
+
+            let svgContent;
+
+            if (currentMode === 'mono') {
+                // Template version for menu bar - outline only
+                const strokeWidth = parseInt(document.getElementById('strokeWidth').value);
+                const showOuter = document.getElementById('showOuter').checked;
+
+                svgContent = `
+                    <defs>
+                        <clipPath id="outerCircle">
+                            <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}"/>
+                        </clipPath>
+                    </defs>
+
+                    <g clip-path="url(#outerCircle)">
+                        <!-- Three circle outlines only -->
+                        <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}" fill="none" stroke="black" stroke-width="${strokeWidth}"/>
+                        <circle cx="${redX}" cy="${redY}" r="${circleRadius}" fill="none" stroke="black" stroke-width="${strokeWidth}"/>
+                        <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="none" stroke="black" stroke-width="${strokeWidth}"/>
+
+                        ${showOuter ? `<!-- Outer boundary circle -->
+                        <circle cx="${outerX}" cy="${outerY}" r="${outerRadius - strokeWidth/2}" fill="none" stroke="black" stroke-width="${strokeWidth}"/>` : ''}
+                    </g>
+                `;
+            } else {
+                // Color version
+                svgContent = `
+                    <defs>
+                        <clipPath id="outerCircle">
+                            <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}"/>
+                        </clipPath>
+                        <clipPath id="greenClip">
+                            <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}"/>
+                        </clipPath>
+                        <clipPath id="redClip">
+                            <circle cx="${redX}" cy="${redY}" r="${circleRadius}"/>
+                        </clipPath>
+                        <clipPath id="blueClip">
+                            <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"/>
+                        </clipPath>
+                    </defs>
+
+                    <g clip-path="url(#outerCircle)">
+                        <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}" fill="#000000"/>
+
+                        <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}" fill="#00A652"/>
+                        <circle cx="${redX}" cy="${redY}" r="${circleRadius}" fill="#ED1C24"/>
+                        <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="#2E3192"/>
+
+                        <g clip-path="url(#greenClip)">
+                            <circle cx="${redX}" cy="${redY}" r="${circleRadius}" fill="#FCF006"/>
+                        </g>
+
+                        <g clip-path="url(#greenClip)">
+                            <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="#01ACF1"/>
+                        </g>
+
+                        <g clip-path="url(#redClip)">
+                            <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="#EA018E"/>
+                        </g>
+
+                        <g clip-path="url(#greenClip)">
+                            <g clip-path="url(#redClip)">
+                                <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="#FFFFFF"/>
+                            </g>
+                        </g>
+                    </g>
+
+                    <!-- Show boundary for reference -->
+                    <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                `;
+            }
+
+            document.getElementById('svgCanvas').innerHTML = svgContent;
+            document.getElementById('overlaySVG').innerHTML = svgContent;
+
+            // Update constraint indicator
+            const constraint = document.getElementById('constraint');
+            const scale = 400 / 1024;
+            constraint.style.width = (outerRadius * 2 * scale) + 'px';
+            constraint.style.height = (outerRadius * 2 * scale) + 'px';
+            constraint.style.left = ((outerX - outerRadius) * scale) + 'px';
+            constraint.style.top = ((outerY - outerRadius) * scale) + 'px';
+        }
+
+        function saveValues() {
+            const values = {
+                outerRadius: document.getElementById('outerRadius').value,
+                outerX: document.getElementById('outerX').value,
+                outerY: document.getElementById('outerY').value,
+                circleRadius: document.getElementById('circleRadius').value,
+                greenX: document.getElementById('greenX').value,
+                greenY: document.getElementById('greenY').value,
+                redX: document.getElementById('redX').value,
+                redY: document.getElementById('redY').value,
+                blueX: document.getElementById('blueX').value,
+                blueY: document.getElementById('blueY').value
+            };
+            localStorage.setItem('zooLogoFinal', JSON.stringify(values));
+            alert('Values saved!');
+        }
+
+        function resetToSaved() {
+            const saved = localStorage.getItem('zooLogoFinal');
+            if (saved) {
+                const values = JSON.parse(saved);
+                Object.keys(values).forEach(key => {
+                    const elem = document.getElementById(key);
+                    if (elem) {
+                        elem.value = values[key];
+                        updateValue(key);
+                    }
+                });
+                updateSVG();
+            }
+        }
+
+        function copyCode() {
+            const svg = document.getElementById('svgCanvas').parentElement.innerHTML;
+            const cleanSvg = svg.replace(/<!-- Show boundary.*?-->.*?<circle.*?stroke-width="1".*?\/>/s, '');
+            navigator.clipboard.writeText(`<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">${cleanSvg}</svg>`);
+            alert('SVG code copied!');
+        }
+
+        function exportSVG() {
+            const svg = document.getElementById('svgCanvas').innerHTML;
+            const cleanSvg = svg.replace(/<!-- Show boundary.*?-->.*?<circle.*?stroke-width="1".*?\/>/s, '');
+            const filename = currentMode === 'mono' ? 'zoo-logo-monochrome.svg' : 'zoo-logo-final.svg';
+            const blob = new Blob([`<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">${cleanSvg}</svg>`], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+
+        function updateValue(id) {
+            const elem = document.getElementById(id);
+            const valElem = document.getElementById(id + 'Val');
+            if (valElem) {
+                if (id === 'opacity') {
+                    valElem.textContent = elem.value + '%';
+                    document.getElementById('overlayImage').style.opacity = elem.value / 100;
+                } else if (id === 'overlayScale') {
+                    valElem.textContent = elem.value + '%';
+                    updateOverlay();
+                } else if (id === 'overlayX' || id === 'overlayY') {
+                    valElem.textContent = elem.value;
+                    updateOverlay();
+                } else {
+                    valElem.textContent = elem.value;
+                }
+            }
+        }
+
+        function updateOverlay() {
+            const scale = document.getElementById('overlayScale').value / 100;
+            const x = parseInt(document.getElementById('overlayX').value);
+            const y = parseInt(document.getElementById('overlayY').value);
+            const img = document.getElementById('overlayImage');
+
+            // The original PNG is 200x200 pixels
+            // The SVG viewport is 1024x1024 displayed at 400x400
+            // So to match: 200px PNG should display at (200/1024) * 400 = 78px
+            // But the logo only uses about 265 radius of the 512 available
+            // So we need to scale it up by (512/265) = 1.93
+            const baseSize = 78 * 1.93;  // ~150px base size
+            const scaledSize = baseSize * scale;
+
+            img.style.width = scaledSize + 'px';
+            img.style.height = scaledSize + 'px';
+            img.style.left = '50%';
+            img.style.top = '50%';
+            img.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+        }
+
+        // Event listeners
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                updateValue(e.target.id);
+                if (e.target.id !== 'opacity') {
+                    updateSVG();
+                }
+                // Update stroke width display
+                if (e.target.id === 'strokeWidth') {
+                    document.getElementById('strokeWidthVal').textContent = e.target.value;
+                }
+            });
+        });
+
+        // Initialize with default values
+        function initializeValues() {
+            Object.keys(defaultValues).forEach(key => {
+                const elem = document.getElementById(key);
+                if (elem) {
+                    elem.value = defaultValues[key];
+                    const valElem = document.getElementById(key + 'Val');
+                    if (valElem) {
+                        valElem.textContent = defaultValues[key];
+                    }
+                }
+            });
+        }
+
+        // Initialize
+        initializeValues();
+        updateSVG();
+        document.getElementById('opacity').value = 50;
+        document.getElementById('overlayScale').value = 103;
+        updateValue('opacity');
+        updateValue('overlayScale');
+        updateOverlay();
+
+        // Load saved values if they exist
+        const saved = localStorage.getItem('zooLogoFinal');
+        if (saved) {
+            resetToSaved();
+        }
+    </script>
+</body>
+</html>

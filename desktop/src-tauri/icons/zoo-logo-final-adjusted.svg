@@ -1,0 +1,61 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Zoo Logo: Final adjusted version based on your testing -->
+
+  <defs>
+    <!-- Outer circle boundary - slightly adjusted for better fit -->
+    <clipPath id="outerCircle">
+      <circle cx="512" cy="512" r="265"/>
+    </clipPath>
+
+    <!-- Three circles with fine-tuned positions -->
+    <clipPath id="greenClip">
+      <circle cx="512" cy="370" r="225"/>
+    </clipPath>
+
+    <clipPath id="redClip">
+      <circle cx="375" cy="595" r="225"/>
+    </clipPath>
+
+    <clipPath id="blueClip">
+      <circle cx="649" cy="595" r="225"/>
+    </clipPath>
+  </defs>
+
+  <!-- Transparent background -->
+
+  <!-- Everything clipped to outer circle -->
+  <g clip-path="url(#outerCircle)">
+
+    <!-- Black fill inside circle -->
+    <circle cx="512" cy="512" r="265" fill="#000000"/>
+
+    <!-- Three primary circles -->
+    <circle cx="512" cy="370" r="225" fill="#00A652"/>
+    <circle cx="375" cy="595" r="225" fill="#ED1C24"/>
+    <circle cx="649" cy="595" r="225" fill="#2E3192"/>
+
+    <!-- Yellow: Green ∩ Red -->
+    <g clip-path="url(#greenClip)">
+      <circle cx="375" cy="595" r="225" fill="#FCF006"/>
+    </g>
+
+    <!-- Cyan: Green ∩ Blue -->
+    <g clip-path="url(#greenClip)">
+      <circle cx="649" cy="595" r="225" fill="#01ACF1"/>
+    </g>
+
+    <!-- Magenta: Red ∩ Blue -->
+    <g clip-path="url(#redClip)">
+      <circle cx="649" cy="595" r="225" fill="#EA018E"/>
+    </g>
+
+    <!-- White center: All three overlap -->
+    <g clip-path="url(#greenClip)">
+      <g clip-path="url(#redClip)">
+        <circle cx="649" cy="595" r="225" fill="#FFFFFF"/>
+      </g>
+    </g>
+
+  </g>
+
+</svg>

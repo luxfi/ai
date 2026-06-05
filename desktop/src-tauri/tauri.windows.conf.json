@@ -1,0 +1,16 @@
+{
+  "bundle": {
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico"
+      },
+      "wix": {
+        "template": "./dummy.wxs"
+      }
+    },
+    "resources": {
+      "llm-models/": "llm-models/",
+      "external-binaries/ollama/lib/": "lib/"
+    }
+  }
+}
