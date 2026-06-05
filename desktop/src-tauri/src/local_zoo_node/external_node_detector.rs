@@ -6,10 +6,10 @@ pub async fn is_external_node_running(
     api_port: u16,
     ollama_port: u16,
 ) -> (bool, bool) {
-    let zoo_node_running = check_port_service(api_port, "/v2/health_check").await;
+    let hanzo_node_running = check_port_service(api_port, "/v2/health_check").await;
     let ollama_running = check_port_service(ollama_port, "/").await;
     
-    (zoo_node_running, ollama_running)
+    (hanzo_node_running, ollama_running)
 }
 
 /// Check if a service is running on a specific port with a health endpoint

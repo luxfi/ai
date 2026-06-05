@@ -5,8 +5,8 @@ use super::external_node_detector::{is_external_node_running, are_ports_availabl
 use super::ollama_api::ollama_api_client::OllamaApiClient;
 use super::ollama_api::ollama_api_types::OllamaApiPullResponse;
 use super::process_handlers::ollama_process_handler::OllamaProcessHandler;
-use super::process_handlers::zoo_node_process_handler::ZooNodeProcessHandler;
-use crate::local_zoo_node::zoo_node_options::ZooNodeOptions;
+use super::process_handlers::hanzo_node_process_handler::ZooNodeProcessHandler;
+use crate::local_zoo_node::hanzo_node_options::ZooNodeOptions;
 use crate::models::embedding_model;
 use anyhow::Result;
 use futures_util::StreamExt;
@@ -52,7 +52,7 @@ pub enum ZooNodeManagerEvent {
 
 pub struct ZooNodeManager {
     ollama_process: OllamaProcessHandler,
-    zoo_node_process: ZooNodeProcessHandler,
+    hanzo_node_process: ZooNodeProcessHandler,
     event_broadcaster: broadcast::Sender<ZooNodeManagerEvent>,
     app_resource_dir: PathBuf,
     llm_models_path: PathBuf,
@@ -63,7 +63,7 @@ pub struct ZooNodeManager {
 impl ZooNodeManager {
     pub(crate) fn new(app: AppHandle, app_resource_dir: PathBuf, app_data_dir: PathBuf) -> Self {
         let (ollama_sender, _ollama_receiver) = channel(100);
-        let (zoo_node_sender, _zoo_node_receiver) = channel(100);
+        let (hanzo_node_sender, _hanzo_node_receiver) = channel(100);
         let (event_broadcaster, _) = broadcast::channel(10);
         let llm_models_path = app
             .path()
@@ -75,9 +75,9 @@ impl ZooNodeManager {
                 ollama_sender,
                 app_resource_dir.clone(),
             ),
-            zoo_node_process: ZooNodeProcessHandler::new(
+            hanzo_node_process: ZooNodeProcessHandler::new(
                 app,
-                zoo_node_sender,
+                hanzo_node_sender,
                 app_resource_dir.clone(),
                 app_data_dir,
             ),
@@ -89,15 +89,15 @@ impl ZooNodeManager {
         }
     }
 
-    pub async fn get_zoo_node_options(&self) -> ZooNodeOptions {
-        let options = self.zoo_node_process.get_options();
+    pub async fn get_hanzo_node_options(&self) -> ZooNodeOptions {
+        let options = self.hanzo_node_process.get_options();
         options.clone()
     }
 
     pub async fn is_running(&self) -> bool {
         // Zoo Node (with Hanzo Engine) is the primary requirement
         // Ollama is optional
-        self.zoo_node_process.is_running().await
+        self.hanzo_node_process.is_running().await
     }
 
     pub async fn is_ollama_running(&self) -> bool {
@@ -106,17 +106,17 @@ impl ZooNodeManager {
 
     pub async fn spawn(&mut self) -> Result<(), String> {
         // Check if external nodes are already running
-        let (zoo_node_external, ollama_external) = is_external_node_running(2000, 11435).await;
+        let (hanzo_node_external, ollama_external) = is_external_node_running(2000, 11435).await;
         
-        if zoo_node_external || ollama_external {
+        if hanzo_node_external || ollama_external {
             self.external_node_running = true;
             self.emit_event(ZooNodeManagerEvent::ExternalNodeDetected {
-                zoo_node: zoo_node_external,
+                zoo_node: hanzo_node_external,
                 ollama: ollama_external,
             });
             
             // If external nodes are running, don't spawn our own
-            if zoo_node_external && ollama_external {
+            if hanzo_node_external && ollama_external {
                 log::info!("External Zoo node and Ollama detected, using external services");
                 return Ok(());
             }
@@ -141,7 +141,7 @@ impl ZooNodeManager {
         self.managed_by_app = true;
 
         // Check if Ollama is enabled in options
-        let enable_ollama = self.zoo_node_process.get_options().enable_ollama.unwrap_or(false);
+        let enable_ollama = self.hanzo_node_process.get_options().enable_ollama.unwrap_or(false);
 
         if enable_ollama {
             log::info!("Ollama is enabled, starting Ollama process");
@@ -171,7 +171,7 @@ impl ZooNodeManager {
                 };
 
                 let default_embedding_model = self
-                    .zoo_node_process
+                    .hanzo_node_process
                     .get_options()
                     .default_embedding_model
                     .unwrap();
@@ -213,7 +213,7 @@ impl ZooNodeManager {
         }
 
         self.emit_event(ZooNodeManagerEvent::StartingZooNode);
-        match self.zoo_node_process.spawn().await {
+        match self.hanzo_node_process.spawn().await {
             Ok(_) => {
                 self.emit_event(ZooNodeManagerEvent::ZooNodeStarted);
             }
@@ -235,7 +235,7 @@ impl ZooNodeManager {
             return;
         }
         self.emit_event(ZooNodeManagerEvent::StoppingZooNode);
-        self.zoo_node_process.kill().await;
+        self.hanzo_node_process.kill().await;
         self.emit_event(ZooNodeManagerEvent::ZooNodeStopped);
 
         // Only kill Ollama if it was started
@@ -247,17 +247,17 @@ impl ZooNodeManager {
     }
 
     pub async fn remove_storage(&self, preserve_keys: bool) -> Result<(), String> {
-        self.zoo_node_process
+        self.hanzo_node_process
             .remove_storage(preserve_keys)
             .await
     }
 
     pub fn open_storage_location(&self) -> Result<(), String> {
-        self.zoo_node_process.open_storage_location()
+        self.hanzo_node_process.open_storage_location()
     }
 
     pub fn open_storage_location_with_path(&self, relative_path: &str) -> Result<(), String> {
-        self.zoo_node_process
+        self.hanzo_node_process
             .open_storage_location_with_path(relative_path)
     }
 
@@ -266,19 +266,19 @@ impl ZooNodeManager {
         storage_location: &str,
         chat_folder_name: &str,
     ) -> Result<(), String> {
-        self.zoo_node_process
+        self.hanzo_node_process
             .open_chat_folder(storage_location, chat_folder_name)
     }
 
-    pub async fn set_default_zoo_node_options(&mut self) -> ZooNodeOptions {
-        self.zoo_node_process.set_default_options()
+    pub async fn set_default_hanzo_node_options(&mut self) -> ZooNodeOptions {
+        self.hanzo_node_process.set_default_options()
     }
 
-    pub async fn set_zoo_node_options(
+    pub async fn set_hanzo_node_options(
         &mut self,
         options: ZooNodeOptions,
     ) -> ZooNodeOptions {
-        self.zoo_node_process.set_options(options)
+        self.hanzo_node_process.set_options(options)
     }
 
     fn emit_event(&mut self, new_event: ZooNodeManagerEvent) {
@@ -300,9 +300,9 @@ impl ZooNodeManager {
     }
     
     pub async fn check_external_nodes(&mut self) -> (bool, bool) {
-        let (zoo_node_external, ollama_external) = is_external_node_running(2000, 11435).await;
-        self.external_node_running = zoo_node_external || ollama_external;
-        (zoo_node_external, ollama_external)
+        let (hanzo_node_external, ollama_external) = is_external_node_running(2000, 11435).await;
+        self.external_node_running = hanzo_node_external || ollama_external;
+        (hanzo_node_external, ollama_external)
     }
     
     pub fn is_managed_by_app(&self) -> bool {
