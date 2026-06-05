@@ -12,7 +12,7 @@ impl Window {
     pub fn as_str(&self) -> &'static str {
         match self {
             Window::Main => "main",
-            Window::ZooNodeManager => "zoo-node-manager",
+            Window::ZooNodeManager => "hanzo-node-manager",
             Window::Spotlight => "spotlight",
             Window::Coordinator => "coordinator",
         }

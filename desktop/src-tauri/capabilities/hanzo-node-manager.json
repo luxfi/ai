@@ -1,8 +1,8 @@
 {
-  "identifier": "zoo-node-manager",
+  "identifier": "hanzo-node-manager",
   "description": "permissions that were migrated from v1",
   "local": true,
-  "windows": ["zoo-node-manager"],
+  "windows": ["hanzo-node-manager"],
   "permissions": [
     "core:default",
     "core:window:allow-start-dragging",

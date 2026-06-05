@@ -108,8 +108,8 @@
         "create": false
       },
       {
-        "label": "zoo-node-manager",
-        "url": "src/windows/zoo-node-manager/index.html",
+        "label": "hanzo-node-manager",
+        "url": "src/windows/hanzo-node-manager/index.html",
         "transparent": true,
         "title": "Zoo Node Manager",
         "width": 1280,
