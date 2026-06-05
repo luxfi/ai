@@ -1,0 +1,50 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Zoo Logo: Final Version - Transparent background for macOS -->
+
+  <defs>
+    <clipPath id="outerCircle">
+      <circle cx="512" cy="512" r="510"/>
+    </clipPath>
+    <clipPath id="greenClip">
+      <circle cx="520" cy="275" r="446"/>
+    </clipPath>
+    <clipPath id="redClip">
+      <circle cx="278" cy="715" r="446"/>
+    </clipPath>
+    <clipPath id="blueClip">
+      <circle cx="765" cy="717" r="446"/>
+    </clipPath>
+  </defs>
+
+  <!-- No background - transparent -->
+
+  <!-- Logo with transparent background -->
+  <g clip-path="url(#outerCircle)">
+    <!-- Three primary circles -->
+    <circle cx="520" cy="275" r="446" fill="#00A652"/>
+    <circle cx="278" cy="715" r="446" fill="#ED1C24"/>
+    <circle cx="765" cy="717" r="446" fill="#2E3192"/>
+
+    <!-- Yellow overlap (green + red) -->
+    <g clip-path="url(#greenClip)">
+      <circle cx="278" cy="715" r="446" fill="#FCF006"/>
+    </g>
+
+    <!-- Cyan overlap (green + blue) -->
+    <g clip-path="url(#greenClip)">
+      <circle cx="765" cy="717" r="446" fill="#01ACF1"/>
+    </g>
+
+    <!-- Magenta overlap (red + blue) -->
+    <g clip-path="url(#redClip)">
+      <circle cx="765" cy="717" r="446" fill="#EA018E"/>
+    </g>
+
+    <!-- White center (all three overlap) -->
+    <g clip-path="url(#greenClip)">
+      <g clip-path="url(#redClip)">
+        <circle cx="765" cy="717" r="446" fill="#FFFFFF"/>
+      </g>
+    </g>
+  </g>
+</svg>

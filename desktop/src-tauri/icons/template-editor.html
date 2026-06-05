@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoo Template Icon Editor - Outline Mode</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 20px;
+            margin: 0 0 20px 0;
+        }
+
+        .controls {
+            width: 300px;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
+        }
+
+        .control-group h3 {
+            margin: 0 0 15px 0;
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        input[type="range"] {
+            width: 140px;
+        }
+
+        input[type="checkbox"] {
+            margin-left: auto;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 4px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        select {
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            width: 140px;
+        }
+
+        .value {
+            width: 45px;
+            text-align: right;
+            font-family: monospace;
+            color: #4CAF50;
+            font-size: 12px;
+        }
+
+        .preview-area {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .preview-card {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .preview-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .svg-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+        }
+
+        .svg-container.dark {
+            background: #0a0a0a;
+        }
+
+        .svg-container.menu-light {
+            background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+        }
+
+        .svg-container.menu-dark {
+            background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+        }
+
+        svg {
+            width: 200px;
+            height: 200px;
+        }
+
+        .size-preview {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #333;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .size-item {
+            text-align: center;
+        }
+
+        .size-item img {
+            image-rendering: crisp-edges;
+            background: white;
+            padding: 4px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .size-item span {
+            font-size: 10px;
+            color: #888;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button.secondary {
+            background: #2196F3;
+        }
+
+        button.secondary:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Zoo Template Icon Editor - Outline & Cutout Options</h1>
+
+    <div class="container">
+        <div class="controls">
+            <div class="control-group">
+                <h3>Render Mode</h3>
+                <label>
+                    Style:
+                    <select id="renderMode" onchange="updateSVG()">
+                        <option value="outline">Outline Only</option>
+                        <option value="cutout">Cutout/Knockout</option>
+                        <option value="filled">Filled Shapes</option>
+                        <option value="mixed">Mixed (Fill + Outline)</option>
+                        <option value="inverted">Inverted Cutout</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Stroke Settings</h3>
+                <label>
+                    Width:
+                    <input type="range" id="strokeWidth" min="2" max="40" value="12">
+                    <span class="value" id="strokeWidthVal">12</span>
+                </label>
+                <label>
+                    Style:
+                    <select id="strokeStyle" onchange="updateSVG()">
+                        <option value="solid">Solid</option>
+                        <option value="dashed">Dashed</option>
+                        <option value="dotted">Dotted</option>
+                    </select>
+                </label>
+                <label>
+                    Dash Length:
+                    <input type="range" id="dashLength" min="5" max="50" value="20" disabled>
+                    <span class="value" id="dashLengthVal">20</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Outer Circle</h3>
+                <label>
+                    Show Outer:
+                    <input type="checkbox" id="showOuter" checked onchange="updateSVG()">
+                </label>
+                <label>
+                    Outer Style:
+                    <select id="outerStyle" onchange="updateSVG()">
+                        <option value="same">Same as circles</option>
+                        <option value="thicker">Thicker</option>
+                        <option value="thinner">Thinner</option>
+                        <option value="double">Double ring</option>
+                    </select>
+                </label>
+                <label>
+                    Outer Offset:
+                    <input type="range" id="outerOffset" min="-20" max="20" value="0">
+                    <span class="value" id="outerOffsetVal">0</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Shape Options</h3>
+                <label>
+                    Center Dot:
+                    <input type="checkbox" id="centerDot" onchange="updateSVG()">
+                </label>
+                <label>
+                    Circle Dots:
+                    <input type="checkbox" id="circleDots" onchange="updateSVG()">
+                </label>
+                <label>
+                    Dot Size:
+                    <input type="range" id="dotSize" min="5" max="30" value="15">
+                    <span class="value" id="dotSizeVal">15</span>
+                </label>
+                <label>
+                    Corner Marks:
+                    <input type="checkbox" id="cornerMarks" onchange="updateSVG()">
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Cutout Options</h3>
+                <label>
+                    Intersection Fill:
+                    <select id="intersectionFill" onchange="updateSVG()">
+                        <option value="none">None</option>
+                        <option value="center">Center Only</option>
+                        <option value="two-way">Two-way Overlaps</option>
+                        <option value="all">All Overlaps</option>
+                    </select>
+                </label>
+                <label>
+                    Cutout Pattern:
+                    <select id="cutoutPattern" onchange="updateSVG()">
+                        <option value="solid">Solid</option>
+                        <option value="lines">Line Pattern</option>
+                        <option value="dots">Dot Pattern</option>
+                        <option value="cross">Crosshatch</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Export</h3>
+                <button onclick="exportSVG()">Export SVG</button>
+                <button class="secondary" onclick="exportPNGs()">Export PNGs (16, 22, 32)</button>
+                <button onclick="copyCode()">Copy SVG Code</button>
+            </div>
+        </div>
+
+        <div class="preview-area">
+            <div class="preview-card">
+                <h3>Light Background</h3>
+                <div class="svg-container">
+                    <svg id="previewLight" width="1024" height="1024" viewBox="0 0 1024 1024">
+                        <!-- Will be populated by JavaScript -->
+                    </svg>
+                </div>
+                <div class="size-preview">
+                    <div class="size-item">
+                        <canvas id="light16" width="16" height="16"></canvas>
+                        <span>16px</span>
+                    </div>
+                    <div class="size-item">
+                        <canvas id="light22" width="22" height="22"></canvas>
+                        <span>22px</span>
+                    </div>
+                    <div class="size-item">
+                        <canvas id="light32" width="32" height="32"></canvas>
+                        <span>32px</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-card">
+                <h3>Dark Background</h3>
+                <div class="svg-container dark">
+                    <svg id="previewDark" width="1024" height="1024" viewBox="0 0 1024 1024">
+                        <!-- Will be populated by JavaScript -->
+                    </svg>
+                </div>
+                <div class="size-preview">
+                    <div class="size-item">
+                        <canvas id="dark16" width="16" height="16" style="background: #333;"></canvas>
+                        <span>16px</span>
+                    </div>
+                    <div class="size-item">
+                        <canvas id="dark22" width="22" height="22" style="background: #333;"></canvas>
+                        <span>22px</span>
+                    </div>
+                    <div class="size-item">
+                        <canvas id="dark32" width="32" height="32" style="background: #333;"></canvas>
+                        <span>32px</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-card">
+                <h3>Menu Bar (Light)</h3>
+                <div class="svg-container menu-light">
+                    <svg id="previewMenuLight" width="1024" height="1024" viewBox="0 0 1024 1024">
+                        <!-- Will be populated by JavaScript -->
+                    </svg>
+                </div>
+            </div>
+
+            <div class="preview-card">
+                <h3>Menu Bar (Dark)</h3>
+                <div class="svg-container menu-dark">
+                    <svg id="previewMenuDark" width="1024" height="1024" viewBox="0 0 1024 1024">
+                        <!-- Will be populated by JavaScript -->
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Circle positions from final logo
+        const outerX = 512, outerY = 508, outerRadius = 259;
+        const greenX = 515, greenY = 368;
+        const redX = 369, redY = 593;
+        const blueX = 653, blueY = 594;
+        const circleRadius = 227;
+
+        function updateSVG() {
+            const renderMode = document.getElementById('renderMode').value;
+            const strokeWidth = parseInt(document.getElementById('strokeWidth').value);
+            const strokeStyle = document.getElementById('strokeStyle').value;
+            const dashLength = parseInt(document.getElementById('dashLength').value);
+            const showOuter = document.getElementById('showOuter').checked;
+            const outerStyle = document.getElementById('outerStyle').value;
+            const outerOffset = parseInt(document.getElementById('outerOffset').value);
+            const centerDot = document.getElementById('centerDot').checked;
+            const circleDots = document.getElementById('circleDots').checked;
+            const dotSize = parseInt(document.getElementById('dotSize').value);
+            const cornerMarks = document.getElementById('cornerMarks').checked;
+            const intersectionFill = document.getElementById('intersectionFill').value;
+            const cutoutPattern = document.getElementById('cutoutPattern').value;
+
+            // Enable/disable dash length based on stroke style
+            document.getElementById('dashLength').disabled = strokeStyle === 'solid';
+
+            let strokeDash = '';
+            if (strokeStyle === 'dashed') {
+                strokeDash = `stroke-dasharray="${dashLength} ${dashLength/2}"`;
+            } else if (strokeStyle === 'dotted') {
+                strokeDash = `stroke-dasharray="${strokeWidth} ${strokeWidth}"`;
+            }
+
+            let svgContent = '';
+
+            // Define patterns if needed
+            if (cutoutPattern !== 'solid') {
+                svgContent += `
+                    <defs>
+                        ${cutoutPattern === 'lines' ? `
+                        <pattern id="linePattern" patternUnits="userSpaceOnUse" width="10" height="10">
+                            <line x1="0" y1="0" x2="10" y2="10" stroke="black" stroke-width="1"/>
+                        </pattern>` : ''}
+                        ${cutoutPattern === 'dots' ? `
+                        <pattern id="dotPattern" patternUnits="userSpaceOnUse" width="20" height="20">
+                            <circle cx="10" cy="10" r="3" fill="black"/>
+                        </pattern>` : ''}
+                        ${cutoutPattern === 'cross' ? `
+                        <pattern id="crossPattern" patternUnits="userSpaceOnUse" width="15" height="15">
+                            <line x1="0" y1="0" x2="15" y2="15" stroke="black" stroke-width="1"/>
+                            <line x1="15" y1="0" x2="0" y2="15" stroke="black" stroke-width="1"/>
+                        </pattern>` : ''}
+                        <clipPath id="outerCircle">
+                            <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}"/>
+                        </clipPath>
+                        <clipPath id="greenClip">
+                            <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}"/>
+                        </clipPath>
+                        <clipPath id="redClip">
+                            <circle cx="${redX}" cy="${redY}" r="${circleRadius}"/>
+                        </clipPath>
+                        <clipPath id="blueClip">
+                            <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"/>
+                        </clipPath>
+                    </defs>
+                `;
+            } else {
+                svgContent += `
+                    <defs>
+                        <clipPath id="outerCircle">
+                            <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}"/>
+                        </clipPath>
+                        <clipPath id="greenClip">
+                            <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}"/>
+                        </clipPath>
+                        <clipPath id="redClip">
+                            <circle cx="${redX}" cy="${redY}" r="${circleRadius}"/>
+                        </clipPath>
+                        <clipPath id="blueClip">
+                            <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"/>
+                        </clipPath>
+                    </defs>
+                `;
+            }
+
+            svgContent += '<g clip-path="url(#outerCircle)">';
+
+            // Render based on mode
+            if (renderMode === 'outline') {
+                // Simple outlines
+                svgContent += `
+                    <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}"
+                            fill="none" stroke="black" stroke-width="${strokeWidth}" ${strokeDash}/>
+                    <circle cx="${redX}" cy="${redY}" r="${circleRadius}"
+                            fill="none" stroke="black" stroke-width="${strokeWidth}" ${strokeDash}/>
+                    <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"
+                            fill="none" stroke="black" stroke-width="${strokeWidth}" ${strokeDash}/>
+                `;
+            } else if (renderMode === 'cutout') {
+                // Create mask for cutout effect
+                svgContent += `
+                    <mask id="cutoutMask">
+                        <rect width="1024" height="1024" fill="white"/>
+                        <circle cx="${greenX}" cy="${greenY}" r="${circleRadius - strokeWidth}" fill="black"/>
+                        <circle cx="${redX}" cy="${redY}" r="${circleRadius - strokeWidth}" fill="black"/>
+                        <circle cx="${blueX}" cy="${blueY}" r="${circleRadius - strokeWidth}" fill="black"/>
+                    </mask>
+                    <g mask="url(#cutoutMask)">
+                        <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}" fill="black"/>
+                        <circle cx="${redX}" cy="${redY}" r="${circleRadius}" fill="black"/>
+                        <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="black"/>
+                    </g>
+                `;
+            } else if (renderMode === 'filled') {
+                // Filled shapes with optional intersection fills
+                const fillPattern = cutoutPattern !== 'solid' ?
+                    `url(#${cutoutPattern}Pattern)` : 'black';
+
+                svgContent += `
+                    <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}"
+                            fill="${fillPattern}" opacity="0.2"/>
+                    <circle cx="${redX}" cy="${redY}" r="${circleRadius}"
+                            fill="${fillPattern}" opacity="0.2"/>
+                    <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"
+                            fill="${fillPattern}" opacity="0.2"/>
+                `;
+
+                if (intersectionFill !== 'none') {
+                    if (intersectionFill === 'two-way' || intersectionFill === 'all') {
+                        svgContent += `
+                            <g clip-path="url(#greenClip)">
+                                <circle cx="${redX}" cy="${redY}" r="${circleRadius}"
+                                        fill="${fillPattern}" opacity="0.3"/>
+                            </g>
+                            <g clip-path="url(#greenClip)">
+                                <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"
+                                        fill="${fillPattern}" opacity="0.3"/>
+                            </g>
+                            <g clip-path="url(#redClip)">
+                                <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"
+                                        fill="${fillPattern}" opacity="0.3"/>
+                            </g>
+                        `;
+                    }
+                    if (intersectionFill === 'center' || intersectionFill === 'all') {
+                        svgContent += `
+                            <g clip-path="url(#greenClip)">
+                                <g clip-path="url(#redClip)">
+                                    <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"
+                                            fill="${fillPattern}" opacity="0.5"/>
+                                </g>
+                            </g>
+                        `;
+                    }
+                }
+            } else if (renderMode === 'mixed') {
+                // Fill + outline combination
+                svgContent += `
+                    <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}"
+                            fill="black" opacity="0.1"/>
+                    <circle cx="${redX}" cy="${redY}" r="${circleRadius}"
+                            fill="black" opacity="0.1"/>
+                    <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"
+                            fill="black" opacity="0.1"/>
+                    <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}"
+                            fill="none" stroke="black" stroke-width="${strokeWidth}" ${strokeDash}/>
+                    <circle cx="${redX}" cy="${redY}" r="${circleRadius}"
+                            fill="none" stroke="black" stroke-width="${strokeWidth}" ${strokeDash}/>
+                    <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"
+                            fill="none" stroke="black" stroke-width="${strokeWidth}" ${strokeDash}/>
+                `;
+            } else if (renderMode === 'inverted') {
+                // Inverted cutout - fill everything except the circles
+                svgContent += `
+                    <mask id="invertedMask">
+                        <rect width="1024" height="1024" fill="white"/>
+                        <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}" fill="black"/>
+                        <circle cx="${redX}" cy="${redY}" r="${circleRadius}" fill="black"/>
+                        <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="black"/>
+                    </mask>
+                    <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}"
+                            fill="black" mask="url(#invertedMask)"/>
+                `;
+            }
+
+            // Add dots if requested
+            if (centerDot) {
+                svgContent += `<circle cx="${outerX}" cy="${outerY}" r="${dotSize}" fill="black"/>`;
+            }
+            if (circleDots) {
+                svgContent += `
+                    <circle cx="${greenX}" cy="${greenY}" r="${dotSize/2}" fill="black"/>
+                    <circle cx="${redX}" cy="${redY}" r="${dotSize/2}" fill="black"/>
+                    <circle cx="${blueX}" cy="${blueY}" r="${dotSize/2}" fill="black"/>
+                `;
+            }
+
+            // Add corner marks if requested
+            if (cornerMarks) {
+                const markSize = 20;
+                const markOffset = 50;
+                svgContent += `
+                    <line x1="${outerX - outerRadius + markOffset}" y1="${outerY - outerRadius + markOffset}"
+                          x2="${outerX - outerRadius + markOffset + markSize}" y2="${outerY - outerRadius + markOffset}"
+                          stroke="black" stroke-width="${strokeWidth/2}"/>
+                    <line x1="${outerX - outerRadius + markOffset}" y1="${outerY - outerRadius + markOffset}"
+                          x2="${outerX - outerRadius + markOffset}" y2="${outerY - outerRadius + markOffset + markSize}"
+                          stroke="black" stroke-width="${strokeWidth/2}"/>
+
+                    <line x1="${outerX + outerRadius - markOffset}" y1="${outerY - outerRadius + markOffset}"
+                          x2="${outerX + outerRadius - markOffset - markSize}" y2="${outerY - outerRadius + markOffset}"
+                          stroke="black" stroke-width="${strokeWidth/2}"/>
+                    <line x1="${outerX + outerRadius - markOffset}" y1="${outerY - outerRadius + markOffset}"
+                          x2="${outerX + outerRadius - markOffset}" y2="${outerY - outerRadius + markOffset + markSize}"
+                          stroke="black" stroke-width="${strokeWidth/2}"/>
+                `;
+            }
+
+            // Add outer circle if requested
+            if (showOuter) {
+                let outerStrokeWidth = strokeWidth;
+                if (outerStyle === 'thicker') outerStrokeWidth = strokeWidth * 1.5;
+                if (outerStyle === 'thinner') outerStrokeWidth = strokeWidth * 0.7;
+
+                const adjustedRadius = outerRadius + outerOffset;
+
+                if (outerStyle === 'double') {
+                    svgContent += `
+                        <circle cx="${outerX}" cy="${outerY}" r="${adjustedRadius}"
+                                fill="none" stroke="black" stroke-width="${strokeWidth}" ${strokeDash}/>
+                        <circle cx="${outerX}" cy="${outerY}" r="${adjustedRadius - strokeWidth*2}"
+                                fill="none" stroke="black" stroke-width="${strokeWidth}" ${strokeDash}/>
+                    `;
+                } else {
+                    svgContent += `
+                        <circle cx="${outerX}" cy="${outerY}" r="${adjustedRadius}"
+                                fill="none" stroke="black" stroke-width="${outerStrokeWidth}" ${strokeDash}/>
+                    `;
+                }
+            }
+
+            svgContent += '</g>';
+
+            // Update all preview SVGs
+            const lightSvg = svgContent;
+            const darkSvg = svgContent.replace(/black/g, 'white');
+
+            document.getElementById('previewLight').innerHTML = lightSvg;
+            document.getElementById('previewDark').innerHTML = darkSvg;
+            document.getElementById('previewMenuLight').innerHTML = lightSvg;
+            document.getElementById('previewMenuDark').innerHTML = darkSvg;
+
+            // Update small canvases
+            updateCanvas('light16', 16, lightSvg);
+            updateCanvas('light22', 22, lightSvg);
+            updateCanvas('light32', 32, lightSvg);
+            updateCanvas('dark16', 16, darkSvg);
+            updateCanvas('dark22', 22, darkSvg);
+            updateCanvas('dark32', 32, darkSvg);
+        }
+
+        function updateCanvas(canvasId, size, svgContent) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            const svgBlob = new Blob([`<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">${svgContent}</svg>`], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(svgBlob);
+
+            img.onload = function() {
+                ctx.clearRect(0, 0, size, size);
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+            };
+            img.src = url;
+        }
+
+        function exportSVG() {
+            const svg = document.getElementById('previewLight').innerHTML;
+            const blob = new Blob([`<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">${svg}</svg>`], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'zoo-template-custom.svg';
+            a.click();
+        }
+
+        function copyCode() {
+            const svg = document.getElementById('previewLight').innerHTML;
+            navigator.clipboard.writeText(`<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">${svg}</svg>`);
+            alert('SVG code copied to clipboard!');
+        }
+
+        function exportPNGs() {
+            alert('To export PNGs, save the SVG first, then use:\nrsvg-convert -w 16 -h 16 zoo-template-custom.svg -o icon16.png\nrsvg-convert -w 22 -h 22 zoo-template-custom.svg -o icon22.png\nrsvg-convert -w 32 -h 32 zoo-template-custom.svg -o icon32.png');
+        }
+
+        // Event listeners
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const valElem = document.getElementById(e.target.id + 'Val');
+                if (valElem) valElem.textContent = e.target.value;
+                updateSVG();
+            });
+        });
+
+        // Initialize
+        updateSVG();
+    </script>
+</body>
+</html>

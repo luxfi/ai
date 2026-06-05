@@ -1,0 +1,58 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Zoo Logo: Black Gradient Background Version -->
+
+  <defs>
+    <!-- Radial gradient from dark gray to black -->
+    <radialGradient id="blackGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#2a2a2a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+
+    <clipPath id="outerCircle">
+      <circle cx="512" cy="512" r="510"/>
+    </clipPath>
+    <clipPath id="greenClip">
+      <circle cx="520" cy="275" r="446"/>
+    </clipPath>
+    <clipPath id="redClip">
+      <circle cx="278" cy="715" r="446"/>
+    </clipPath>
+    <clipPath id="blueClip">
+      <circle cx="765" cy="717" r="446"/>
+    </clipPath>
+  </defs>
+
+  <!-- Black gradient background -->
+  <rect x="0" y="0" width="1024" height="1024" fill="url(#blackGradient)"/>
+
+  <!-- Logo on gradient background -->
+  <g clip-path="url(#outerCircle)">
+    <!-- Three primary circles -->
+    <circle cx="520" cy="275" r="446" fill="#00A652"/>
+    <circle cx="278" cy="715" r="446" fill="#ED1C24"/>
+    <circle cx="765" cy="717" r="446" fill="#2E3192"/>
+
+    <!-- Yellow overlap (green + red) -->
+    <g clip-path="url(#greenClip)">
+      <circle cx="278" cy="715" r="446" fill="#FCF006"/>
+    </g>
+
+    <!-- Cyan overlap (green + blue) -->
+    <g clip-path="url(#greenClip)">
+      <circle cx="765" cy="717" r="446" fill="#01ACF1"/>
+    </g>
+
+    <!-- Magenta overlap (red + blue) -->
+    <g clip-path="url(#redClip)">
+      <circle cx="765" cy="717" r="446" fill="#EA018E"/>
+    </g>
+
+    <!-- White center (all three overlap) -->
+    <g clip-path="url(#greenClip)">
+      <g clip-path="url(#redClip)">
+        <circle cx="765" cy="717" r="446" fill="#FFFFFF"/>
+      </g>
+    </g>
+  </g>
+</svg>

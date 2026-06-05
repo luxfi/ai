@@ -1,0 +1,28 @@
+{
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "url": "../index.html",
+        "title": "Zoo",
+        "width": 375,
+        "height": 812,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self' customprotocol: asset:",
+        "font-src": "'self' data: asset: https://fonts.gstatic.com",
+        "img-src": "'self' asset: http://asset.localhost blob: data:",
+        "style-src": "'unsafe-inline' 'self' https://fonts.googleapis.com"
+      }
+    },
+    "bundle": {
+      "iOS": {
+        "developmentTeam": "YOUR_TEAM_ID"
+      }
+    }
+  }
+}

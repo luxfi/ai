@@ -1,0 +1,48 @@
+{
+  "identifier": "main",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": ["main", "spotlight"],
+  "permissions": [
+    "core:default",
+    "dialog:allow-save",
+    "fs:allow-download-write",
+    "shell:allow-open",
+    "core:window:allow-start-dragging",
+    "updater:allow-check",
+    "updater:allow-download",
+    "updater:allow-install",
+    "updater:allow-download-and-install",
+    "process:allow-restart",
+    "log:default",
+    "dialog:allow-open",
+    "notification:default",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        {
+          "path": "$HOME/Downloads/*"
+        }
+      ]
+    },
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://mcp.composio.dev" }],
+      "deny": []
+    }
+  ],
+  "commands.allow": [
+    "zoo_node_is_running",
+    "zoo_node_get_options",
+    "zoo_node_set_options",
+    "zoo_node_spawn",
+    "zoo_node_kill",
+    "zoo_node_remove_storage",
+    "zoo_node_set_default_options",
+    "zoo_node_get_ollama_api_url",
+    "zoo_node_get_default_model",
+    "hardware_get_summary",
+    "galxe_generate_proof",
+    "retrieve_logs"
+  ]
+}

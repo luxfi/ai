@@ -1,0 +1,34 @@
+{
+  "identifier": "zoo-node-manager",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": ["zoo-node-manager"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "log:default",
+    "dialog:allow-save",
+    "fs:allow-download-write",
+    "dialog:allow-open",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        {
+          "path": "$HOME/Downloads/*"
+        }
+      ]
+    }
+  ],
+  "commands.allow": [
+    "zoo_node_is_running",
+    "zoo_node_get_options",
+    "zoo_node_set_options",
+    "zoo_node_spawn",
+    "zoo_node_kill",
+    "zoo_node_remove_storage",
+    "zoo_node_set_default_options",
+    "zoo_node_get_ollama_api_url",
+    "zoo_node_get_default_model",
+    "retrieve_logs"
+  ]
+}
