@@ -27,7 +27,7 @@ pub struct ZooNodeProcessHandler {
 impl ZooNodeProcessHandler {
     const HEALTH_REQUEST_TIMEOUT_MS: u64 = 250;
     const HEALTH_TIMEOUT_MS: u64 = 10000;
-    const PROCESS_NAME: &'static str = "zoo-node";
+    const PROCESS_NAME: &'static str = "hanzo-node";
 
     pub fn new(
         app: AppHandle,

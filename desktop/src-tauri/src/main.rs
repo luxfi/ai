@@ -299,7 +299,7 @@ fn main() {
                     drop(hanzo_node_manager_guard);
                     while let Ok(state_change) = receiver.recv().await {
                         app_handle
-                            .emit("zoo-node-state-change", state_change)
+                            .emit("hanzo-node-state-change", state_change)
                             .unwrap_or_else(|e| {
                                 log::error!("failed to emit global event for state change: {}", e);
                             });
@@ -316,7 +316,7 @@ fn main() {
             }
             RunEvent::Exit { .. } => {
                 tauri::async_runtime::spawn(async {
-                    log::debug!("killing ollama and zoo-node before exit");
+                    log::debug!("killing ollama and hanzo-node before exit");
 
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut hanzo_node_manager_guard =
