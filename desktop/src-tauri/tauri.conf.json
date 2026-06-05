@@ -13,7 +13,9 @@
       "nsis",
       "dmg"
     ],
-    "externalBin": [],
+    "externalBin": [
+      "external-binaries/hanzo-node/hanzo-node"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
