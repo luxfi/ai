@@ -293,9 +293,9 @@ fn install_hanzo_update(app_handle: tauri::AppHandle, download_path: PathBuf) ->
         .map_err(|e| format!("Failed to get resource directory: {}", e))?;
 
     let binary_name = if cfg!(target_os = "windows") {
-        "zoo-node.exe"
+        "hanzo-node.exe"
     } else {
-        "zoo-node"
+        "hanzo-node"
     };
 
     let install_path = resource_dir.join("binaries").join(binary_name);
