@@ -159,7 +159,7 @@ pub async fn download_and_install_update(
     });
 
     // Create temp directory for download
-    let temp_dir = std::env::temp_dir().join("zoo-updates");
+    let temp_dir = std::env::temp_dir().join("hanzo-updates");
     fs::create_dir_all(&temp_dir)
         .map_err(|e| format!("Failed to create temp directory: {}", e))?;
 
