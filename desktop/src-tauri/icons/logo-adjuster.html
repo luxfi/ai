@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoo Logo Adjuster</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            width: 300px;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+
+        .control-group h3 {
+            margin: 0 0 15px 0;
+            color: #aaa;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        input[type="range"] {
+            width: 150px;
+        }
+
+        .value {
+            width: 50px;
+            text-align: right;
+            font-family: monospace;
+            color: #4CAF50;
+        }
+
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .canvas-wrapper {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+
+        #svgCanvas {
+            display: block;
+        }
+
+        .overlay-wrapper {
+            position: relative;
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .overlay-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        .overlay-container img,
+        .overlay-container svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #originalImage {
+            opacity: 0.5;
+            transform-origin: center center;
+        }
+
+        .overlay-container svg {
+            pointer-events: none;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        #exportButton {
+            background: #2196F3;
+        }
+
+        #exportButton:hover {
+            background: #1976D2;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .preset-buttons button {
+            font-size: 11px;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <h2>Logo Adjuster</h2>
+
+            <div class="preset-buttons">
+                <button onclick="loadPreset('default')">Default</button>
+                <button onclick="loadPreset('yourValues')">Your Values</button>
+                <button onclick="loadPreset('adjusted')">Adjusted</button>
+                <button onclick="loadPreset('large')">Large Circles</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Outer Circle</h3>
+                <label>
+                    Radius:
+                    <input type="range" id="outerRadius" min="200" max="600" value="400" step="1">
+                    <span class="value" id="outerRadiusVal">400</span>
+                </label>
+                <label>
+                    Fine Adjust:
+                    <input type="number" id="outerRadiusFine" min="200" max="600" value="400"
+                           style="width: 80px; background: #333; color: white; border: 1px solid #555; padding: 4px;">
+                </label>
+                <label>
+                    X Position:
+                    <input type="range" id="outerX" min="400" max="624" value="512">
+                    <span class="value" id="outerXVal">512</span>
+                </label>
+                <label>
+                    Y Position:
+                    <input type="range" id="outerY" min="400" max="624" value="512">
+                    <span class="value" id="outerYVal">512</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Circle Size</h3>
+                <label>
+                    Radius:
+                    <input type="range" id="circleRadius" min="150" max="350" value="220" step="1">
+                    <span class="value" id="circleRadiusVal">220</span>
+                </label>
+                <label>
+                    Fine Adjust:
+                    <input type="number" id="circleRadiusFine" min="150" max="350" value="220"
+                           style="width: 80px; background: #333; color: white; border: 1px solid #555; padding: 4px;">
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Green Circle (Top)</h3>
+                <label>
+                    X Position:
+                    <input type="range" id="greenX" min="400" max="624" value="512">
+                    <span class="value" id="greenXVal">512</span>
+                </label>
+                <label>
+                    Y Position:
+                    <input type="range" id="greenY" min="200" max="500" value="362">
+                    <span class="value" id="greenYVal">362</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Red Circle (Bottom-Left)</h3>
+                <label>
+                    X Position:
+                    <input type="range" id="redX" min="250" max="500" value="384">
+                    <span class="value" id="redXVal">384</span>
+                </label>
+                <label>
+                    Y Position:
+                    <input type="range" id="redY" min="400" max="700" value="562">
+                    <span class="value" id="redYVal">562</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Blue Circle (Bottom-Right)</h3>
+                <label>
+                    X Position:
+                    <input type="range" id="blueX" min="524" max="774" value="640">
+                    <span class="value" id="blueXVal">640</span>
+                </label>
+                <label>
+                    Y Position:
+                    <input type="range" id="blueY" min="400" max="700" value="562">
+                    <span class="value" id="blueYVal">562</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>Overlay</h3>
+                <label>
+                    Original Opacity:
+                    <input type="range" id="overlayOpacity" min="0" max="100" value="50">
+                    <span class="value" id="overlayOpacityVal">50%</span>
+                </label>
+                <label>
+                    Scale:
+                    <input type="range" id="overlayScale" min="50" max="150" value="100">
+                    <span class="value" id="overlayScaleVal">100%</span>
+                </label>
+                <label>
+                    X Offset:
+                    <input type="range" id="overlayX" min="-50" max="50" value="0">
+                    <span class="value" id="overlayXVal">0</span>
+                </label>
+                <label>
+                    Y Offset:
+                    <input type="range" id="overlayY" min="-50" max="50" value="0">
+                    <span class="value" id="overlayYVal">0</span>
+                </label>
+            </div>
+
+            <button onclick="saveCurrentAsPreset()">Save Current Values</button>
+            <button onclick="copyToClipboard()">Copy SVG Code</button>
+            <button id="exportButton" onclick="exportSVG()">Export SVG File</button>
+        </div>
+
+        <div class="canvas-area">
+            <div class="canvas-wrapper">
+                <svg id="svgCanvas" width="400" height="400" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Will be populated by JavaScript -->
+                </svg>
+            </div>
+
+            <div class="overlay-wrapper">
+                <div class="overlay-container">
+                    <svg id="overlaySVG" width="400" height="400" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Dynamic SVG overlay -->
+                    </svg>
+                    <div id="originalImageWrapper" style="position: absolute; top: 0; left: 0; width: 400px; height: 400px; display: flex; align-items: center; justify-content: center;">
+                        <img id="originalImage" src="original-zoo-logo.png" alt="Original"
+                             style="position: absolute; width: 400px; height: 400px; opacity: 0.5; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const presets = {
+            default: {
+                outerRadius: 400,
+                circleRadius: 220,
+                greenX: 512, greenY: 362,
+                redX: 384, redY: 562,
+                blueX: 640, blueY: 562
+            },
+            yourValues: {
+                outerRadius: 282,
+                circleRadius: 231,
+                greenX: 518, greenY: 348,
+                redX: 363, redY: 567,
+                blueX: 657, blueY: 570
+            },
+            adjusted: {
+                outerRadius: 300,  // Slightly larger to not cut bottom
+                circleRadius: 231,
+                greenX: 518, greenY: 348,
+                redX: 363, redY: 567,
+                blueX: 657, blueY: 570
+            },
+            large: {
+                outerRadius: 400,
+                circleRadius: 280,
+                greenX: 512, greenY: 330,
+                redX: 370, redY: 570,
+                blueX: 654, blueY: 570
+            }
+        };
+
+        function loadPreset(name) {
+            const preset = presets[name];
+            if (preset) {
+                Object.keys(preset).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) {
+                        input.value = preset[key];
+                        updateValue(key);
+                    }
+                });
+                updateSVG();
+            }
+        }
+
+        function updateSVG() {
+            const outerRadius = document.getElementById('outerRadius').value;
+            const outerX = document.getElementById('outerX').value;
+            const outerY = document.getElementById('outerY').value;
+            const circleRadius = document.getElementById('circleRadius').value;
+            const greenX = document.getElementById('greenX').value;
+            const greenY = document.getElementById('greenY').value;
+            const redX = document.getElementById('redX').value;
+            const redY = document.getElementById('redY').value;
+            const blueX = document.getElementById('blueX').value;
+            const blueY = document.getElementById('blueY').value;
+
+            const svgContent = `
+                <defs>
+                    <clipPath id="outerCircle">
+                        <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}"/>
+                    </clipPath>
+                    <clipPath id="greenClip">
+                        <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}"/>
+                    </clipPath>
+                    <clipPath id="redClip">
+                        <circle cx="${redX}" cy="${redY}" r="${circleRadius}"/>
+                    </clipPath>
+                    <clipPath id="blueClip">
+                        <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}"/>
+                    </clipPath>
+                </defs>
+
+                <rect width="1024" height="1024" fill="#000000"/>
+
+                <g clip-path="url(#outerCircle)">
+                    <circle cx="${outerX}" cy="${outerY}" r="${outerRadius}" fill="#000000"/>
+
+                    <circle cx="${greenX}" cy="${greenY}" r="${circleRadius}" fill="#00A652"/>
+                    <circle cx="${redX}" cy="${redY}" r="${circleRadius}" fill="#ED1C24"/>
+                    <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="#2E3192"/>
+
+                    <g clip-path="url(#greenClip)">
+                        <circle cx="${redX}" cy="${redY}" r="${circleRadius}" fill="#FCF006"/>
+                    </g>
+
+                    <g clip-path="url(#greenClip)">
+                        <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="#01ACF1"/>
+                    </g>
+
+                    <g clip-path="url(#redClip)">
+                        <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="#EA018E"/>
+                    </g>
+
+                    <g clip-path="url(#greenClip)">
+                        <g clip-path="url(#redClip)">
+                            <circle cx="${blueX}" cy="${blueY}" r="${circleRadius}" fill="#FFFFFF"/>
+                        </g>
+                    </g>
+                </g>
+            `;
+
+            document.getElementById('svgCanvas').innerHTML = svgContent;
+            document.querySelector('.overlay-container svg').innerHTML = svgContent;
+        }
+
+        function updateValue(id) {
+            const input = document.getElementById(id);
+            const valueSpan = document.getElementById(id + 'Val');
+            if (valueSpan) {
+                if (id === 'overlayOpacity') {
+                    valueSpan.textContent = input.value + '%';
+                    document.getElementById('originalImage').style.opacity = input.value / 100;
+                } else if (id === 'overlayScale') {
+                    valueSpan.textContent = input.value + '%';
+                    updateOverlayTransform();
+                } else if (id === 'overlayX' || id === 'overlayY') {
+                    valueSpan.textContent = input.value;
+                    updateOverlayTransform();
+                } else {
+                    valueSpan.textContent = input.value;
+                }
+            }
+        }
+
+        function updateOverlayTransform() {
+            const scale = document.getElementById('overlayScale').value / 100;
+            const x = parseFloat(document.getElementById('overlayX').value);
+            const y = parseFloat(document.getElementById('overlayY').value);
+            const img = document.getElementById('originalImage');
+
+            // Apply transform to the image directly
+            const scaleValue = scale;
+            const translateX = x;
+            const translateY = y;
+
+            img.style.transform = `scale(${scaleValue}) translate(${translateX}px, ${translateY}px)`;
+            img.style.transformOrigin = 'center center';
+        }
+
+        function copyToClipboard() {
+            const svg = document.getElementById('svgCanvas').outerHTML;
+            navigator.clipboard.writeText(svg).then(() => {
+                alert('SVG code copied to clipboard!');
+            });
+        }
+
+        function exportSVG() {
+            const svg = document.getElementById('svgCanvas').outerHTML;
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'zoo-logo-adjusted.svg';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function saveCurrentAsPreset() {
+            const values = {
+                outerRadius: document.getElementById('outerRadius').value,
+                circleRadius: document.getElementById('circleRadius').value,
+                greenX: document.getElementById('greenX').value,
+                greenY: document.getElementById('greenY').value,
+                redX: document.getElementById('redX').value,
+                redY: document.getElementById('redY').value,
+                blueX: document.getElementById('blueX').value,
+                blueY: document.getElementById('blueY').value
+            };
+
+            console.log('Current values:', values);
+            localStorage.setItem('zooLogoValues', JSON.stringify(values));
+            alert('Values saved! They will be loaded next time you open this page.');
+        }
+
+        // Add event listeners
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('input', (e) => {
+                updateValue(e.target.id);
+                if (e.target.id === 'outerRadius') {
+                    document.getElementById('outerRadiusFine').value = e.target.value;
+                }
+                if (e.target.id !== 'overlayOpacity' &&
+                    e.target.id !== 'overlayScale' &&
+                    e.target.id !== 'overlayX' &&
+                    e.target.id !== 'overlayY') {
+                    updateSVG();
+                }
+            });
+        });
+
+        // Fine adjustment input for outer radius
+        document.getElementById('outerRadiusFine').addEventListener('input', (e) => {
+            const value = Math.min(600, Math.max(200, e.target.value));
+            document.getElementById('outerRadius').value = value;
+            document.getElementById('outerRadiusVal').textContent = value;
+            updateSVG();
+        });
+
+        // Fine adjustment input for circle radius
+        document.getElementById('circleRadiusFine').addEventListener('input', (e) => {
+            const value = Math.min(350, Math.max(150, e.target.value));
+            document.getElementById('circleRadius').value = value;
+            document.getElementById('circleRadiusVal').textContent = value;
+            updateSVG();
+        });
+
+        // Sync circle radius slider with fine input
+        document.getElementById('circleRadius').addEventListener('input', (e) => {
+            document.getElementById('circleRadiusFine').value = e.target.value;
+        });
+
+        // Initialize
+        // Load saved values if they exist
+        const savedValues = localStorage.getItem('zooLogoValues');
+        if (savedValues) {
+            const values = JSON.parse(savedValues);
+            Object.keys(values).forEach(key => {
+                const input = document.getElementById(key);
+                if (input) {
+                    input.value = values[key];
+                    updateValue(key);
+                    // Update fine adjust inputs too
+                    if (key === 'outerRadius') {
+                        document.getElementById('outerRadiusFine').value = values[key];
+                    } else if (key === 'circleRadius') {
+                        document.getElementById('circleRadiusFine').value = values[key];
+                    }
+                }
+            });
+        }
+
+        updateSVG();
+        document.getElementById('overlayOpacity').value = 50;
+        updateValue('overlayOpacity');
+        updateOverlayTransform();
+    </script>
+</body>
+</html>

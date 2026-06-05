@@ -1,0 +1,20 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Zoo Logo: Template Version for macOS Menu Bar - Outline Only -->
+  <!-- Pure black lines for proper template rendering -->
+
+  <defs>
+    <clipPath id="outerCircle">
+      <circle cx="512" cy="508" r="259"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#outerCircle)">
+    <!-- Three circle outlines only -->
+    <circle cx="515" cy="368" r="227" fill="none" stroke="black" stroke-width="12"/>
+    <circle cx="369" cy="593" r="227" fill="none" stroke="black" stroke-width="12"/>
+    <circle cx="653" cy="594" r="227" fill="none" stroke="black" stroke-width="12"/>
+
+    <!-- Outer boundary circle -->
+    <circle cx="512" cy="508" r="255" fill="none" stroke="black" stroke-width="12"/>
+  </g>
+</svg>
