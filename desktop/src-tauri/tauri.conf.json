@@ -28,7 +28,7 @@
     "createUpdaterArtifacts": true
   },
   "productName": "Lux Desktop",
-  "version": "../../../package.json",
+  "version": "0.1.0",
   "identifier": "com.luxfi.desktop",
   "plugins": {
     "updater": {
