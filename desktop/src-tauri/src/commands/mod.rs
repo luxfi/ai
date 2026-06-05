@@ -4,7 +4,7 @@ pub mod hardware;
 pub mod logs;
 pub mod mining;
 pub mod runtime_updates;
-pub mod zoo_node_manager_commands;
+pub mod hanzo_node_manager_commands;
 pub mod mcp_clients_install;
 pub mod service;
 pub mod spotlight_commands;

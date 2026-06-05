@@ -9,7 +9,7 @@ use regex::Regex;
 use tauri::AppHandle;
 use tokio::sync::mpsc::Sender;
 
-use crate::local_zoo_node::zoo_node_options::ZooNodeOptions;
+use crate::local_zoo_node::hanzo_node_options::ZooNodeOptions;
 
 use super::{
     process_handler::{ProcessHandler, ProcessHandlerEvent},
@@ -88,7 +88,7 @@ impl ZooNodeProcessHandler {
         }
     }
 
-    async fn wait_zoo_node_server(&self) -> Result<(), String> {
+    async fn wait_hanzo_node_server(&self) -> Result<(), String> {
         let max_wait_time = Duration::from_millis(Self::HEALTH_TIMEOUT_MS);
         let default_timeout = Duration::from_millis(Self::HEALTH_REQUEST_TIMEOUT_MS);
         let mut timeout = default_timeout;
@@ -179,7 +179,7 @@ impl ZooNodeProcessHandler {
             "http://localhost:11435".to_string(),
         );
         self.process_handler.spawn(env, [].to_vec(), None).await?;
-        if let Err(e) = self.wait_zoo_node_server().await {
+        if let Err(e) = self.wait_hanzo_node_server().await {
             self.process_handler.kill().await;
             return Err(e);
         }

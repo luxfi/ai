@@ -135,7 +135,7 @@ pub async fn switch_engine_version(
     log::info!("Switching {} engine to version {}", engine_type, version);
 
     // Update the configuration
-    // This would normally update the zoo_node_options
+    // This would normally update the hanzo_node_options
 
     Ok(format!("Successfully switched {} to version {}", engine_type, version))
 }

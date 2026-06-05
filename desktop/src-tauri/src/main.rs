@@ -6,14 +6,14 @@ use std::sync::Arc;
 use crate::commands::fetch::{get_request, post_request};
 use crate::commands::galxe::galxe_generate_proof;
 use crate::commands::hardware::hardware_get_summary;
-use crate::commands::zoo_node_manager_commands::{
-    show_zoo_node_manager_window, zoo_node_get_default_embedding_model,
-    zoo_node_get_default_model, zoo_node_get_ollama_api_url,
-    zoo_node_get_ollama_version, zoo_node_get_options, zoo_node_is_running,
-    zoo_node_kill, zoo_node_open_chat_folder, zoo_node_open_storage_location,
-    zoo_node_open_storage_location_with_path, zoo_node_remove_storage,
-    zoo_node_set_default_options, zoo_node_set_options, zoo_node_spawn,
-    zoo_node_status,
+use crate::commands::hanzo_node_manager_commands::{
+    show_hanzo_node_manager_window, hanzo_node_get_default_embedding_model,
+    hanzo_node_get_default_model, hanzo_node_get_ollama_api_url,
+    hanzo_node_get_ollama_version, hanzo_node_get_options, hanzo_node_is_running,
+    hanzo_node_kill, hanzo_node_open_chat_folder, hanzo_node_open_storage_location,
+    hanzo_node_open_storage_location_with_path, hanzo_node_remove_storage,
+    hanzo_node_set_default_options, hanzo_node_set_options, hanzo_node_spawn,
+    hanzo_node_status,
 };
 use crate::commands::engine_manager::{
     get_available_engine_versions, get_engine_info, download_engine_version, switch_engine_version,
@@ -52,7 +52,7 @@ use crate::commands::store::{get_store_response, store_api_proxy};
 use deep_links::setup_deep_links;
 use global_shortcuts::global_shortcut_handler;
 use globals::ZOO_NODE_MANAGER_INSTANCE;
-use local_zoo_node::zoo_node_manager::ZooNodeManager;
+use local_zoo_node::hanzo_node_manager::ZooNodeManager;
 use mining::MiningManager;
 use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
@@ -149,26 +149,26 @@ fn main() {
             hide_spotlight_window_app,
             show_spotlight_window_app,
             open_main_window_with_path_app,
-            show_zoo_node_manager_window,
-            zoo_node_is_running,
-            zoo_node_status,
-            zoo_node_get_options,
-            zoo_node_set_options,
-            zoo_node_spawn,
-            zoo_node_kill,
-            zoo_node_remove_storage,
-            zoo_node_open_storage_location,
-            zoo_node_open_storage_location_with_path,
-            zoo_node_open_chat_folder,
-            zoo_node_set_default_options,
-            zoo_node_get_ollama_api_url,
-            zoo_node_get_default_model,
-            zoo_node_get_default_embedding_model,
+            show_hanzo_node_manager_window,
+            hanzo_node_is_running,
+            hanzo_node_status,
+            hanzo_node_get_options,
+            hanzo_node_set_options,
+            hanzo_node_spawn,
+            hanzo_node_kill,
+            hanzo_node_remove_storage,
+            hanzo_node_open_storage_location,
+            hanzo_node_open_storage_location_with_path,
+            hanzo_node_open_chat_folder,
+            hanzo_node_set_default_options,
+            hanzo_node_get_ollama_api_url,
+            hanzo_node_get_default_model,
+            hanzo_node_get_default_embedding_model,
             hardware_get_summary,
             galxe_generate_proof,
             get_request,
             post_request,
-            zoo_node_get_ollama_version,
+            hanzo_node_get_ollama_version,
             retrieve_logs,
             download_logs,
             get_available_engine_versions,
@@ -258,19 +258,19 @@ fn main() {
                 let app_handle = app.handle().clone();
                 async move {
                     // Check for external nodes before killing
-                    let mut zoo_node_manager_guard =
+                    let mut hanzo_node_manager_guard =
                         ZOO_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
                     
                     // Check if external nodes are running
-                    let (zoo_external, ollama_external) = zoo_node_manager_guard.check_external_nodes().await;
+                    let (zoo_external, ollama_external) = hanzo_node_manager_guard.check_external_nodes().await;
                     
                     if !zoo_external && !ollama_external {
                         // Only kill if no external nodes are detected
-                        zoo_node_manager_guard.kill().await;
+                        hanzo_node_manager_guard.kill().await;
                     } else {
                         log::info!("External nodes detected (zoo: {}, ollama: {}), skipping kill", zoo_external, ollama_external);
                     }
-                    drop(zoo_node_manager_guard);
+                    drop(hanzo_node_manager_guard);
 
                     // Only create windows if not in background mode
                     if !is_background_mode {
@@ -293,10 +293,10 @@ fn main() {
             tauri::async_runtime::spawn({
                 let app_handle = app.handle().clone();
                 async move {
-                    let mut zoo_node_manager_guard =
+                    let mut hanzo_node_manager_guard =
                         ZOO_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
-                    let mut receiver = zoo_node_manager_guard.subscribe_to_events();
-                    drop(zoo_node_manager_guard);
+                    let mut receiver = hanzo_node_manager_guard.subscribe_to_events();
+                    drop(hanzo_node_manager_guard);
                     while let Ok(state_change) = receiver.recv().await {
                         app_handle
                             .emit("zoo-node-state-change", state_change)
@@ -319,10 +319,10 @@ fn main() {
                     log::debug!("killing ollama and zoo-node before exit");
 
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
-                    let mut zoo_node_manager_guard =
+                    let mut hanzo_node_manager_guard =
                         ZOO_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
-                    zoo_node_manager_guard.kill().await;
-                    drop(zoo_node_manager_guard);
+                    hanzo_node_manager_guard.kill().await;
+                    drop(hanzo_node_manager_guard);
                     // Force exit the application
                     std::process::exit(0);
                 });
