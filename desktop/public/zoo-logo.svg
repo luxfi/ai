@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="241 241 542 542" width="512" height="512">
+  <defs>
+    <filter id="overlap" x="0%" y="0%" width="100%" height="100%">
+      <feBlend mode="multiply" in2="BackgroundImage"/>
+    </filter>
+  </defs>
+
+  <!-- Outer circle -->
+  <circle cx="512" cy="512" r="270" fill="none" stroke="#000" stroke-width="4"/>
+
+  <!-- Green circle -->
+  <circle cx="513" cy="369" r="234" fill="#00A652" opacity="0.8" filter="url(#overlap)"/>
+
+  <!-- Red circle -->
+  <circle cx="365" cy="595" r="234" fill="#ED1C24" opacity="0.8" filter="url(#overlap)"/>
+
+  <!-- Blue circle -->
+  <circle cx="643" cy="595" r="234" fill="#2E3192" opacity="0.8" filter="url(#overlap)"/>
+</svg>

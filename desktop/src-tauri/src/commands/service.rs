@@ -3,13 +3,13 @@
 //! Phase 0 goal: let the desktop run as a headless run-once daemon, supervised
 //! by the user's own systemd instance — NO root, NO system units, NO sudo.
 //!
-//! We write a `--user` unit to `~/.config/systemd/user/zoo-desktop.service`
+//! We write a `--user` unit to `~/.config/systemd/user/lux-desktop.service`
 //! that launches THIS binary (resolved via `std::env::current_exe()`, or
 //! `$APPIMAGE` when bundled as an AppImage) with `--headless` and an
 //! auto-restart policy (see `render_unit` for why `on-failure` over `always`),
 //! then:
 //!   - `systemctl --user daemon-reload`
-//!   - `systemctl --user enable --now zoo-desktop`
+//!   - `systemctl --user enable --now lux-desktop`
 //!   - `loginctl enable-linger $USER`   (so it survives logout / starts at boot)
 //!
 //! On non-Linux platforms these commands compile but return a friendly error so
@@ -50,7 +50,7 @@ impl ServiceStatus {
 }
 
 #[cfg(target_os = "linux")]
-const SERVICE_NAME: &str = "zoo-desktop";
+const SERVICE_NAME: &str = "lux-desktop";
 
 #[cfg(target_os = "linux")]
 fn unit_file_path() -> Result<std::path::PathBuf, String> {

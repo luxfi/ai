@@ -146,3 +146,67 @@ pub async fn hanzo_node_open_chat_folder(storage_location: &str, chat_folder_nam
         Err(message) => Err(message),
     }
 }
+
+// ============================================================================
+// Brand-neutral `node_*` aliases.
+//
+// The shared @hanzo/ai SDK now invokes brand-neutral Tauri commands named
+// `node_*` (the `hanzo_` prefix was dropped). Each wrapper below simply
+// delegates to the existing `hanzo_node_*` implementation above, with an
+// identical signature, args, return type, and async-ness.
+// ============================================================================
+
+#[tauri::command]
+pub async fn node_spawn() -> Result<(), String> {
+    hanzo_node_spawn().await
+}
+
+#[tauri::command]
+pub async fn node_kill() -> Result<(), String> {
+    hanzo_node_kill().await
+}
+
+#[tauri::command]
+pub async fn node_is_running() -> Result<bool, String> {
+    hanzo_node_is_running().await
+}
+
+#[tauri::command]
+pub async fn node_get_options() -> Result<ZooNodeOptions, String> {
+    hanzo_node_get_options().await
+}
+
+#[tauri::command]
+pub async fn node_set_options(options: ZooNodeOptions) -> Result<ZooNodeOptions, String> {
+    hanzo_node_set_options(options).await
+}
+
+#[tauri::command]
+pub async fn node_remove_storage(preserve_keys: bool) -> Result<(), String> {
+    hanzo_node_remove_storage(preserve_keys).await
+}
+
+#[tauri::command]
+pub async fn node_get_default_model() -> Result<String, String> {
+    hanzo_node_get_default_model().await
+}
+
+#[tauri::command]
+pub async fn node_get_default_embedding_model() -> Result<String, String> {
+    hanzo_node_get_default_embedding_model().await
+}
+
+#[tauri::command]
+pub async fn node_set_default_options() -> Result<ZooNodeOptions, String> {
+    hanzo_node_set_default_options().await
+}
+
+#[tauri::command]
+pub async fn node_open_chat_folder(storage_location: &str, chat_folder_name: &str) -> Result<(), String> {
+    hanzo_node_open_chat_folder(storage_location, chat_folder_name).await
+}
+
+#[tauri::command]
+pub async fn show_node_manager_window(app_handle: tauri::AppHandle) {
+    show_hanzo_node_manager_window(app_handle).await
+}
