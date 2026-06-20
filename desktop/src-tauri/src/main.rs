@@ -14,6 +14,10 @@ use crate::commands::hanzo_node_manager_commands::{
     hanzo_node_open_storage_location_with_path, hanzo_node_remove_storage,
     hanzo_node_set_default_options, hanzo_node_set_options, hanzo_node_spawn,
     hanzo_node_status,
+    // Brand-neutral `node_*` aliases (delegate to the `hanzo_node_*` fns above).
+    node_spawn, node_kill, node_is_running, node_get_options, node_set_options,
+    node_remove_storage, node_get_default_model, node_get_default_embedding_model,
+    node_set_default_options, node_open_chat_folder, show_node_manager_window,
 };
 use crate::commands::engine_manager::{
     get_available_engine_versions, get_engine_info, download_engine_version, switch_engine_version,
@@ -121,13 +125,10 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
-                .with_shortcuts([
-                    "super+shift+o",
-                    "control+shift+o",
-                    "super+shift+k",
-                    "control+shift+k",
-                ])
-                .unwrap()
+                // Shortcuts are registered NON-FATALLY in setup() instead of via
+                // with_shortcuts(), which registers at plugin init and PANICS if
+                // another running brand (hanzo/zoo — same app) already holds the
+                // system-wide hotkey. A conflict must not crash the app.
                 .with_handler(
                     |app: &tauri::AppHandle,
                      shortcut: &tauri_plugin_global_shortcut::Shortcut,
@@ -164,6 +165,18 @@ fn main() {
             hanzo_node_get_ollama_api_url,
             hanzo_node_get_default_model,
             hanzo_node_get_default_embedding_model,
+            // Brand-neutral `node_*` aliases for the @hanzo/ai SDK.
+            node_spawn,
+            node_kill,
+            node_is_running,
+            node_get_options,
+            node_set_options,
+            node_remove_storage,
+            node_get_default_model,
+            node_get_default_embedding_model,
+            node_set_default_options,
+            node_open_chat_folder,
+            show_node_manager_window,
             hardware_get_summary,
             galxe_generate_proof,
             get_request,
@@ -222,6 +235,19 @@ fn main() {
         ])
         .setup(move |app| {
             log::info!("starting app version: {} (background: {})", env!("CARGO_PKG_VERSION"), is_background_mode);
+
+            // Register global shortcuts NON-FATALLY (see the global_shortcut
+            // plugin above): another running brand may already hold these
+            // system-wide hotkeys; a conflict must log a warning, not crash.
+            {
+                use tauri_plugin_global_shortcut::GlobalShortcutExt;
+                let gs = app.global_shortcut();
+                for s in ["super+shift+o", "control+shift+o", "super+shift+k", "control+shift+k"] {
+                    if let Err(e) = gs.register(s) {
+                        log::warn!("global shortcut '{}' not registered (already held by another app?): {}", s, e);
+                    }
+                }
+            }
             let app_resource_dir = app.path().resource_dir()?;
             let app_data_dir = app.path().app_data_dir()?;
 

@@ -254,10 +254,15 @@ impl Default for ZooNodeOptions {
             node_api_ip: Some("127.0.0.1".to_string()),
             node_api_port: Some("2000".to_string()),
             node_ws_port: Some("2001".to_string()),
-            node_ip: Some("127.0.0.1".to_string()),
+            // P2P listens on ALL interfaces so the node is reachable + shareable
+            // on the network (LAN peers connect directly; the relay advertises it
+            // to the wider network). The HTTP API above stays on 127.0.0.1
+            // (local-only) for safety.
+            node_ip: Some("0.0.0.0".to_string()),
             node_port: Some("2002".to_string()),
             node_https_port: Some("2003".to_string()),
-            global_identity_name: None,
+            // Chain-only DID prefix — node derives did:lux:0x<addr> from its key.
+            global_identity_name: Some("did:lux:auto".to_string()),
             node_storage_path: Some("./".to_string()),
             // Use Hanzo Engine for embeddings by default (Ollama is opt-in)
             embeddings_server_url: Some("zoo-backend:FREE_TEXT_INFERENCE".to_string()),

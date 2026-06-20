@@ -1,5 +1,5 @@
 [package]
-name = "zoo-desktop"
+name = "lux-desktop"
 version = "1.1.18"
 description = "A first class Desktop application to interact with Zoo Node"
 authors = ["z@zoo.ngo"]
