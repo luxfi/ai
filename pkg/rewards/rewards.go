@@ -379,6 +379,75 @@ func (rd *RewardDistributor) SlashProvider(providerID string, reason string) err
 	return nil
 }
 
+// QuorumOutcome is the result of settling a quorum task through the reward
+// distributor: who was paid, who was slashed, and the totals. It is the legacy
+// in-memory mirror of the canonical A-Chain settlement (chains/aivm), kept so the
+// reward ledger reflects quorum outcomes and the slash path is exercised in the
+// same module that owns provider stats.
+type QuorumOutcome struct {
+	Reached      bool     // did the winning group reach threshold
+	Paid         []string // winners credited rewardPerWinner
+	Slashed      []string // withholders slashed
+	TotalPaid    *big.Int
+	TotalSlashed *big.Int
+}
+
+// SettleQuorum is the REAL settlement consequence on the reward ledger:
+//   - rewards are credited to winners ONLY when the quorum is reached
+//     (len(winners) >= threshold); a sub-threshold call pays NO ONE.
+//   - every withholder (selected, committed, but never revealed) is slashed via
+//     SlashProvider — the slash path is now driven by settlement, not left as a
+//     never-triggered stub.
+//
+// rewardPerWinner is the per-winner credit; slashing zeroes a withholder's
+// pending rewards and marks it slashed (SlashProvider's existing semantics).
+// Idempotency / replay protection for the authoritative path lives in
+// chains/aivm (the settled marker); this ledger mirror is additive and is called
+// once per task by the settlement driver.
+func (rd *RewardDistributor) SettleQuorum(winners, withholders []string, threshold int, rewardPerWinner *big.Int) QuorumOutcome {
+	out := QuorumOutcome{TotalPaid: big.NewInt(0), TotalSlashed: big.NewInt(0)}
+
+	// Slash withholders regardless of quorum outcome (they withheld either way).
+	// SlashProvider takes its own lock, so call it BEFORE taking ours.
+	for _, w := range withholders {
+		before := rd.GetPendingRewards(w)
+		if err := rd.SlashProvider(w, "withheld reveal in quorum task"); err == nil {
+			out.Slashed = append(out.Slashed, w)
+			out.TotalSlashed.Add(out.TotalSlashed, before)
+		}
+	}
+
+	// Pay winners ONLY on quorum.
+	if len(winners) < threshold {
+		return out // no quorum -> no payment
+	}
+	out.Reached = true
+
+	rd.mu.Lock()
+	defer rd.mu.Unlock()
+	for _, w := range winners {
+		stats, ok := rd.providers[w]
+		if !ok {
+			stats = &ProviderStats{ProviderID: w, TotalRewards: big.NewInt(0), Uptime: 1.0}
+			rd.providers[w] = stats
+		}
+		if stats.Slashed {
+			continue // a slashed provider is never paid
+		}
+		stats.TotalRewards.Add(stats.TotalRewards, rewardPerWinner)
+		stats.TasksCompleted++
+		if _, ok := rd.pendingRewards[w]; !ok {
+			rd.pendingRewards[w] = big.NewInt(0)
+		}
+		rd.pendingRewards[w].Add(rd.pendingRewards[w], rewardPerWinner)
+		rd.totalMinted.Add(rd.totalMinted, rewardPerWinner)
+		rd.epochRewards.Add(rd.epochRewards, rewardPerWinner)
+		out.Paid = append(out.Paid, w)
+		out.TotalPaid.Add(out.TotalPaid, rewardPerWinner)
+	}
+	return out
+}
+
 // GetProviderStats returns provider statistics
 func (rd *RewardDistributor) GetProviderStats(providerID string) (*ProviderStats, bool) {
 	rd.mu.RLock()
