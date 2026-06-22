@@ -508,3 +508,89 @@ func TestProviderStatsAccumulation(t *testing.T) {
 		t.Error("AvgLatency should not be 0")
 	}
 }
+
+// helper: register a provider in the distributor by submitting a valid receipt,
+// so SlashProvider/SettleQuorum can find it.
+func seedProvider(rd *RewardDistributor, id string) {
+	rd.SubmitReceipt(&Receipt{
+		JobID:       "seed-" + id,
+		ProviderID:  id,
+		ComputeTime: 500,
+		Proof:       make([]byte, 64),
+	})
+}
+
+// TestSettleQuorum_Reached: quorum reached -> winners paid, withholders slashed.
+func TestSettleQuorum_Reached(t *testing.T) {
+	rd := NewRewardDistributor()
+	winners := []string{"op-1", "op-2", "op-3"}
+	withholders := []string{"op-4", "op-5"}
+	for _, w := range append(append([]string{}, winners...), withholders...) {
+		seedProvider(rd, w)
+	}
+
+	reward := big.NewInt(1_000_000_000_000_000_000) // 1 token
+	out := rd.SettleQuorum(winners, withholders, 3, reward)
+
+	if !out.Reached {
+		t.Fatal("quorum of 3/3 winners should be reached")
+	}
+	if len(out.Paid) != 3 {
+		t.Fatalf("expected 3 paid, got %d", len(out.Paid))
+	}
+	if len(out.Slashed) != 2 {
+		t.Fatalf("expected 2 slashed, got %d", len(out.Slashed))
+	}
+	// winners credited.
+	for _, w := range winners {
+		if got := rd.GetPendingRewards(w); got.Cmp(reward) != 1 && got.Cmp(reward) != 0 {
+			// pending includes the seed receipt's small reward + the settle reward;
+			// must be at least `reward`.
+			if got.Cmp(reward) < 0 {
+				t.Errorf("winner %s pending %s < reward %s", w, got, reward)
+			}
+		}
+	}
+	// withholders slashed: marked slashed and pending zeroed.
+	for _, w := range withholders {
+		stats, _ := rd.GetProviderStats(w)
+		if !stats.Slashed {
+			t.Errorf("withholder %s should be slashed", w)
+		}
+		if rd.GetPendingRewards(w).Sign() != 0 {
+			t.Errorf("withholder %s pending should be zeroed", w)
+		}
+	}
+}
+
+// TestSettleQuorum_NoQuorum: sub-threshold -> nobody paid, withholders still slashed.
+func TestSettleQuorum_NoQuorum(t *testing.T) {
+	rd := NewRewardDistributor()
+	winners := []string{"op-1", "op-2"} // only 2, threshold 3
+	withholders := []string{"op-3"}
+	for _, w := range append(append([]string{}, winners...), withholders...) {
+		seedProvider(rd, w)
+	}
+
+	reward := big.NewInt(1_000_000_000_000_000_000)
+	out := rd.SettleQuorum(winners, withholders, 3, reward)
+
+	if out.Reached {
+		t.Fatal("2/3 must NOT reach quorum")
+	}
+	if len(out.Paid) != 0 {
+		t.Fatalf("no quorum -> nobody paid, got %d", len(out.Paid))
+	}
+	// the would-be winners were NOT credited the settle reward.
+	base := func(id string) *big.Int { return rd.GetPendingRewards(id) }
+	for _, w := range winners {
+		if base(w).Cmp(reward) >= 0 {
+			t.Errorf("winner %s should not have been paid the full reward on no-quorum", w)
+		}
+	}
+	// withholder still slashed (withheld regardless of outcome).
+	stats, _ := rd.GetProviderStats("op-3")
+	if !stats.Slashed {
+		t.Error("withholder must be slashed even on no-quorum")
+	}
+}
