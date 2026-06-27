@@ -4,6 +4,7 @@
 package attestation
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -94,69 +95,50 @@ func TestVerifyCPUAttestation_UnsupportedTEE(t *testing.T) {
 	}
 }
 
-func TestVerifySGXQuote(t *testing.T) {
-	v := NewVerifier()
+// CPU attestation now delegates to the canonical cc/attest verifier; there is
+// no hand-rolled parser in this package. These tests assert the delegation
+// contract (fail-closed), not stub-pass behavior.
 
-	// Create valid SGX quote (432+ bytes)
+func TestVerifyCPUAttestation_SGXUnsupported(t *testing.T) {
+	v := NewVerifier()
+	// SGX has no cc/attest backend — refuse (this package never had real SGX
+	// crypto; refusing is fail-closed, not a regression).
 	quote := &AttestationQuote{
 		Type:      TEETypeSGX,
 		Quote:     make([]byte, 500),
 		Timestamp: time.Now(),
 	}
-
-	err := v.VerifyCPUAttestation(quote, nil)
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+	if err := v.VerifyCPUAttestation(quote, nil); err != ErrUnsupportedTEE {
+		t.Errorf("expected ErrUnsupportedTEE, got %v", err)
 	}
 }
 
-func TestVerifySGXQuote_MeasurementMismatch(t *testing.T) {
+func TestVerifyCPUAttestation_SEVSNPDelegates(t *testing.T) {
 	v := NewVerifier()
-
-	quote := &AttestationQuote{
-		Type:      TEETypeSGX,
-		Quote:     make([]byte, 500),
-		Timestamp: time.Now(),
-	}
-
-	expectedMeasurement := make([]byte, 32)
-	expectedMeasurement[0] = 0xFF
-
-	err := v.VerifyCPUAttestation(quote, expectedMeasurement)
-	if err != ErrInvalidMeasurement {
-		t.Errorf("expected ErrInvalidMeasurement, got %v", err)
-	}
-}
-
-func TestVerifySEVSNPQuote(t *testing.T) {
-	v := NewVerifier()
-
-	// Create valid SEV-SNP report (1184 bytes)
+	// Synthetic (non-conforming) SEV-SNP bytes must be REJECTED by the real
+	// cc/attest SEV-SNP verifier — proof the crypto is no longer faked here.
 	quote := &AttestationQuote{
 		Type:      TEETypeSEVSNP,
 		Quote:     make([]byte, 1200),
 		Timestamp: time.Now(),
 	}
-
 	err := v.VerifyCPUAttestation(quote, nil)
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+	if !errors.Is(err, ErrInvalidQuote) {
+		t.Errorf("expected ErrInvalidQuote (cc/attest rejected malformed report), got %v", err)
 	}
 }
 
-func TestVerifyTDXQuote(t *testing.T) {
+func TestVerifyCPUAttestation_TDXDelegates(t *testing.T) {
 	v := NewVerifier()
-
-	// Create valid TDX quote (584+ bytes)
+	// TDX routes to cc/attest's TDX verifier (currently a fail-loud stub).
 	quote := &AttestationQuote{
 		Type:      TEETypeTDX,
 		Quote:     make([]byte, 600),
 		Timestamp: time.Now(),
 	}
-
 	err := v.VerifyCPUAttestation(quote, nil)
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+	if !errors.Is(err, ErrInvalidQuote) {
+		t.Errorf("expected ErrInvalidQuote (delegated to cc/attest TDX), got %v", err)
 	}
 }
 
@@ -290,51 +272,6 @@ func TestCalculateLocalTrustScore(t *testing.T) {
 					score, tt.minScore, tt.maxScore)
 			}
 		})
-	}
-}
-
-func TestParseSEVSNPReport(t *testing.T) {
-	// Create minimal valid report
-	data := make([]byte, 1200)
-	data[0] = 1 // Version
-
-	report, err := ParseSEVSNPReport(data)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	if report.Version != 1 {
-		t.Errorf("Version = %d, want 1", report.Version)
-	}
-}
-
-func TestParseSEVSNPReport_TooShort(t *testing.T) {
-	data := make([]byte, 100)
-	_, err := ParseSEVSNPReport(data)
-	if err != ErrInvalidQuote {
-		t.Errorf("expected ErrInvalidQuote, got %v", err)
-	}
-}
-
-func TestParseTDXQuote(t *testing.T) {
-	data := make([]byte, 600)
-	data[0] = 4 // Version
-
-	quote, err := ParseTDXQuote(data)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	if quote.Version != 4 {
-		t.Errorf("Version = %d, want 4", quote.Version)
-	}
-}
-
-func TestParseTDXQuote_TooShort(t *testing.T) {
-	data := make([]byte, 100)
-	_, err := ParseTDXQuote(data)
-	if err != ErrInvalidQuote {
-		t.Errorf("expected ErrInvalidQuote, got %v", err)
 	}
 }
 
