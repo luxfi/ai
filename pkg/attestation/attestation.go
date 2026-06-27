@@ -5,7 +5,6 @@ package attestation
 
 import (
 	"crypto/sha256"
-	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -174,26 +173,6 @@ func (v *Verifier) RegisterTrustedMeasurement(name string, measurement []byte) {
 	v.trustedMeasurements[name] = measurement
 }
 
-// VerifyCPUAttestation verifies CPU TEE attestation
-func (v *Verifier) VerifyCPUAttestation(quote *AttestationQuote, expectedMeasurement []byte) error {
-	if quote == nil || len(quote.Quote) == 0 {
-		return ErrInvalidQuote
-	}
-	if time.Since(quote.Timestamp) > time.Hour {
-		return ErrQuoteExpired
-	}
-	switch quote.Type {
-	case TEETypeSGX:
-		return v.verifySGXQuote(quote, expectedMeasurement)
-	case TEETypeSEVSNP:
-		return v.verifySEVSNPQuote(quote, expectedMeasurement)
-	case TEETypeTDX:
-		return v.verifyTDXQuote(quote, expectedMeasurement)
-	default:
-		return ErrUnsupportedTEE
-	}
-}
-
 // VerifyGPUAttestation verifies GPU attestation based on mode
 // All attestation is LOCAL - no cloud dependencies (blockchain requirement)
 func (v *Verifier) VerifyGPUAttestation(att *GPUAttestation) (*DeviceStatus, error) {
@@ -245,19 +224,16 @@ func (v *Verifier) verifyLocalGPUAttestation(att *GPUAttestation) (*DeviceStatus
 
 	ev := att.LocalEvidence
 
-	// Verify SPDM report exists (minimum size for valid report)
+	// Structural sanity on the raw evidence envelope. The cryptographic
+	// verification — SPDM/RIM signature and measurement match against the
+	// NVIDIA-signed Reference Integrity Manifest — is NOT done here: it is
+	// the one canonical primitive in github.com/luxfi/cc/attest, reached via
+	// (*Verifier).VerifyGPULocalEvidence (see verify_cc.go). This method is
+	// the trust-score POLICY that scores an already-shaped attestation whose
+	// ev.RIMVerified reflects that verification.
 	if len(ev.SPDMReport) < 256 {
 		return nil, ErrInvalidQuote
 	}
-
-	// Verify certificate chain exists
-	if len(ev.CertChain) < 256 {
-		return nil, ErrInvalidQuote
-	}
-
-	// In production: verify SPDM signature against NVIDIA root cert
-	// In production: compare measurements against RIM golden values
-	// See nvtrust.go for full implementation
 
 	trustScore := calculateLocalTrustScore(att, ev)
 
@@ -316,45 +292,6 @@ func (v *Verifier) verifySoftwareGPUAttestation(att *GPUAttestation) (*DeviceSta
 	}, nil
 }
 
-func (v *Verifier) verifySGXQuote(quote *AttestationQuote, expectedMeasurement []byte) error {
-	if len(quote.Quote) < 432 {
-		return ErrInvalidQuote
-	}
-	mrenclave := quote.Quote[112:144]
-	if len(expectedMeasurement) > 0 && !bytesEqual(mrenclave, expectedMeasurement) {
-		return ErrInvalidMeasurement
-	}
-	return nil
-}
-
-func (v *Verifier) verifySEVSNPQuote(quote *AttestationQuote, expectedMeasurement []byte) error {
-	if len(quote.Quote) < 1184 {
-		return ErrInvalidQuote
-	}
-	report, err := ParseSEVSNPReport(quote.Quote)
-	if err != nil {
-		return err
-	}
-	if len(expectedMeasurement) > 0 && !bytesEqual(report.Measurement[:], expectedMeasurement) {
-		return ErrInvalidMeasurement
-	}
-	return nil
-}
-
-func (v *Verifier) verifyTDXQuote(quote *AttestationQuote, expectedMeasurement []byte) error {
-	if len(quote.Quote) < 584 {
-		return ErrInvalidQuote
-	}
-	tdxQuote, err := ParseTDXQuote(quote.Quote)
-	if err != nil {
-		return err
-	}
-	if len(expectedMeasurement) > 0 && !bytesEqual(tdxQuote.ReportData[:], expectedMeasurement) {
-		return ErrInvalidMeasurement
-	}
-	return nil
-}
-
 // calculateLocalTrustScore for local nvtrust verification
 // This is the PRIMARY trust score calculation for CC-capable GPUs
 // Max score: 100 for datacenter GPUs with full CC features
@@ -388,88 +325,6 @@ func calculateLocalTrustScore(att *GPUAttestation, ev *LocalGPUEvidence) uint8 {
 		score = 100
 	}
 	return score
-}
-
-// SEVSNPReport represents AMD SEV-SNP attestation report
-type SEVSNPReport struct {
-	Version         uint32
-	GuestSVN        uint32
-	Policy          uint64
-	FamilyID        [16]byte
-	ImageID         [16]byte
-	VMPL            uint32
-	SignatureAlgo   uint32
-	PlatformVersion uint64
-	PlatformInfo    uint64
-	AuthorKeyEn     uint32
-	ReportData      [64]byte
-	Measurement     [48]byte
-	HostData        [32]byte
-	IDKeyDigest     [48]byte
-	AuthorKeyDigest [48]byte
-	ReportID        [32]byte
-	ReportIDMA      [32]byte
-	ReportedTCB     uint64
-	ChipID          [64]byte
-	Signature       [512]byte
-}
-
-// ParseSEVSNPReport parses AMD SEV-SNP attestation report
-func ParseSEVSNPReport(data []byte) (*SEVSNPReport, error) {
-	if len(data) < 1184 {
-		return nil, ErrInvalidQuote
-	}
-	report := &SEVSNPReport{
-		Version:         binary.LittleEndian.Uint32(data[0:4]),
-		GuestSVN:        binary.LittleEndian.Uint32(data[4:8]),
-		Policy:          binary.LittleEndian.Uint64(data[8:16]),
-		VMPL:            binary.LittleEndian.Uint32(data[48:52]),
-		SignatureAlgo:   binary.LittleEndian.Uint32(data[52:56]),
-		PlatformVersion: binary.LittleEndian.Uint64(data[56:64]),
-		PlatformInfo:    binary.LittleEndian.Uint64(data[64:72]),
-		AuthorKeyEn:     binary.LittleEndian.Uint32(data[72:76]),
-		ReportedTCB:     binary.LittleEndian.Uint64(data[380:388]),
-	}
-	copy(report.FamilyID[:], data[16:32])
-	copy(report.ImageID[:], data[32:48])
-	copy(report.ReportData[:], data[76:140])
-	copy(report.Measurement[:], data[140:188])
-	copy(report.HostData[:], data[188:220])
-	copy(report.IDKeyDigest[:], data[220:268])
-	copy(report.AuthorKeyDigest[:], data[268:316])
-	copy(report.ReportID[:], data[316:348])
-	copy(report.ReportIDMA[:], data[348:380])
-	copy(report.ChipID[:], data[388:452])
-	copy(report.Signature[:], data[672:1184])
-	return report, nil
-}
-
-// TDXQuote represents Intel TDX attestation quote
-type TDXQuote struct {
-	Version            uint16
-	AttestationKeyType uint16
-	TEEType            uint32
-	Reserved           [4]byte
-	VendorID           [16]byte
-	UserData           [20]byte
-	ReportData         [64]byte
-}
-
-// ParseTDXQuote parses Intel TDX quote
-func ParseTDXQuote(data []byte) (*TDXQuote, error) {
-	if len(data) < 584 {
-		return nil, ErrInvalidQuote
-	}
-	quote := &TDXQuote{
-		Version:            binary.LittleEndian.Uint16(data[0:2]),
-		AttestationKeyType: binary.LittleEndian.Uint16(data[2:4]),
-		TEEType:            binary.LittleEndian.Uint32(data[4:8]),
-	}
-	copy(quote.Reserved[:], data[8:12])
-	copy(quote.VendorID[:], data[12:28])
-	copy(quote.UserData[:], data[28:48])
-	copy(quote.ReportData[:], data[48:112])
-	return quote, nil
 }
 
 // calculateSoftwareTrustScore for consumer GPU software attestation
