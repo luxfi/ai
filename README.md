@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="ai" width="880"></p>
+
 # Lux AI
 
 Mine AI tokens and chat with AI models on the Lux AI network.
