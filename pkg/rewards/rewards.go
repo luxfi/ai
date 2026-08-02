@@ -130,14 +130,14 @@ func (rc *RewardCalculator) getComputeFactor(computeTimeMs uint64) float64 {
 type ComputeClass int
 
 const (
-	ClassCpuOrUnknown      ComputeClass = iota // CPU-only / unrecognized — still earns a baseline
-	ClassIntegratedOrEntry                     // integrated / entry GPU, base Apple Silicon, Intel Arc
-	ClassConsumerDiscrete                      // mainstream discrete GPU / AI APU / Apple M*Max
-	ClassProsumerHighEnd                       // RTX 5090/4090, Apple M*Ultra, DGX Spark/GB10 desktop appliance
-	ClassWorkstationAi                         // RTX PRO 6000 Blackwell / 6000 Ada / A6000 (~7x a Spark)
-	ClassDatacenter                            // A100 / L40S / A40 / Instinct MI250
-	ClassPremiumDatacenter                     // H100 / H200 / GH200 / MI300
-	ClassFrontierDatacenter                    // GB200 / B200
+	ClassCpuOrUnknown       ComputeClass = iota // CPU-only / unrecognized — still earns a baseline
+	ClassIntegratedOrEntry                      // integrated / entry GPU, base Apple Silicon, Intel Arc
+	ClassConsumerDiscrete                       // mainstream discrete GPU / AI APU / Apple M*Max
+	ClassProsumerHighEnd                        // RTX 5090/4090, Apple M*Ultra, DGX Spark/GB10 desktop appliance
+	ClassWorkstationAi                          // RTX PRO 6000 Blackwell / 6000 Ada / A6000 (~7x a Spark)
+	ClassDatacenter                             // A100 / L40S / A40 / Instinct MI250
+	ClassPremiumDatacenter                      // H100 / H200 / GH200 / MI300
+	ClassFrontierDatacenter                     // GB200 / B200
 )
 
 // BaseBonusPct is an INTEGER percent (no float, so no truncation artifacts).
