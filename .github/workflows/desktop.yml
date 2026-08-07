@@ -106,7 +106,7 @@ jobs:
           args: ${{ matrix.args }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: desktop-${{ matrix.platform }}-${{ matrix.arch }}
           path: |

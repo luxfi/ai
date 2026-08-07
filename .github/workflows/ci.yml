@@ -161,7 +161,7 @@ jobs:
           go build -ldflags="-s -w" -o lux-ai-${{ matrix.goos }}-${{ matrix.goarch }}${EXT} ./cmd/lux-ai
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: lux-ai-${{ matrix.goos }}-${{ matrix.goarch }}
           path: lux-ai-*
