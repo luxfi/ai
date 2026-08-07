@@ -105,6 +105,10 @@ jobs:
           projectPath: desktop
           args: ${{ matrix.args }}
 
+      # v3, not v4+: git.hanzo.ai presents as GHES and the v4 action refuses
+      # outright. Over 30 days on this forge v4 is 0 ok / 43 fail and v3 is
+      # 132 ok / 1 fail. Do not "upgrade" this — the job goes red while the
+      # build itself is green.
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
