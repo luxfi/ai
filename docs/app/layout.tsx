@@ -1,13 +1,8 @@
 import './global.css';
 import { RootProvider } from 'fumadocs-ui/provider';
-import { Inter } from 'next/font/google';
+import { ZenMono } from '@hanzo/font/mono';
+import { ZenSans } from '@hanzo/font/sans';
 import type { ReactNode } from 'react';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-geist-sans',
-  display: 'swap',
-});
 
 export const metadata = {
   title: {
@@ -26,7 +21,7 @@ export const metadata = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={`${ZenSans.variable} ${ZenMono.variable}`} suppressHydrationWarning>
       <body className="min-h-svh bg-background font-sans antialiased">
         <RootProvider
           search={{
