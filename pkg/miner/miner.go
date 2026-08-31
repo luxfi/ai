@@ -354,7 +354,7 @@ func (m *Miner) pollForTasks(ctx context.Context) {
 	}
 
 	// Query node for tasks
-	url := fmt.Sprintf("%s/v1/chain/A/ai/pendingTasks", m.config.NodeURL)
+	url := fmt.Sprintf("%s/v1/bc/A/ai/pendingTasks", m.config.NodeURL)
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return
@@ -557,7 +557,7 @@ func (m *Miner) resultHandler(ctx context.Context) {
 // submitResult sends completed task back to the network
 func (m *Miner) submitResult(ctx context.Context, task *Task) {
 	// In production, this would submit the result to the AIVM
-	url := fmt.Sprintf("%s/v1/chain/A/ai/submitResult", m.config.NodeURL)
+	url := fmt.Sprintf("%s/v1/bc/A/ai/submitResult", m.config.NodeURL)
 
 	body, err := json.Marshal(task)
 	if err != nil {
