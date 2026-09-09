@@ -43,6 +43,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
+          cache: false
           node-version: '20'
 
       - name: Install pnpm
