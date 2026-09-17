@@ -474,7 +474,7 @@ func (rd *RewardDistributor) GetTotalMinted() *big.Int {
 }
 
 // GetEpochStats returns current epoch statistics
-func (rd *RewardDistributor) GetEpochStats() map[string]interface{} {
+func (rd *RewardDistributor) GetEpochStats() map[string]any {
 	rd.mu.RLock()
 	defer rd.mu.RUnlock()
 
@@ -485,7 +485,7 @@ func (rd *RewardDistributor) GetEpochStats() map[string]interface{} {
 		}
 	}
 
-	return map[string]interface{}{
+	return map[string]any{
 		"total_minted":     rd.totalMinted.String(),
 		"epoch_rewards":    rd.epochRewards.String(),
 		"total_receipts":   len(rd.receipts),

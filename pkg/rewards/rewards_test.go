@@ -482,7 +482,7 @@ func TestComputeMerkleRoot(t *testing.T) {
 func TestProviderStatsAccumulation(t *testing.T) {
 	rd := NewRewardDistributor()
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		receipt := &Receipt{
 			JobID:       "job-" + string(rune('0'+i)),
 			ProviderID:  "provider-001",

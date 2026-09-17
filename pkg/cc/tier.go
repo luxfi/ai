@@ -278,7 +278,7 @@ func (a *TierAttestation) MeetsTierRequirement(required CCTier) error {
 }
 
 // ParseTier parses a tier from a string or uint8
-func ParseTier(value interface{}) (CCTier, error) {
+func ParseTier(value any) (CCTier, error) {
 	switch v := value.(type) {
 	case uint8:
 		return parseTierUint8(v)

@@ -452,7 +452,7 @@ func (m *Miner) runInference(ctx context.Context, task *Task) error {
 		return err
 	}
 
-	output := map[string]interface{}{
+	output := map[string]any{
 		"text":   resp.Text,
 		"tokens": resp.Tokens,
 		"model":  resp.Model,
@@ -494,7 +494,7 @@ func (m *Miner) runChat(ctx context.Context, task *Task) error {
 		return err
 	}
 
-	output := map[string]interface{}{
+	output := map[string]any{
 		"role":    resp.Role,
 		"content": resp.Content,
 		"model":   resp.Model,
@@ -526,7 +526,7 @@ func (m *Miner) runEmbedding(ctx context.Context, task *Task) error {
 		return err
 	}
 
-	output := map[string]interface{}{
+	output := map[string]any{
 		"embedding": resp.Embedding,
 		"model":     resp.Model,
 	}
@@ -705,7 +705,7 @@ func (m *Miner) handleHealth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"status":  status,
 		"running": running,
 	})

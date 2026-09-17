@@ -241,7 +241,7 @@ func BenchmarkIteratorPerformance(b *testing.B) {
 
 	// Populate with 10k entries
 	numEntries := 10000
-	for i := 0; i < numEntries; i++ {
+	for i := range numEntries {
 		key := fmt.Sprintf("key-%08d", i)
 		value := make([]byte, 256)
 		if err := db.Put([]byte(key), value); err != nil {
@@ -275,7 +275,7 @@ func BenchmarkIteratorPerformance(b *testing.B) {
 func SimulateCChainBlockProduction(ctx context.Context, db database.Database, numBlocks int, txPerBlock int) (time.Duration, error) {
 	start := time.Now()
 
-	for i := 0; i < numBlocks; i++ {
+	for i := range numBlocks {
 		// Simulate block production
 		block := generateBlockData(uint64(i), 32*1024, txPerBlock) // 32KB average block
 
@@ -293,7 +293,7 @@ func SimulateCChainBlockProduction(ctx context.Context, db database.Database, nu
 		}
 
 		// Simulate transaction receipts
-		for j := 0; j < txPerBlock; j++ {
+		for j := range txPerBlock {
 			receipt := make([]byte, 256) // Average receipt size
 			if err := batch.Put([]byte(fmt.Sprintf("tx:receipt:%d:%d", i, j)), receipt); err != nil {
 				return 0, err

@@ -1,6 +1,6 @@
 module benchmarks
 
-go 1.26.4
+go 1.27.1
 
 require (
 	github.com/luxfi/database v1.19.3

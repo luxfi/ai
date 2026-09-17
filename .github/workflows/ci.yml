@@ -10,7 +10,7 @@ on:
     - cron: '0 2 * * *'
 
 env:
-  GO_VERSION: '1.26.4'
+  GO_VERSION: '1.27.1'
 
 jobs:
   # Quick checks that should pass before running expensive tests

@@ -223,7 +223,7 @@ func TestTierMeetsTierRequirement(t *testing.T) {
 func TestParseTier(t *testing.T) {
 	tests := []struct {
 		name     string
-		input    interface{}
+		input    any
 		expected CCTier
 		wantErr  bool
 	}{
@@ -1310,7 +1310,7 @@ func BenchmarkQuickTrustScore(b *testing.B) {
 }
 
 func BenchmarkParseTier(b *testing.B) {
-	inputs := []interface{}{
+	inputs := []any{
 		uint8(1),
 		int(2),
 		"GPU-Native-CC",

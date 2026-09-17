@@ -300,8 +300,8 @@ func detectAMDCapabilitiesWithDeps(cap *HardwareCapability, cmdRunner CommandRun
 	}
 
 	cap.GPUVendor = VendorAMD
-	lines := strings.Split(string(output), "\n")
-	for _, line := range lines {
+	lines := strings.SplitSeq(string(output), "\n")
+	for line := range lines {
 		if strings.Contains(line, "MI300") || strings.Contains(line, "MI250") {
 			cap.GPUModel = strings.TrimSpace(line)
 			// AMD Instinct MI300X supports CC when paired with SEV-SNP

@@ -360,7 +360,7 @@ func (vm *VM) GetModels() []*ModelInfo {
 }
 
 // GetStats returns VM statistics
-func (vm *VM) GetStats() map[string]interface{} {
+func (vm *VM) GetStats() map[string]any {
 	vm.mu.RLock()
 	defer vm.mu.RUnlock()
 
@@ -385,7 +385,7 @@ func (vm *VM) GetStats() map[string]interface{} {
 
 	epochStats := vm.distributor.GetEpochStats()
 
-	return map[string]interface{}{
+	return map[string]any{
 		"tasks_pending":      pending,
 		"tasks_completed":    completed,
 		"tasks_failed":       failed,
@@ -399,7 +399,7 @@ func (vm *VM) GetStats() map[string]interface{} {
 }
 
 // GetRewardStats returns reward statistics for a provider
-func (vm *VM) GetRewardStats(providerID string) (map[string]interface{}, error) {
+func (vm *VM) GetRewardStats(providerID string) (map[string]any, error) {
 	stats, ok := vm.distributor.GetProviderStats(providerID)
 	if !ok {
 		return nil, errors.New("provider not found")
@@ -407,7 +407,7 @@ func (vm *VM) GetRewardStats(providerID string) (map[string]interface{}, error) 
 
 	pending := vm.distributor.GetPendingRewards(providerID)
 
-	return map[string]interface{}{
+	return map[string]any{
 		"provider_id":     stats.ProviderID,
 		"tasks_completed": stats.TasksCompleted,
 		"total_rewards":   stats.TotalRewards.String(),

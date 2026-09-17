@@ -470,7 +470,7 @@ func BenchmarkParticipationRewards(b *testing.B) {
 	now := time.Now()
 
 	// Add 100 providers
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		tier := CCTier((i % 4) + 1)
 		pool.Providers[string(rune('A'+i))] = &AIProvider{
 			ProviderID: string(rune('A' + i)),

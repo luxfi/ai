@@ -4,7 +4,6 @@
 package aivm
 
 import (
-	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -50,8 +49,7 @@ func TestDefaultModels(t *testing.T) {
 
 func TestStartStop(t *testing.T) {
 	vm := NewVM()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	err := vm.Start(ctx)
 	if err != nil {
@@ -265,7 +263,7 @@ func TestSubmitResult_WithError(t *testing.T) {
 func TestGetPendingTasks(t *testing.T) {
 	vm := NewVM()
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		task := &Task{
 			ID:    "task-" + string(rune('0'+i)),
 			Type:  TaskTypeInference,
@@ -305,7 +303,7 @@ func TestGetStats(t *testing.T) {
 	vm := NewVM()
 
 	// Submit some tasks
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		task := &Task{
 			ID:    "task-" + string(rune('0'+i)),
 			Type:  TaskTypeInference,
@@ -611,7 +609,7 @@ func TestProviderStatusTracking(t *testing.T) {
 	vm.RegisterProvider(provider)
 
 	// Submit and complete multiple tasks
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		task := &Task{
 			ID:    "task-" + string(rune('0'+i)),
 			Type:  TaskTypeInference,
@@ -664,15 +662,14 @@ func TestGetModelHash(t *testing.T) {
 
 func TestConcurrentTaskSubmission(t *testing.T) {
 	vm := NewVM()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	vm.Start(ctx)
 	defer vm.Stop()
 
 	// Submit tasks concurrently
 	done := make(chan bool)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		go func(idx int) {
 			task := &Task{
 				ID:    "task-" + string(rune('A'+idx)),
@@ -686,7 +683,7 @@ func TestConcurrentTaskSubmission(t *testing.T) {
 	}
 
 	// Wait for all goroutines
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		<-done
 	}
 

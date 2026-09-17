@@ -85,7 +85,7 @@ Examples:
 			}
 			messages = append(messages, map[string]string{"role": "user", "content": args[0]})
 
-			body := map[string]interface{}{
+			body := map[string]any{
 				"model":    model,
 				"messages": messages,
 			}
@@ -154,7 +154,7 @@ Examples:
 			messages := []map[string]string{
 				{"role": "user", "content": args[0]},
 			}
-			body := map[string]interface{}{
+			body := map[string]any{
 				"model":    model,
 				"messages": messages,
 			}
@@ -278,7 +278,7 @@ Examples:
 				{"role": "system", "content": "You are a Lux blockchain operations agent. Execute the requested task step by step."},
 				{"role": "user", "content": args[0]},
 			}
-			body := map[string]interface{}{
+			body := map[string]any{
 				"model":    model,
 				"messages": messages,
 			}

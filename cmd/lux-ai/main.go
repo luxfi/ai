@@ -337,9 +337,9 @@ func (n *AINode) handleModels(w http.ResponseWriter, r *http.Request) {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
 
-	models := make([]map[string]interface{}, 0, len(n.models))
+	models := make([]map[string]any, 0, len(n.models))
 	for _, m := range n.models {
-		models = append(models, map[string]interface{}{
+		models = append(models, map[string]any{
 			"id":       m.ID,
 			"object":   "model",
 			"created":  time.Now().Unix(),
@@ -348,7 +348,7 @@ func (n *AINode) handleModels(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"object": "list",
 		"data":   models,
 	})
@@ -374,9 +374,9 @@ func (n *AINode) handleEmbeddings(w http.ResponseWriter, r *http.Request) {
 	embedding := make([]float64, 1536)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"object": "list",
-		"data": []map[string]interface{}{
+		"data": []map[string]any{
 			{
 				"object":    "embedding",
 				"embedding": embedding,
@@ -503,7 +503,7 @@ func (n *AINode) handleStats(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"miners_connected": len(n.miners),
 		"models_available": len(n.models),
 		"tasks_pending":    pending,
@@ -519,7 +519,7 @@ func (n *AINode) handleHealth(w http.ResponseWriter, r *http.Request) {
 	n.mu.RUnlock()
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"status":  "healthy",
 		"running": running,
 		"version": version,
