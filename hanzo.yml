@@ -1,0 +1,9 @@
+# Hanzo CI/CD for luxfi/ai: .github/workflows/cicd.yml imports hanzoai/ci,
+# which reads this file. The build door builds each image, one BuildKit Job
+# per platform.
+images:
+  - name: ai
+    context: .
+    dockerfile: Dockerfile
+    repo: ghcr.io/luxfi/ai
+    platforms: [linux/amd64]
